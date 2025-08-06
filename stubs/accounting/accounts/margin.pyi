@@ -4,16 +4,16 @@ from typing import Any
 from nautilus_trader.model.enums import LiquiditySide
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PositionSide
-from stubs.accounting.accounts.base import Account
-from stubs.model.events.account import AccountState
-from stubs.model.events.order import OrderFilled
-from stubs.model.identifiers import InstrumentId
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import MarginBalance
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.position import Position
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.model.events.account import AccountState
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import MarginBalance
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.position import Position
 
 class MarginAccount(Account):
     """

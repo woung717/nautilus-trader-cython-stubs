@@ -1,8 +1,8 @@
-from stubs.indicators.atr import AverageTrueRange
-from stubs.indicators.average.ma_factory import MovingAverageFactory
-from stubs.indicators.average.moving_average import MovingAverageType
-from stubs.indicators.base.indicator import Indicator
-from stubs.model.data import Bar
+from nautilus_trader.indicators.atr import AverageTrueRange
+from nautilus_trader.indicators.average.ma_factory import MovingAverageFactory
+from nautilus_trader.indicators.average.moving_average import MovingAverageType
+from nautilus_trader.indicators.base.indicator import Indicator
+from nautilus_trader.model.data import Bar
 
 class Pressure(Indicator):
     """

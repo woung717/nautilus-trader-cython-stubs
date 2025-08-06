@@ -1,16 +1,16 @@
 from nautilus_trader.model.enums import BookType
 from nautilus_trader.model.enums import OrderSide
-from stubs.core.data import Data
-from stubs.model.data import BookOrder
-from stubs.model.data import OrderBookDelta
-from stubs.model.data import OrderBookDeltas
-from stubs.model.data import OrderBookDepth10
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
-from stubs.model.identifiers import InstrumentId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.data import BookOrder
+from nautilus_trader.model.data import OrderBookDelta
+from nautilus_trader.model.data import OrderBookDeltas
+from nautilus_trader.model.data import OrderBookDepth10
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
 
 class OrderBook(Data):
     """

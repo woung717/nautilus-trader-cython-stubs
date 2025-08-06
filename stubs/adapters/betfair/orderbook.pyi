@@ -1,7 +1,7 @@
-from stubs.model.book import OrderBook
-from stubs.model.identifiers import InstrumentId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.book import OrderBook
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 def create_betfair_order_book(instrument_id: InstrumentId) -> OrderBook: ...
 def betfair_float_to_price(value: float) -> Price: ...

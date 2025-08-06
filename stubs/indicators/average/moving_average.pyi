@@ -3,7 +3,7 @@ from enum import unique
 from typing import ClassVar
 
 from nautilus_trader.model.enums import PriceType
-from stubs.indicators.base.indicator import Indicator
+from nautilus_trader.indicators.base.indicator import Indicator
 
 @unique
 class MovingAverageType(Enum):

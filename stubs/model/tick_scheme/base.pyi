@@ -1,4 +1,4 @@
-from stubs.model.objects import Price
+from nautilus_trader.model.objects import Price
 
 class TickScheme:
     """

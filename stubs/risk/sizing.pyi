@@ -1,9 +1,9 @@
 from decimal import Decimal
 
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class PositionSizer:
     """

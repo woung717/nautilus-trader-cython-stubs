@@ -4,11 +4,11 @@ from typing import Any
 
 from nautilus_trader.core.nautilus_pyo3 import BetSide
 from nautilus_trader.model.enums import OrderSide
-from stubs.model.identifiers import Symbol
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class BettingInstrument(Instrument):
     """

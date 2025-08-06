@@ -1,5 +1,5 @@
-from stubs.indicators.base.indicator import Indicator
-from stubs.model.data import Bar
+from nautilus_trader.indicators.base.indicator import Indicator
+from nautilus_trader.model.data import Bar
 
 class LinearRegression(Indicator):
     """

@@ -24,7 +24,7 @@ from nautilus_trader.model.enums import TimeInForce
 from nautilus_trader.model.enums import TradingState
 from nautilus_trader.model.enums import TrailingOffsetType
 from nautilus_trader.model.enums import TriggerType
-from stubs.model.data import BarAggregation
+from nautilus_trader.model.data import BarAggregation
 
 def account_type_from_str(value: str) -> AccountType: ...
 def account_type_to_str(value: AccountType) -> str: ...

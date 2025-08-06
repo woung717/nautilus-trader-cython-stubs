@@ -1,5 +1,5 @@
-from stubs.indicators.average.moving_average import MovingAverage
-from stubs.indicators.average.moving_average import MovingAverageType
+from nautilus_trader.indicators.average.moving_average import MovingAverage
+from nautilus_trader.indicators.average.moving_average import MovingAverageType
 
 class MovingAverageFactory:
     """

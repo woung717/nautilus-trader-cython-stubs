@@ -3,20 +3,20 @@ from typing import Any
 
 from nautilus_trader.common.enums import LogLevel
 from nautilus_trader.model.enums import OrderSide
-from stubs.core.message import Command
-from stubs.core.uuid import UUID4
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.list import OrderList
+from nautilus_trader.core.message import Command
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.list import OrderList
 
 class ExecutionReportCommand(Command):
     """

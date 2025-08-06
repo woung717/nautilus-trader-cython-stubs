@@ -3,15 +3,15 @@ from typing import Any
 
 from nautilus_trader.model.enums import AssetClass
 from nautilus_trader.model.enums import InstrumentClass
-from stubs.core.data import Data
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.identifiers import Venue
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.tick_scheme.base import TickScheme
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.tick_scheme.base import TickScheme
 
 EXPIRING_INSTRUMENT_TYPES: set[InstrumentClass]
 

@@ -1,7 +1,7 @@
 import numpy as np
 
-from stubs.model.objects import Price
-from stubs.model.tick_scheme.base import TickScheme
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.tick_scheme.base import TickScheme
 
 class TieredTickScheme(TickScheme):
     """

@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from stubs.serialization.base import Serializer
+from nautilus_trader.serialization.base import Serializer
 
 class MsgSpecSerializer(Serializer):
     """

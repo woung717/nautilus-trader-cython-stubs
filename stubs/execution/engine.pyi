@@ -3,35 +3,35 @@ from nautilus_trader.execution.reports import ExecutionMassStatus
 from nautilus_trader.execution.reports import ExecutionReport
 from nautilus_trader.model.enums import OmsType
 from nautilus_trader.model.enums import OrderSide
-from stubs.cache.cache import Cache
-from stubs.common.component import Clock
-from stubs.common.component import Component
-from stubs.common.component import MessageBus
-from stubs.common.component import TimeEvent
-from stubs.common.generators import PositionIdGenerator
-from stubs.execution.client import ExecutionClient
-from stubs.execution.messages import BatchCancelOrders
-from stubs.execution.messages import CancelAllOrders
-from stubs.execution.messages import CancelOrder
-from stubs.execution.messages import ModifyOrder
-from stubs.execution.messages import QueryOrder
-from stubs.execution.messages import SubmitOrder
-from stubs.execution.messages import SubmitOrderList
-from stubs.execution.messages import TradingCommand
-from stubs.model.events.order import OrderEvent
-from stubs.model.events.order import OrderFilled
-from stubs.model.events.position import PositionEvent
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Venue
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.position import Position
-from stubs.trading.strategy import Strategy
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Component
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.common.component import TimeEvent
+from nautilus_trader.common.generators import PositionIdGenerator
+from nautilus_trader.execution.client import ExecutionClient
+from nautilus_trader.execution.messages import BatchCancelOrders
+from nautilus_trader.execution.messages import CancelAllOrders
+from nautilus_trader.execution.messages import CancelOrder
+from nautilus_trader.execution.messages import ModifyOrder
+from nautilus_trader.execution.messages import QueryOrder
+from nautilus_trader.execution.messages import SubmitOrder
+from nautilus_trader.execution.messages import SubmitOrderList
+from nautilus_trader.execution.messages import TradingCommand
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.events.position import PositionEvent
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.position import Position
+from nautilus_trader.trading.strategy import Strategy
 
 class ExecutionEngine(Component):
     """
@@ -60,7 +60,6 @@ class ExecutionEngine(Component):
     _clients: dict[ClientId, ExecutionClient]
     _routing_map: dict[Venue, ExecutionClient]
     _default_client: ExecutionClient | None
-    _external_clients: set[ClientId]
     _oms_overrides: dict[StrategyId, OmsType]
     _external_order_claims: dict[InstrumentId, StrategyId]
     _pos_id_generator: PositionIdGenerator

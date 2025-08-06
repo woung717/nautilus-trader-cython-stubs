@@ -1,9 +1,9 @@
-from stubs.common.component import Clock
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
+from nautilus_trader.common.component import Clock
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
 
 class IdentifierGenerator:
     """
@@ -46,11 +46,9 @@ class ClientOrderIdGenerator(IdentifierGenerator):
     """
 
     count: int
-    use_uuids: bool
-    use_hyphens: bool
     _id_tag_strategy: str
 
-    def __init__(self, trader_id: TraderId, strategy_id: StrategyId, clock: Clock, initial_count: int = 0, use_uuids: bool = False, use_hyphens: bool = True) -> None: ...
+    def __init__(self, trader_id: TraderId, strategy_id: StrategyId, clock: Clock, initial_count: int = 0) -> None: ...
     def set_count(self, count: int) -> None:
         """
         Set the internal counter to the given count.

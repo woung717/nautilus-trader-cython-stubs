@@ -1,8 +1,8 @@
 from nautilus_trader.model.enums import PriceType
-from stubs.indicators.average.moving_average import MovingAverage
-from stubs.model.data import Bar
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
+from nautilus_trader.indicators.average.moving_average import MovingAverage
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
 
 class WilderMovingAverage(MovingAverage):
     """

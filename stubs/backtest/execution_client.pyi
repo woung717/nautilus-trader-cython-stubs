@@ -1,14 +1,14 @@
-from stubs.backtest.exchange import SimulatedExchange
-from stubs.cache.cache import Cache
-from stubs.common.component import MessageBus
-from stubs.common.component import TestClock
-from stubs.execution.client import ExecutionClient
-from stubs.execution.messages import BatchCancelOrders
-from stubs.execution.messages import CancelAllOrders
-from stubs.execution.messages import CancelOrder
-from stubs.execution.messages import ModifyOrder
-from stubs.execution.messages import SubmitOrder
-from stubs.execution.messages import SubmitOrderList
+from nautilus_trader.backtest.exchange import SimulatedExchange
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.common.component import TestClock
+from nautilus_trader.execution.client import ExecutionClient
+from nautilus_trader.execution.messages import BatchCancelOrders
+from nautilus_trader.execution.messages import CancelAllOrders
+from nautilus_trader.execution.messages import CancelOrder
+from nautilus_trader.execution.messages import ModifyOrder
+from nautilus_trader.execution.messages import SubmitOrder
+from nautilus_trader.execution.messages import SubmitOrderList
 
 class BacktestExecClient(ExecutionClient):
     """

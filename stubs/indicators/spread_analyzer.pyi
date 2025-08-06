@@ -1,8 +1,8 @@
 from collections import deque
 
-from stubs.indicators.base.indicator import Indicator
-from stubs.model.data import QuoteTick
-from stubs.model.identifiers import InstrumentId
+from nautilus_trader.indicators.base.indicator import Indicator
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.identifiers import InstrumentId
 
 class SpreadAnalyzer(Indicator):
     """

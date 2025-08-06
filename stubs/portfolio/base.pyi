@@ -1,10 +1,10 @@
 from typing import Any
 
-from stubs.accounting.accounts.base import Account
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Venue
-from stubs.model.objects import Money
-from stubs.model.objects import Price
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
 
 class PortfolioFacade:
     """

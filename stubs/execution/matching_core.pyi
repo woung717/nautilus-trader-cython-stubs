@@ -1,10 +1,10 @@
 from collections.abc import Callable
 
 from nautilus_trader.model.enums import OrderSide
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.objects import Price
-from stubs.model.orders.base import Order
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.orders.base import Order
 
 class MatchingCore:
     """

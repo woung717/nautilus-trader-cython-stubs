@@ -1,10 +1,10 @@
 from typing import Any
 
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
 
 class FillModel:
     """

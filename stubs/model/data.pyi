@@ -12,11 +12,11 @@ from nautilus_trader.model.enums import InstrumentCloseType
 from nautilus_trader.model.enums import MarketStatusAction
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PriceType
-from stubs.core.data import Data
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import TradeId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class BarAggregation(Enum): # skip-validate
     TICK = 1
@@ -2127,7 +2127,7 @@ class TradeTick(Data):
         """
         ...
     @property
-    def trade_id(self) -> TradeId:
+    def trade_id(self) -> InstrumentId:
         """
         Return the ticks trade match ID.
 

@@ -11,14 +11,14 @@ from nautilus_trader.common.enums import ComponentTrigger
 from nautilus_trader.common.enums import LogColor
 from nautilus_trader.common.enums import LogLevel
 from nautilus_trader.core import nautilus_pyo3
-from stubs.core.message import Event
-from stubs.core.message import Request
-from stubs.core.message import Response
-from stubs.core.uuid import UUID4
-from stubs.model.identifiers import ComponentId
-from stubs.model.identifiers import Identifier
-from stubs.model.identifiers import TraderId
-from stubs.serialization.base import Serializer
+from nautilus_trader.core.message import Event
+from nautilus_trader.core.message import Request
+from nautilus_trader.core.message import Response
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.identifiers import ComponentId
+from nautilus_trader.model.identifiers import Identifier
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.serialization.base import Serializer
 
 _COMPONENT_CLOCKS: dict[UUID4, list[TestClock]]
 _FORCE_STOP: bool
@@ -1363,17 +1363,6 @@ class MessageBus:
         Returns
         -------
         list[Subscription]
-
-        """
-        ...
-
-    def streaming_types(self) -> set[type]:
-        """
-        Return all types registered for external streaming -> internal publishing.
-
-        Returns
-        -------
-        set[type]
 
         """
         ...

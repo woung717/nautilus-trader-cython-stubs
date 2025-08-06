@@ -8,27 +8,27 @@ from nautilus_trader.model.enums import OrderType
 from nautilus_trader.model.enums import TimeInForce
 from nautilus_trader.model.enums import TrailingOffsetType
 from nautilus_trader.model.enums import TriggerType
-from stubs.cache.base import CacheFacade
-from stubs.common.component import Clock
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.limit import LimitOrder
-from stubs.model.orders.limit_if_touched import LimitIfTouchedOrder
-from stubs.model.orders.list import OrderList
-from stubs.model.orders.market import MarketOrder
-from stubs.model.orders.market_if_touched import MarketIfTouchedOrder
-from stubs.model.orders.market_to_limit import MarketToLimitOrder
-from stubs.model.orders.stop_limit import StopLimitOrder
-from stubs.model.orders.stop_market import StopMarketOrder
-from stubs.model.orders.trailing_stop_limit import TrailingStopLimitOrder
-from stubs.model.orders.trailing_stop_market import TrailingStopMarketOrder
+from nautilus_trader.cache.base import CacheFacade
+from nautilus_trader.common.component import Clock
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.limit import LimitOrder
+from nautilus_trader.model.orders.limit_if_touched import LimitIfTouchedOrder
+from nautilus_trader.model.orders.list import OrderList
+from nautilus_trader.model.orders.market import MarketOrder
+from nautilus_trader.model.orders.market_if_touched import MarketIfTouchedOrder
+from nautilus_trader.model.orders.market_to_limit import MarketToLimitOrder
+from nautilus_trader.model.orders.stop_limit import StopLimitOrder
+from nautilus_trader.model.orders.stop_market import StopMarketOrder
+from nautilus_trader.model.orders.trailing_stop_limit import TrailingStopLimitOrder
+from nautilus_trader.model.orders.trailing_stop_market import TrailingStopMarketOrder
 
 class OrderFactory:
     """
@@ -56,7 +56,6 @@ class OrderFactory:
     trader_id: TraderId
     strategy_id: StrategyId
     use_uuid_client_order_ids: bool
-    use_hyphens_in_client_order_ids: bool
 
     def __init__(
         self,
@@ -65,7 +64,6 @@ class OrderFactory:
         clock: Clock,
         cache: CacheFacade | None = None,
         use_uuid_client_order_ids: bool = False,
-        use_hyphens_in_client_order_ids: bool = True,
     ) -> None: ...
     def get_client_order_id_count(self) -> int:
         """

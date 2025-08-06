@@ -1,6 +1,6 @@
-from stubs.indicators.average.moving_average import MovingAverageType
-from stubs.indicators.base.indicator import Indicator
-from stubs.model.data import Bar
+from nautilus_trader.indicators.average.moving_average import MovingAverageType
+from nautilus_trader.indicators.base.indicator import Indicator
+from nautilus_trader.model.data import Bar
 
 class RelativeVolatilityIndex(Indicator):
     """
