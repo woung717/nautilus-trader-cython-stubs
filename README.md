@@ -1,4 +1,4 @@
-# Cython type stubs for NautilusTrader
+# Type stubs for NautilusTrader
 
 `nautilus-trader-cython-stubs` provides **`.pyi` type stubs** for the [NautilusTrader](https://github.com/nautechsystems/nautilus_trader) trading platform, specifically for its **Cython interface**.
 
