@@ -6,11 +6,27 @@ These stubs serve the following purposes:
 
 - Enhance **IntelliSense and docstring support** in **Visual Studio Code** (via Pylance) and other IDEs  
 - Provide consistent **type annotations** and **docstring visibility** for Cython modules  
-- Enable proper **import resolution** for Cython-based APIs (which is almost entire APIs)
+- Enable proper **import resolution** for Cython-based APIs 
 
-## Usage
+## Installation
+Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
 
-Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files.
+For example:
+```bash
+rsync -a ./stubs/ {path/to/python/site-packages}/nautilus_trader
+```
+
+## Validate stubs
+To check if the current version of the .pyi stub is synchronized with the NautilusTrader API, run the following command:
+ 
+```bash
+cd nautilus-trader
+git checkout {branch_name|tag_name} # branch or tag(release) of nautilus_trader 
+cd ..
+./scripts/validate_stubs.sh
+```
+
+Note: Python3 and Cython dependencies are required.
 
 ## Limitations
 
