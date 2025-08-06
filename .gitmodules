@@ -1,0 +1,4 @@
+[submodule "nautilus_trader"]
+    path = nautilus_trader
+    url = https://github.com/nautechsystems/nautilus_trader.git
+    branch = master
