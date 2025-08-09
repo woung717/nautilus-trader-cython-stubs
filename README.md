@@ -5,7 +5,10 @@
 These stubs serve the following purposes:
 
 - **IntelliSense and docstring support** in **Visual Studio Code** (via Pylance) and other IDEs  
-- **import resolution** for Cython-based APIs 
+- **import resolution** for Cython-based APIs
+  
+<img width="1792" height="846" alt="image" src="https://github.com/user-attachments/assets/2b25fb7e-690e-41fc-b12d-5fe09e975d89" />
+
 
 ## Installation
 Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
