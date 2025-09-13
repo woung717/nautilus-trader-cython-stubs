@@ -1,10 +1,7 @@
-from nautilus_trader.core.nautilus_pyo3 import CandleBodySize
-from nautilus_trader.core.nautilus_pyo3 import CandleDirection
-from nautilus_trader.core.nautilus_pyo3 import CandleSize
-from nautilus_trader.core.nautilus_pyo3 import CandleWickSize
-from stubs.indicators.base.indicator import Indicator
-from stubs.indicators.fuzzy_candlesticks import FuzzyCandle
-from stubs.model.data import Bar
+from nautilus_trader.model.data import Bar
+from nautilus_trader.indicators.base import Indicator
+from nautilus_trader.indicators.fuzzy_enums import CandleDirection, CandleSize, CandleBodySize, CandleWickSize
+
 
 class FuzzyCandle:
     """
@@ -42,6 +39,7 @@ class FuzzyCandle:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
+
 class FuzzyCandlesticks(Indicator):
     """
     An indicator which fuzzifies bar data to produce fuzzy candlesticks.
@@ -62,7 +60,7 @@ class FuzzyCandlesticks(Indicator):
     """
 
     period: int
-    vector: list[int] | None
+    vector: list
     value: FuzzyCandle | None
 
     def __init__(
@@ -73,7 +71,7 @@ class FuzzyCandlesticks(Indicator):
         threshold3: float = 2.0,
         threshold4: float = 3.0,
     ) -> None: ...
-    def handle_bar(self, bar: Bar) -> None:
+    def handle_bar(self, bar: Bar) -> None: 
         """
         Update the indicator with the given bar.
 
@@ -89,7 +87,7 @@ class FuzzyCandlesticks(Indicator):
         high: float,
         low: float,
         close: float,
-    ) -> None:
+    ) -> None: 
         """
         Update the indicator with the given raw values.
 
@@ -106,4 +104,3 @@ class FuzzyCandlesticks(Indicator):
 
         """
         ...
-    def _reset(self) -> None: ...
