@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any
 
 from nautilus_trader.model.enums import PriceType
@@ -5,6 +6,17 @@ from nautilus_trader.indicators.base import Indicator
 from nautilus_trader.indicators.momentum import ChandeMomentumOscillator
 from nautilus_trader.model.data import Bar, QuoteTick, TradeTick
 
+
+class MovingAverageType(Enum): # skip-validate
+    SIMPLE = 0
+    EXPONENTIAL = 1
+    DOUBLE_EXPONENTIAL = 2
+    WILDER = 3
+    HULL = 4
+    ADAPTIVE = 5
+    WEIGHTED = 6
+    VARIABLE_INDEX_DYNAMIC = 7
+    
 
 class MovingAverage(Indicator):
     """The base class for all moving average type indicators.
