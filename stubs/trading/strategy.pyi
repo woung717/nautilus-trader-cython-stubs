@@ -6,46 +6,47 @@ from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.enums import TimeInForce
 from nautilus_trader.trading.config import ImportableStrategyConfig
 from nautilus_trader.trading.config import StrategyConfig
-from stubs.cache.base import CacheFacade
-from stubs.cache.cache import Cache
-from stubs.common.actor import Actor
-from stubs.common.component import Clock
-from stubs.common.component import MessageBus
-from stubs.common.component import TimeEvent
-from stubs.common.factories import OrderFactory
-from stubs.core.message import Event
-from stubs.model.events.order import OrderAccepted
-from stubs.model.events.order import OrderCanceled
-from stubs.model.events.order import OrderCancelRejected
-from stubs.model.events.order import OrderDenied
-from stubs.model.events.order import OrderEmulated
-from stubs.model.events.order import OrderEvent
-from stubs.model.events.order import OrderExpired
-from stubs.model.events.order import OrderFilled
-from stubs.model.events.order import OrderInitialized
-from stubs.model.events.order import OrderModifyRejected
-from stubs.model.events.order import OrderPendingCancel
-from stubs.model.events.order import OrderPendingUpdate
-from stubs.model.events.order import OrderRejected
-from stubs.model.events.order import OrderReleased
-from stubs.model.events.order import OrderSubmitted
-from stubs.model.events.order import OrderTriggered
-from stubs.model.events.order import OrderUpdated
-from stubs.model.events.position import PositionChanged
-from stubs.model.events.position import PositionClosed
-from stubs.model.events.position import PositionEvent
-from stubs.model.events.position import PositionOpened
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.list import OrderList
-from stubs.model.position import Position
-from stubs.portfolio.base import PortfolioFacade
+from nautilus_trader.cache.base import CacheFacade
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.actor import Actor
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.common.component import TimeEvent
+from nautilus_trader.common.factories import OrderFactory
+from nautilus_trader.core.message import Event
+from nautilus_trader.model.events.order import OrderAccepted
+from nautilus_trader.model.events.order import OrderCanceled
+from nautilus_trader.model.events.order import OrderCancelRejected
+from nautilus_trader.model.events.order import OrderDenied
+from nautilus_trader.model.events.order import OrderEmulated
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.order import OrderExpired
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.events.order import OrderInitialized
+from nautilus_trader.model.events.order import OrderModifyRejected
+from nautilus_trader.model.events.order import OrderPendingCancel
+from nautilus_trader.model.events.order import OrderPendingUpdate
+from nautilus_trader.model.events.order import OrderRejected
+from nautilus_trader.model.events.order import OrderReleased
+from nautilus_trader.model.events.order import OrderSubmitted
+from nautilus_trader.model.events.order import OrderTriggered
+from nautilus_trader.model.events.order import OrderUpdated
+from nautilus_trader.model.events.position import PositionChanged
+from nautilus_trader.model.events.position import PositionClosed
+from nautilus_trader.model.events.position import PositionEvent
+from nautilus_trader.model.events.position import PositionOpened
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.list import OrderList
+from nautilus_trader.model.position import Position
+from nautilus_trader.portfolio.base import PortfolioFacade
+from nautilus_trader.model.identifiers import AccountId
 
 class Strategy(Actor):
     """
@@ -761,6 +762,25 @@ class Strategy(Actor):
             If the market orders to close positions should carry the 'reduce-only' execution instruction.
             Optional, as not all venues support this feature.
         params : dict[str, Any] | None, optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def query_account(self, account_id: AccountId, client_id: ClientId = None, params: dict[str, Any] = None) -> None:
+        """
+        Query the account with optional routing instructions.
+
+        A `QueryAccount` command will be created and then sent to the
+        `ExecutionEngine`.
+
+        Parameters
+        ----------
+        account_id : AccountId
+            The account to query.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
         """

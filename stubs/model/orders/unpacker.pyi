@@ -1,7 +1,7 @@
 from typing import Any
 
-from stubs.model.events.order import OrderInitialized
-from stubs.model.orders.base import Order
+from nautilus_trader.model.events.order import OrderInitialized
+from nautilus_trader.model.orders.base import Order
 
 class OrderUnpacker:
     """

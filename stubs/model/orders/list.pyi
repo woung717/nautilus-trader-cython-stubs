@@ -1,7 +1,7 @@
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import StrategyId
-from stubs.model.orders.base import Order
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.orders.base import Order
 
 class OrderList:
     """

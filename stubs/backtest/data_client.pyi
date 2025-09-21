@@ -1,39 +1,41 @@
 from nautilus_trader.common.config import NautilusConfig
-from stubs.cache.cache import Cache
-from stubs.common.component import Clock
-from stubs.common.component import MessageBus
-from stubs.data.client import DataClient
-from stubs.data.client import MarketDataClient
-from stubs.data.messages import RequestBars
-from stubs.data.messages import RequestData
-from stubs.data.messages import RequestInstrument
-from stubs.data.messages import RequestInstruments
-from stubs.data.messages import RequestOrderBookSnapshot
-from stubs.data.messages import RequestQuoteTicks
-from stubs.data.messages import RequestTradeTicks
-from stubs.data.messages import SubscribeBars
-from stubs.data.messages import SubscribeData
-from stubs.data.messages import SubscribeIndexPrices
-from stubs.data.messages import SubscribeInstrument
-from stubs.data.messages import SubscribeInstrumentClose
-from stubs.data.messages import SubscribeInstruments
-from stubs.data.messages import SubscribeInstrumentStatus
-from stubs.data.messages import SubscribeMarkPrices
-from stubs.data.messages import SubscribeOrderBook
-from stubs.data.messages import SubscribeQuoteTicks
-from stubs.data.messages import SubscribeTradeTicks
-from stubs.data.messages import UnsubscribeBars
-from stubs.data.messages import UnsubscribeData
-from stubs.data.messages import UnsubscribeIndexPrices
-from stubs.data.messages import UnsubscribeInstrument
-from stubs.data.messages import UnsubscribeInstrumentClose
-from stubs.data.messages import UnsubscribeInstruments
-from stubs.data.messages import UnsubscribeInstrumentStatus
-from stubs.data.messages import UnsubscribeMarkPrices
-from stubs.data.messages import UnsubscribeOrderBook
-from stubs.data.messages import UnsubscribeQuoteTicks
-from stubs.data.messages import UnsubscribeTradeTicks
-from stubs.model.identifiers import ClientId
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.data.client import DataClient
+from nautilus_trader.data.client import MarketDataClient
+from nautilus_trader.data.messages import RequestBars
+from nautilus_trader.data.messages import RequestData
+from nautilus_trader.data.messages import RequestInstrument
+from nautilus_trader.data.messages import RequestInstruments
+from nautilus_trader.data.messages import RequestOrderBookSnapshot
+from nautilus_trader.data.messages import RequestQuoteTicks
+from nautilus_trader.data.messages import RequestTradeTicks
+from nautilus_trader.data.messages import SubscribeBars
+from nautilus_trader.data.messages import SubscribeData
+from nautilus_trader.data.messages import SubscribeFundingRates
+from nautilus_trader.data.messages import SubscribeIndexPrices
+from nautilus_trader.data.messages import SubscribeInstrument
+from nautilus_trader.data.messages import SubscribeInstrumentClose
+from nautilus_trader.data.messages import SubscribeInstruments
+from nautilus_trader.data.messages import SubscribeInstrumentStatus
+from nautilus_trader.data.messages import SubscribeMarkPrices
+from nautilus_trader.data.messages import SubscribeOrderBook
+from nautilus_trader.data.messages import SubscribeQuoteTicks
+from nautilus_trader.data.messages import SubscribeTradeTicks
+from nautilus_trader.data.messages import UnsubscribeBars
+from nautilus_trader.data.messages import UnsubscribeData
+from nautilus_trader.data.messages import UnsubscribeFundingRates
+from nautilus_trader.data.messages import UnsubscribeIndexPrices
+from nautilus_trader.data.messages import UnsubscribeInstrument
+from nautilus_trader.data.messages import UnsubscribeInstrumentClose
+from nautilus_trader.data.messages import UnsubscribeInstruments
+from nautilus_trader.data.messages import UnsubscribeInstrumentStatus
+from nautilus_trader.data.messages import UnsubscribeMarkPrices
+from nautilus_trader.data.messages import UnsubscribeOrderBook
+from nautilus_trader.data.messages import UnsubscribeQuoteTicks
+from nautilus_trader.data.messages import UnsubscribeTradeTicks
+from nautilus_trader.model.identifiers import ClientId
 
 class BacktestDataClient(DataClient):
     """
@@ -96,6 +98,7 @@ class BacktestMarketDataClient(MarketDataClient):
     ): ...
     def _start(self) -> None: ...
     def _stop(self) -> None: ...
+    def _reset(self) -> None: ...
     def subscribe(self, command: SubscribeData) -> None: ...
     def unsubscribe(self, command: UnsubscribeData) -> None: ...
     def subscribe_instruments(self, command: SubscribeInstruments) -> None: ...
@@ -106,6 +109,7 @@ class BacktestMarketDataClient(MarketDataClient):
     def subscribe_trade_ticks(self, command: SubscribeTradeTicks) -> None: ...
     def subscribe_mark_prices(self, command: SubscribeMarkPrices) -> None: ...
     def subscribe_index_prices(self, command: SubscribeIndexPrices) -> None: ...
+    def subscribe_funding_rates(self, command: SubscribeFundingRates) -> None: ...
     def subscribe_bars(self, command: SubscribeBars) -> None: ...
     def subscribe_instrument_status(self, command: SubscribeInstrumentStatus) -> None: ...
     def subscribe_instrument_close(self, command: SubscribeInstrumentClose) -> None: ...
@@ -117,6 +121,7 @@ class BacktestMarketDataClient(MarketDataClient):
     def unsubscribe_trade_ticks(self, command: UnsubscribeTradeTicks) -> None: ...
     def unsubscribe_mark_prices(self, command: UnsubscribeMarkPrices) -> None: ...
     def unsubscribe_index_prices(self, command: UnsubscribeIndexPrices) -> None: ...
+    def unsubscribe_funding_rates(self, command: UnsubscribeFundingRates) -> None:...
     def unsubscribe_bars(self, command: UnsubscribeBars) -> None: ...
     def unsubscribe_instrument_status(self, command: UnsubscribeInstrumentStatus) -> None: ...
     def unsubscribe_instrument_close(self, command: UnsubscribeInstrumentClose) -> None: ...
@@ -126,3 +131,5 @@ class BacktestMarketDataClient(MarketDataClient):
     def request_quote_ticks(self, request: RequestQuoteTicks) -> None: ...
     def request_trade_ticks(self, request: RequestTradeTicks) -> None: ...
     def request_bars(self, request: RequestBars) -> None: ...
+    def _start_spread_quote_aggregator(self, command: SubscribeQuoteTicks) -> None: ...
+    def _stop_spread_quote_aggregator(self, command: UnsubscribeQuoteTicks) -> None: ...

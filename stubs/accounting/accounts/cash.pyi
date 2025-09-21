@@ -1,16 +1,17 @@
-from typing import ClassVar, Literal
+from typing import ClassVar
 
 from nautilus_trader.model.enums import AccountType, LiquiditySide
 from nautilus_trader.model.enums import OrderSide
-from stubs.accounting.accounts.base import Account
-from stubs.model.events.account import AccountState
-from stubs.model.events.order import OrderFilled
-from stubs.model.identifiers import InstrumentId
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.position import Position
+from nautilus_trader.core.nautilus_pyo3 import AccountBalance
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.model.events.account import AccountState
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.position import Position
 
 class CashAccount(Account):
     """
@@ -31,17 +32,40 @@ class CashAccount(Account):
 
     ACCOUNT_TYPE: ClassVar[AccountType] = ...
 
+    allow_borrowing: bool
     _balances_locked: dict[InstrumentId, Money]
 
     def __init__(
         self,
         event: AccountState,
         calculate_account_state: bool = False,
+        allow_borrowing: bool = False
     ) -> None: ...
     @staticmethod
     def to_dict(obj: CashAccount) -> dict: ...
     @staticmethod
     def from_dict(values: dict) -> CashAccount: ...
+    def update_balances(self, balances: list[AccountBalance]) -> None:
+        """
+        Update the account balances.
+
+        There is no guarantee that every account currency is included in the
+        given balances, therefore we only update included balances.
+
+        Parameters
+        ----------
+        balances : list[AccountBalance]
+            The balances for the update.
+
+        Raises
+        ------
+        ValueError
+            If `balances` is empty.
+        AccountBalanceNegative
+            If borrowing is not allowed and balance is negative.
+
+        """
+        ...
     def update_balance_locked(self, instrument_id: InstrumentId, locked: Money) -> None:
         """
         Update the balance locked for the given instrument ID.

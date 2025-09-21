@@ -11,14 +11,14 @@ from nautilus_trader.common.enums import ComponentTrigger
 from nautilus_trader.common.enums import LogColor
 from nautilus_trader.common.enums import LogLevel
 from nautilus_trader.core import nautilus_pyo3
-from stubs.core.message import Event
-from stubs.core.message import Request
-from stubs.core.message import Response
-from stubs.core.uuid import UUID4
-from stubs.model.identifiers import ComponentId
-from stubs.model.identifiers import Identifier
-from stubs.model.identifiers import TraderId
-from stubs.serialization.base import Serializer
+from nautilus_trader.core.message import Event
+from nautilus_trader.core.message import Request
+from nautilus_trader.core.message import Response
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.identifiers import ComponentId
+from nautilus_trader.model.identifiers import Identifier
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.serialization.base import Serializer
 
 _COMPONENT_CLOCKS: dict[UUID4, list[TestClock]]
 _FORCE_STOP: bool
@@ -717,6 +717,7 @@ def init_logging(
     file_name: str | None = None,
     file_format: str | None = None,
     component_levels: dict[ComponentId, LogLevel] | None = None,
+    log_components_only: bool = ...,
     colors: bool = True,
     bypass: bool = False,
     print_config: bool = False,

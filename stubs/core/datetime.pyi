@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import datetime as dt
 
 import pandas as pd
 
@@ -256,6 +257,30 @@ def min_date(date1: pd.Timestamp | str | int | None = None, date2: str | int | N
     -------
     pd.Timestamp | None
         The minimum date, or None if both input dates are None.
+
+    """
+    ...
+def ensure_pydatetime_utc(timestamp: pd.Timestamp) -> dt.datetime | None:
+    """
+    Convert an optional ``pandas.Timestamp`` to a timezone-aware ``datetime`` in UTC.
+
+    The underlying Python ``datetime`` type only supports microsecond precision. When
+    the provided ``timestamp`` contains non-zero nanoseconds these **cannot** be
+    represented and are therefore truncated to microseconds before the conversion
+    takes place.  This avoids the "Discarding nonzero nanoseconds in conversion"
+    ``UserWarning`` raised by pandas when calling :py:meth:`Timestamp.to_pydatetime`.
+
+    Parameters
+    ----------
+    timestamp : pd.Timestamp, optional
+        The timestamp to convert. If ``None`` the function immediately returns
+        ``None``.
+
+    Returns
+    -------
+    datetime.datetime | None
+        The converted timestamp with tz-info set to ``UTC`` or ``None`` if the
+        input was ``None``.
 
     """
     ...

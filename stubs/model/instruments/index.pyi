@@ -1,11 +1,11 @@
 from typing import Any
 
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class IndexInstrument(Instrument):
     """
@@ -35,6 +35,8 @@ class IndexInstrument(Instrument):
         UNIX timestamp (nanoseconds) when the data event occurred.
     ts_init : uint64_t
         UNIX timestamp (nanoseconds) when the data object was initialized.
+    tick_scheme_name : str, optional
+        The name of the tick scheme.
     info : dict[str, object], optional
         The additional instrument information.
 
@@ -66,6 +68,7 @@ class IndexInstrument(Instrument):
         size_increment: Quantity,
         ts_event: int,
         ts_init: int,
+        tick_scheme_name: str | None = None,
         info: dict[str, Any] | None = None,
     ) -> None: ...
     @staticmethod

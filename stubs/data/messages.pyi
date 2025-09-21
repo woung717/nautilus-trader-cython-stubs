@@ -1,17 +1,14 @@
-from collections.abc import Callable
+from typing import Any, Callable
 from datetime import datetime
-from typing import Any
+
+import anyio
 
 from nautilus_trader.model.enums import BookType
-from stubs.core.message import Command
-from stubs.core.message import Request
-from stubs.core.message import Response
-from stubs.core.uuid import UUID4
-from stubs.model.data import BarType
-from stubs.model.data import DataType
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Venue
+from nautilus_trader.core.message import Command, Request, Response
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.data import BarType, DataType
+from nautilus_trader.model.identifiers import ClientId, InstrumentId, Venue
+
 
 class DataCommand(Command):
     """
@@ -41,12 +38,6 @@ class DataCommand(Command):
     --------
     This class should not be used directly, but through a concrete subclass.
     """
-
-    data_type: DataType
-    client_id: ClientId | None
-    venue: Venue | None
-    params: dict[str, Any] | None
-
     def __init__(
         self,
         data_type: DataType,
@@ -58,6 +49,7 @@ class DataCommand(Command):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class SubscribeData(DataCommand):
     """
@@ -86,9 +78,6 @@ class SubscribeData(DataCommand):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
-    instrument_id: InstrumentId | None
-
     def __init__(
         self,
         data_type: DataType,
@@ -104,26 +93,8 @@ class SubscribeData(DataCommand):
         start: datetime | None,
         end: datetime | None,
         callback: Callable[[Any], None],
-    ) -> RequestData:
-        """
-        Convert this subscribe message to a request message.
+    ) -> RequestData: ...
 
-        Parameters
-        ----------
-        start : datetime
-            The start datetime (UTC) of request time range (inclusive).
-        end : datetime
-            The end datetime (UTC) of request time range.
-            The inclusiveness depends on individual data client implementation.
-        callback : Callable[[Any], None]
-            The delegate to call with the data.
-
-        Returns
-        -------
-        RequestQuoteTicks
-            The converted request message.
-        """
-        ...
 
 class SubscribeInstruments(SubscribeData):
     """
@@ -148,7 +119,6 @@ class SubscribeInstruments(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         client_id: ClientId | None,
@@ -164,26 +134,8 @@ class SubscribeInstruments(SubscribeData):
         start: datetime | None,
         end: datetime | None,
         callback: Callable[[Any], None],
-    ) -> RequestInstruments:
-        """
-        Convert this subscribe message to a request message.
+    ) -> RequestInstruments: ...
 
-        Parameters
-        ----------
-        start : datetime
-            The start datetime (UTC) of request time range (inclusive).
-        end : datetime
-            The end datetime (UTC) of request time range.
-            The inclusiveness depends on individual data client implementation.
-        callback : Callable[[Any], None]
-            The delegate to call with the data.
-
-        Returns
-        -------
-        RequestInstruments
-            The converted request message.
-        """
-        ...
 
 class SubscribeInstrument(SubscribeData):
     """
@@ -210,7 +162,6 @@ class SubscribeInstrument(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -223,6 +174,7 @@ class SubscribeInstrument(SubscribeData):
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
+
 class SubscribeOrderBook(SubscribeData):
     """
     Represents a command to subscribe to order book deltas for an instrument.
@@ -231,6 +183,8 @@ class SubscribeOrderBook(SubscribeData):
     ----------
     instrument_id : InstrumentId
         The instrument ID for the subscription.
+    data_type : DataType, {``OrderBookDeltas``, ``OrderBookDepth10``}
+        The data type for book updates.
     book_type : BookType
         The order book type.
     client_id : ClientId or ``None``
@@ -245,10 +199,8 @@ class SubscribeOrderBook(SubscribeData):
         The maximum depth for the subscription.
     managed: bool, optional, default True
         If an order book should be managed by the data engine based on the subscribed feed.
-    interval_ms : int, optional, default 1000
+    interval_ms : int, default 0 (no interval snapshots)
         The interval (milliseconds) between snapshots.
-    only_deltas : bool, optional, default True
-        If the subscription is for OrderBookDeltas or OrderBook snapshots.
     params : dict[str, object], optional
         Additional parameters for the subscription.
 
@@ -256,19 +208,13 @@ class SubscribeOrderBook(SubscribeData):
     ------
     ValueError
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
-    ValueError
-        If `interval_ms` is not positive (> 0).
+ ValueError
+        If `interval_ms` is negative (< 0).
     """
-
-    book_type: BookType
-    depth: int
-    managed: bool
-    interval_ms: int
-    only_deltas: bool
-
     def __init__(
         self,
         instrument_id: InstrumentId,
+        book_data_type: type,
         book_type: BookType,
         client_id: ClientId | None,
         venue: Venue | None,
@@ -276,12 +222,12 @@ class SubscribeOrderBook(SubscribeData):
         ts_init: int,
         depth: int = 0,
         managed: bool = True,
-        interval_ms: int = 1000,
-        only_deltas: bool = True,
+        interval_ms: int = 0,
         params: dict[str, Any] | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class SubscribeQuoteTicks(SubscribeData):
     """
@@ -308,7 +254,6 @@ class SubscribeQuoteTicks(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -324,27 +269,9 @@ class SubscribeQuoteTicks(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
-    ) -> RequestQuoteTicks:
-        """
-        Convert this subscribe message to a request message.
+        callback: Callable[[Any],],
+    ) -> RequestQuoteTicks: ...
 
-        Parameters
-        ----------
-        start : datetime
-            The start datetime (UTC) of request time range (inclusive).
-        end : datetime
-            The end datetime (UTC) of request time range.
-            The inclusiveness depends on individual data client implementation.
-        callback : Callable[[Any], None]
-            The delegate to call with the data.
-
-        Returns
-        -------
-        RequestQuoteTicks
-            The converted request message.
-        """
-        ...
 
 class SubscribeTradeTicks(SubscribeData):
     """
@@ -371,7 +298,6 @@ class SubscribeTradeTicks(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -388,26 +314,8 @@ class SubscribeTradeTicks(SubscribeData):
         start: datetime | None,
         end: datetime | None,
         callback: Callable[[Any], None],
-    ) -> RequestTradeTicks:
-        """
-        Convert this subscribe message to a request message.
+    ) -> RequestTradeTicks: ...
 
-        Parameters
-        ----------
-        start : datetime
-            The start datetime (UTC) of request time range (inclusive).
-        end : datetime
-            The end datetime (UTC) of request time range.
-            The inclusiveness depends on individual data client implementation.
-        callback : Callable[[Any], None]
-            The delegate to call with the data.
-
-        Returns
-        -------
-        RequestTradeTicks
-            The converted request message.
-        """
-        ...
 
 class SubscribeMarkPrices(SubscribeData):
     """
@@ -434,7 +342,6 @@ class SubscribeMarkPrices(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -446,6 +353,7 @@ class SubscribeMarkPrices(SubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class SubscribeIndexPrices(SubscribeData):
     """
@@ -472,7 +380,6 @@ class SubscribeIndexPrices(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -484,6 +391,45 @@ class SubscribeIndexPrices(SubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
+
+class SubscribeFundingRates(SubscribeData):
+    """
+    Represents a command to subscribe to funding rates.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the subscription.
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
 
 class SubscribeBars(SubscribeData):
     """
@@ -500,8 +446,7 @@ class SubscribeBars(SubscribeData):
     command_id : UUID4
         The command ID.
     ts_init : uint64_t
-        UNIX timestamp (nanoseconds) when the object was initialized.
-    await_partial : bool
+        UNIX timestamp (nanoseconds) when the object was    await_partial : bool
         If the bar aggregator should await the arrival of a historical partial bar prior to actively aggregating new bars.
     params : dict[str, object], optional
         Additional parameters for the subscription.
@@ -512,10 +457,6 @@ class SubscribeBars(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
-    bar_type: BarType
-    await_partial: bool
-
     def __init__(
         self,
         bar_type: BarType,
@@ -533,26 +474,8 @@ class SubscribeBars(SubscribeData):
         start: datetime | None,
         end: datetime | None,
         callback: Callable[[Any], None],
-    ) -> RequestBars:
-        """
-        Convert this subscribe message to a request message.
+    ) -> RequestBars: ...
 
-        Parameters
-        ----------
-        start : datetime
-            The start datetime (UTC) of request time range (inclusive).
-        end : datetime
-            The end datetime (UTC) of request time range.
-            The inclusiveness depends on individual data client implementation.
-        callback : Callable[[Any], None]
-            The delegate to call with the data.
-
-        Returns
-        -------
-        RequestBars
-            The converted request message.
-        """
-        ...
 
 class SubscribeInstrumentStatus(SubscribeData):
     """
@@ -576,10 +499,9 @@ class SubscribeInstrumentStatus(SubscribeData):
     Raises
     ------
     ValueError
-        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+        If bothclient_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -591,6 +513,7 @@ class SubscribeInstrumentStatus(SubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class SubscribeInstrumentClose(SubscribeData):
     """
@@ -617,7 +540,6 @@ class SubscribeInstrumentClose(SubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -629,6 +551,7 @@ class SubscribeInstrumentClose(SubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeData(DataCommand):
     """
@@ -657,7 +580,6 @@ class UnsubscribeData(DataCommand):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         data_type: DataType,
@@ -692,7 +614,6 @@ class UnsubscribeInstruments(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         client_id: ClientId | None,
@@ -703,6 +624,7 @@ class UnsubscribeInstruments(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeInstrument(UnsubscribeData):
     """
@@ -729,7 +651,6 @@ class UnsubscribeInstrument(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -739,8 +660,9 @@ class UnsubscribeInstrument(UnsubscribeData):
         ts_init: int,
         params: dict[str, Any] | None = None,
     ) -> None: ...
-    def __str__(self) -> str: ... # skip-validate
+    def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeOrderBook(UnsubscribeData):
     """
@@ -750,8 +672,8 @@ class UnsubscribeOrderBook(UnsubscribeData):
     ----------
     instrument_id : InstrumentId
         The instrument ID for the subscription.
-    only_deltas: bool
-        If the subscription is for OrderBookDeltas or OrderBook snapshots.
+    book_data_type : type, {``OrderBookDelta``, ``OrderBookDepth10``}
+        The data type for book updates.
     client_id : ClientId or ``None``
         The data client ID for the command.
     venue : Venue or ``None``
@@ -769,13 +691,10 @@ class UnsubscribeOrderBook(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
-    only_deltas: bool
-
     def __init__(
         self,
         instrument_id: InstrumentId,
-        only_deltas: bool,
+        book_data_type: type,
         client_id: ClientId | None,
         venue: Venue | None,
         command_id: UUID4,
@@ -784,6 +703,7 @@ class UnsubscribeOrderBook(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeQuoteTicks(UnsubscribeData):
     """
@@ -810,7 +730,6 @@ class UnsubscribeQuoteTicks(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -822,6 +741,7 @@ class UnsubscribeQuoteTicks(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeTradeTicks(UnsubscribeData):
     """
@@ -848,7 +768,6 @@ class UnsubscribeTradeTicks(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -860,6 +779,7 @@ class UnsubscribeTradeTicks(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeMarkPrices(UnsubscribeData):
     """
@@ -886,7 +806,6 @@ class UnsubscribeMarkPrices(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -898,6 +817,7 @@ class UnsubscribeMarkPrices(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeIndexPrices(UnsubscribeData):
     """
@@ -924,7 +844,6 @@ class UnsubscribeIndexPrices(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -936,6 +855,45 @@ class UnsubscribeIndexPrices(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
+
+class UnsubscribeFundingRates(UnsubscribeData):
+    """
+    Represents a command to unsubscribe from funding rates for an instrument.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the subscription.
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
 
 class UnsubscribeBars(UnsubscribeData):
     """
@@ -962,9 +920,6 @@ class UnsubscribeBars(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
-    bar_type: BarType
-
     def __init__(
         self,
         bar_type: BarType,
@@ -976,6 +931,7 @@ class UnsubscribeBars(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeInstrumentStatus(UnsubscribeData):
     """
@@ -1002,7 +958,6 @@ class UnsubscribeInstrumentStatus(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1014,6 +969,7 @@ class UnsubscribeInstrumentStatus(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class UnsubscribeInstrumentClose(UnsubscribeData):
     """
@@ -1040,7 +996,6 @@ class UnsubscribeInstrumentClose(UnsubscribeData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1052,6 +1007,7 @@ class UnsubscribeInstrumentClose(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class RequestData(Request):
     """
@@ -1089,16 +1045,6 @@ class RequestData(Request):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
-    data_type: DataType
-    instrument_id: InstrumentId | None
-    start: datetime | None
-    end: datetime | None
-    limit: int
-    client_id: ClientId | None
-    venue: Venue | None
-    params: dict[str, Any] | None
-
     def __init__(
         self,
         data_type: DataType,
@@ -1113,9 +1059,10 @@ class RequestData(Request):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int): ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestData: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class RequestInstrument(RequestData):
     """
@@ -1131,7 +1078,7 @@ class RequestInstrument(RequestData):
         The end datetime (UTC) of request time range.
         The inclusiveness depends on individual data client implementation.
     client_id : ClientId or ``None``
-        The data client ID for the request.
+        The client ID for the request.
     venue : Venue or ``None``
         The venue for the request.
     callback : Callable[[Any], None]
@@ -1149,7 +1096,6 @@ class RequestInstrument(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1165,6 +1111,7 @@ class RequestInstrument(RequestData):
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
+
 class RequestInstruments(RequestData):
     """
     Represents a request for instruments.
@@ -1174,8 +1121,7 @@ class RequestInstruments(RequestData):
     start : datetime
         The start datetime (UTC) of request time range (inclusive).
     end : datetime
-        The end datetime (UTC) of request time range.
-        The inclusiveness depends on individual data client implementation.
+        The end datetime (UTC) of request time range The inclusiveness depends on individual data client implementation.
     client_id : ClientId or ``None``
         The data client ID for the request.
     venue : Venue or ``None``
@@ -1195,7 +1141,6 @@ class RequestInstruments(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         start: datetime | None,
@@ -1207,9 +1152,10 @@ class RequestInstruments(RequestData):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int): ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestInstruments: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class RequestOrderBookSnapshot(RequestData):
     """
@@ -1230,7 +1176,7 @@ class RequestOrderBookSnapshot(RequestData):
     request_id : UUID4
         The request ID.
     ts_init : uint64_t
-        UNIX timestamp (nanoseconds) when the object was initialized.
+        UNIX (nanoseconds) when the object was initialized.
     params : dict[str, object]
         Additional parameters for the request.
 
@@ -1240,7 +1186,6 @@ class RequestOrderBookSnapshot(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1255,6 +1200,7 @@ class RequestOrderBookSnapshot(RequestData):
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
+
 class RequestQuoteTicks(RequestData):
     """
     Represents a request for quote ticks.
@@ -1262,7 +1208,7 @@ class RequestQuoteTicks(RequestData):
     Parameters
     ----------
     instrument_id : InstrumentId
-        The instrument ID for the request.
+        The instrument ID the request.
     start : datetime
         The start datetime (UTC) of request time range (inclusive).
     end : datetime
@@ -1277,8 +1223,7 @@ class RequestQuoteTicks(RequestData):
     callback : Callable[[Any], None]
         The delegate to call with the data.
     request_id : UUID4
-        The request ID.
-    ts_init : uint64_t
+        The request : uint64_t
         UNIX timestamp (nanoseconds) when the object was initialized.
     params : dict[str, object]
         Additional parameters for the request.
@@ -1289,7 +1234,6 @@ class RequestQuoteTicks(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1303,9 +1247,10 @@ class RequestQuoteTicks(RequestData):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int): ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestQuoteTicks: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class RequestTradeTicks(RequestData):
     """
@@ -1341,7 +1286,6 @@ class RequestTradeTicks(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -1355,7 +1299,7 @@ class RequestTradeTicks(RequestData):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int): ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestTradeTicks: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1379,7 +1323,7 @@ class RequestBars(RequestData):
         The data client ID for the request.
     venue : Venue or ``None``
         The venue for the request.
-    callback : Callable[[Any], None]
+ callback : Callable[[Any], None]
         The delegate to call with the data.
     request_id : UUID4
         The request ID.
@@ -1394,7 +1338,6 @@ class RequestBars(RequestData):
         If both `client_id` and `venue` are both ``None`` (not enough routing info).
 
     """
-
     def __init__(
         self,
         bar_type: BarType,
@@ -1408,9 +1351,10 @@ class RequestBars(RequestData):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int): ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestBars: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
 
 class DataResponse(Response):
     """
@@ -1432,6 +1376,10 @@ class DataResponse(Response):
         The response ID.
     ts_init : uint64_t
         UNIX timestamp (nanoseconds) when the object was initialized.
+    start : datetime
+        The start datetime (UTC) of response time range (inclusive).
+    end : datetime
+        The end datetime (UTC) of response time range (inclusive).
     params : dict[str, object], optional
         Additional parameters for the response.
 
@@ -1442,23 +1390,28 @@ class DataResponse(Response):
 
     """
 
-    client_id: ClientId | None
-    venue: Venue | None
+    client_id: ClientId
+    venue: Venue
     data_type: DataType
-    data: Any
-    params: dict[str, Any] | None
+    data: anyio
+    start: datetime
+    end: datetime
+    params: dict[str, Any]
 
     def __init__(
-            self,
-            client_id: ClientId | None,
-            venue: Venue | None,
-            data_type: DataType,
-            data: Any,
-            correlation_id: UUID4,
-            response_id: UUID4,
-            ts_init: int,
-            params: dict[str, Any] | None = None,
+        self,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        data_type: DataType,
+        data: Any,
+        correlation_id: UUID4,
+        response_id: UUID4,
+        ts_init: int,
+        start: datetime,
+        end: datetime,
+        params: dict[str, Any] | None = None,
     ) -> None: ...
-    def __str__(self) -> str: ...
-    def __repr__(self) -> str: ...
 
+    def __str__(self) -> str: ...
+
+    def __repr__(self) -> str: ...

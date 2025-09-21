@@ -1,5 +1,5 @@
-from stubs.model.objects import Price
-from stubs.model.tick_scheme.base import TickScheme
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.tick_scheme.base import TickScheme
 
 class FixedTickScheme(TickScheme):
     """
@@ -76,3 +76,4 @@ class FixedTickScheme(TickScheme):
 
 FOREX_5DECIMAL_TICK_SCHEME: FixedTickScheme
 FOREX_3DECIMAL_TICK_SCHEME: FixedTickScheme
+tick_scheme: FixedTickScheme

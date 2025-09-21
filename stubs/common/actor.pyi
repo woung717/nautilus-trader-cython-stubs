@@ -8,33 +8,34 @@ from nautilus_trader.common.config import ActorConfig
 from nautilus_trader.common.config import ImportableActorConfig
 from nautilus_trader.common.executor import TaskId
 from nautilus_trader.model.enums import BookType
-from stubs.cache.base import CacheFacade
-from stubs.common.component import Clock
-from stubs.common.component import Component
-from stubs.common.component import MessageBus
-from stubs.core.data import Data
-from stubs.core.message import Event
-from stubs.core.uuid import UUID4
-from stubs.data.messages import DataResponse
-from stubs.indicators.base.indicator import Indicator
-from stubs.model.book import OrderBook
-from stubs.model.data import Bar
-from stubs.model.data import BarType
-from stubs.model.data import DataType
-from stubs.model.data import IndexPriceUpdate
-from stubs.model.data import InstrumentClose
-from stubs.model.data import InstrumentStatus
-from stubs.model.data import MarkPriceUpdate
-from stubs.model.data import OrderBookDepth10
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
-from stubs.model.greeks import GreeksCalculator
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Venue
-from stubs.model.instruments.base import Instrument
-from stubs.model.instruments.synthetic import SyntheticInstrument
-from stubs.portfolio.base import PortfolioFacade
+from nautilus_trader.cache.base import CacheFacade
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Component
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.core.data import Data
+from nautilus_trader.core.message import Event
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.data.messages import DataResponse
+from nautilus_trader.indicators.base.indicator import Indicator
+from nautilus_trader.model.book import OrderBook
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import BarType
+from nautilus_trader.model.data import DataType
+from nautilus_trader.model.data import FundingRateUpdate
+from nautilus_trader.model.data import IndexPriceUpdate
+from nautilus_trader.model.data import InstrumentClose
+from nautilus_trader.model.data import InstrumentStatus
+from nautilus_trader.model.data import MarkPriceUpdate
+from nautilus_trader.model.data import OrderBookDepth10
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.greeks import GreeksCalculator
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.instruments.synthetic import SyntheticInstrument
+from nautilus_trader.portfolio.base import PortfolioFacade
 
 class Actor(Component):
     """
@@ -355,6 +356,21 @@ class Actor(Component):
         ----------
         index_price : IndexPriceUpdate
             The index price update received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def on_funding_rate(self, funding_rate: FundingRateUpdate) -> None:
+        """
+        Actions to be performed when running and receives a funding rate update.
+
+        Parameters
+        ----------
+        funding_rate : FundingRateUpdate
+            The funding rate update received.
 
         Warnings
         --------
@@ -950,7 +966,6 @@ class Actor(Component):
         depth: int = 0,
         interval_ms: int = 1000,
         client_id: ClientId | None = None,
-        managed: bool = True,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -1085,6 +1100,30 @@ class Actor(Component):
 
         Once subscribed, any matching index price updates published on the message bus are forwarded
         to the `on_index_price` handler.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to subscribe to.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def subscribe_funding_rates(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId  = None,
+        params: dict[str, Any] = None,
+    ) -> None:
+        """
+        Subscribe to streaming `FundingRateUpdate` data for the given instrument ID.
+
+        Once subscribed, any matching funding rate updates published on the message bus are forwarded
+        to the `on_funding_rate` handler.
 
         Parameters
         ----------
@@ -1394,6 +1433,26 @@ class Actor(Component):
 
         """
         ...
+    def unsubscribe_funding_rates(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId = None,
+        params: dict[str, Any] = None,
+    ) -> None:
+        """
+        Unsubscribe from streaming `FundingRateUpdate` data for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to unsubscribe from.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
     def unsubscribe_bars(
         self,
         bar_type: BarType,
@@ -2169,6 +2228,23 @@ class Actor(Component):
 
         """
         ...
+    def handle_funding_rate(self, funding_rate: FundingRateUpdate) -> None:
+        """
+        Handle the given funding rate update.
+
+        If state is ``RUNNING`` then passes to `on_funding_rate`.
+
+        Parameters
+        ----------
+        funding_rate : FundingRateUpdate
+            The funding rate update received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
     def handle_trade_ticks(self, ticks: list[TradeTick]) -> None:
         """
         Handle the given historical trade tick data by handling each tick individually.
@@ -2322,7 +2398,6 @@ class Actor(Component):
         """
         ...
     def _handle_data_response(self, response: DataResponse) -> None: ...
-    def _handle_instrument_response(self, response: DataResponse) -> None: ...
     def _handle_instruments_response(self, response: DataResponse) -> None: ...
     def _handle_quote_ticks_response(self, response: DataResponse) -> None: ...
     def _handle_trade_ticks_response(self, response: DataResponse) -> None: ...

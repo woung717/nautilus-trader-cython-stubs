@@ -8,24 +8,24 @@ from nautilus_trader.model.enums import OrderType
 from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.enums import TimeInForce
 from nautilus_trader.model.enums import TriggerType
-from stubs.core.fsm import FiniteStateMachine
-from stubs.core.uuid import UUID4
-from stubs.model.events.order import OrderEvent
-from stubs.model.events.order import OrderInitialized
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Symbol
-from stubs.model.identifiers import TradeId
-from stubs.model.identifiers import Venue
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.core.fsm import FiniteStateMachine
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.order import OrderInitialized
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 STOP_ORDER_TYPES: set[OrderType]
 LIMIT_ORDER_TYPES: set[OrderType]

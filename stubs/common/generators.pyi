@@ -1,9 +1,9 @@
-from stubs.common.component import Clock
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
+from nautilus_trader.common.component import Clock
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
 
 class IdentifierGenerator:
     """

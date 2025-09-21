@@ -3,35 +3,37 @@ from nautilus_trader.execution.reports import ExecutionMassStatus
 from nautilus_trader.execution.reports import ExecutionReport
 from nautilus_trader.model.enums import OmsType
 from nautilus_trader.model.enums import OrderSide
-from stubs.cache.cache import Cache
-from stubs.common.component import Clock
-from stubs.common.component import Component
-from stubs.common.component import MessageBus
-from stubs.common.component import TimeEvent
-from stubs.common.generators import PositionIdGenerator
-from stubs.execution.client import ExecutionClient
-from stubs.execution.messages import BatchCancelOrders
-from stubs.execution.messages import CancelAllOrders
-from stubs.execution.messages import CancelOrder
-from stubs.execution.messages import ModifyOrder
-from stubs.execution.messages import QueryOrder
-from stubs.execution.messages import SubmitOrder
-from stubs.execution.messages import SubmitOrderList
-from stubs.execution.messages import TradingCommand
-from stubs.model.events.order import OrderEvent
-from stubs.model.events.order import OrderFilled
-from stubs.model.events.position import PositionEvent
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Venue
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.position import Position
-from stubs.trading.strategy import Strategy
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Component
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.common.component import TimeEvent
+from nautilus_trader.common.generators import PositionIdGenerator
+from nautilus_trader.execution.client import ExecutionClient
+from nautilus_trader.execution.messages import BatchCancelOrders
+from nautilus_trader.execution.messages import CancelAllOrders
+from nautilus_trader.execution.messages import CancelOrder
+from nautilus_trader.execution.messages import ModifyOrder
+from nautilus_trader.execution.messages import QueryOrder
+from nautilus_trader.execution.messages import SubmitOrder
+from nautilus_trader.execution.messages import SubmitOrderList
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.events.position import PositionEvent
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.position import Position
+from nautilus_trader.trading.strategy import Strategy
+from nautilus_trader.core.message import Command
+from nautilus_trader.execution.messages import QueryAccount
+
 
 class ExecutionEngine(Component):
     """
@@ -185,6 +187,16 @@ class ExecutionEngine(Component):
 
         """
         ...
+    def get_external_client_ids(self) -> set[ClientId]:
+        """
+        Returns the configured external client order IDs.
+
+        Returns
+        -------
+        set[ClientId]
+
+        """
+        ...
     def get_external_order_claim(self, instrument_id: InstrumentId) -> StrategyId | None:
         """
         Get any external order claim for the given instrument ID.
@@ -327,7 +339,8 @@ class ExecutionEngine(Component):
             If `client` is not registered with the execution engine.
 
         """
-    async def reconcile_state(self, timeout_secs: float = 10.0) -> bool:
+        ...
+    async def reconcile_execution_state(self, timeout_secs: float = 10.0) -> bool:
         """
         Reconcile the internal execution state with all execution clients (external state).
 
@@ -347,8 +360,9 @@ class ExecutionEngine(Component):
             If `timeout_secs` is not positive (> 0).
 
         """
-        ...
-    def reconcile_report(self, report: ExecutionReport) -> bool:
+        ...  # Should be overridden for live execution engines
+
+    def reconcile_execution_report(self, report: ExecutionReport) -> bool:
         """
         Check the given execution report.
 
@@ -363,8 +377,9 @@ class ExecutionEngine(Component):
             True if reconciliation successful, else False.
 
         """
-        ...
-    def reconcile_mass_status(self, report: ExecutionMassStatus) -> None:
+        ...  # Should be overridden for live execution engines
+
+    def reconcile_execution_mass_status(self, report: ExecutionMassStatus) -> None:
         """
         Reconcile the given execution mass status report.
 
@@ -391,7 +406,7 @@ class ExecutionEngine(Component):
         Load the cache up from the execution database.
         """
         ...
-    def execute(self, command: TradingCommand) -> None:
+    def execute(self, command: Command) -> None:
         """
         Execute the given command.
 
@@ -429,15 +444,25 @@ class ExecutionEngine(Component):
     def _deny_order(self, order: Order, reason: str) -> None: ...
     def _get_or_init_own_order_book(self, instrument_id: InstrumentId) -> object: ...
     def _add_own_book_order(self, order: Order) -> None: ...
-    def _execute_command(self, command: TradingCommand) -> None: ...
+    def _execute_command(self, command: Command) -> None: ...
     def _handle_submit_order(self, client: ExecutionClient, command: SubmitOrder) -> None: ...
     def _handle_submit_order_list(self, client: ExecutionClient, command: SubmitOrderList) -> None: ...
     def _handle_modify_order(self, client: ExecutionClient, command: ModifyOrder) -> None: ...
     def _handle_cancel_order(self, client: ExecutionClient, command: CancelOrder) -> None: ...
     def _handle_cancel_all_orders(self, client: ExecutionClient, command: CancelAllOrders) -> None: ...
     def _handle_batch_cancel_orders(self, client: ExecutionClient, command: BatchCancelOrders) -> None: ...
+    def _handle_query_account(self, client: ExecutionClient, command: QueryAccount) -> None : ...
     def _handle_query_order(self, client: ExecutionClient, command: QueryOrder) -> None: ...
     def _handle_event(self, event: OrderEvent) -> None: ...
+    def _handle_leg_fill_without_order(self, fill: OrderFilled) -> None:
+        """
+        Handle leg fills that don't have corresponding orders in the cache.
+
+        This occurs when a spread order is executed and generates individual leg fills.
+        The leg fills need to create positions for portfolio tracking, even though
+        there's no direct order for the individual leg instruments.
+        """
+        ...
     def _determine_oms_type(self, fill: OrderFilled) -> OmsType: ...
     def _determine_position_id(self, fill: OrderFilled, oms_type: OmsType) -> None: ...
     def _determine_hedging_position_id(self, fill: OrderFilled) -> PositionId: ...

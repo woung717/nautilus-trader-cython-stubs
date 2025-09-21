@@ -3,20 +3,21 @@ from typing import Any
 
 from nautilus_trader.common.enums import LogLevel
 from nautilus_trader.model.enums import OrderSide
-from stubs.core.message import Command
-from stubs.core.uuid import UUID4
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TraderId
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.list import OrderList
+from nautilus_trader.core.message import Command
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.list import OrderList
+from nautilus_trader.model.identifiers import AccountId, Venue
 
 class ExecutionReportCommand(Command):
     """
@@ -89,6 +90,38 @@ class GenerateOrderStatusReport(ExecutionReportCommand):
         params: dict[str, Any] | None = None,
     ) -> None: ...
 
+    def __repr__(self) -> str:
+        ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> GenerateOrderStatusReport:
+        """
+        Return a generate order status report command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        GenerateOrderStatusReport
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: GenerateOrderStatusReport):
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
 class GenerateOrderStatusReports(ExecutionReportCommand):
     """
     Command to generate order status reports.
@@ -127,6 +160,37 @@ class GenerateOrderStatusReports(ExecutionReportCommand):
         log_receipt_level: LogLevel = ...,
     ) -> None: ...
 
+    def __repr__(self) -> str: ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> GenerateOrderStatusReports:
+        """
+        Return a generate order status reports command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        GenerateOrderStatusReports
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: GenerateOrderStatusReports):
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
 class GenerateFillReports(ExecutionReportCommand):
     """
     Command to generate fill reports.
@@ -161,6 +225,37 @@ class GenerateFillReports(ExecutionReportCommand):
         params: dict[str, Any] | None = None,
     ) -> None: ...
 
+    def __repr__(self) -> str: ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> GenerateFillReports:
+        """
+        Return a generate fill reports command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        GenerateFillReports
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: GenerateFillReports):
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
 class GeneratePositionStatusReports(ExecutionReportCommand):
     """
     Command to generate position status reports.
@@ -191,6 +286,105 @@ class GeneratePositionStatusReports(ExecutionReportCommand):
         params: dict[str, Any] | None = None,
     ) -> None: ...
 
+    def __repr__(self) -> str:
+        ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> GeneratePositionStatusReports:
+        """
+        Return a generate position status reports command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        GeneratePositionStatusReports
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: GeneratePositionStatusReports):
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
+class GenerateExecutionMassStatus(ExecutionReportCommand):
+    """
+    Command to generate an execution mass status report.
+
+    Parameters
+    ----------
+    trader_id : TraderId
+        The trader ID for the command.
+    client_id : ClientId
+        The client ID for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    venue : Venue, optional
+        The venue for the command.
+    params : dict[str, object], optional
+        Additional parameters for the command.
+    """
+
+    trader_id: TraderId
+    client_id: ClientId
+    venue: Venue
+
+    def __init__(
+        self,
+        trader_id: TraderId,
+        client_id: ClientId,
+        command_id: UUID4,
+        ts_init: int,
+        venue: Venue | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        ...
+
+    def __repr__(self) -> str:
+        ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> GenerateExecutionMassStatus:
+        """
+        Return a generate execution mass status command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        GenerateExecutionMassStatus
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: GenerateExecutionMassStatus):
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+    
 class TradingCommand(Command):
     """
     The base class for all trading related commands.
@@ -737,6 +931,73 @@ class QueryOrder(TradingCommand):
         ...
     @staticmethod
     def to_dict(obj: QueryOrder) -> dict[str, Any]:
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
+class QueryAccount(Command):
+    """
+    Represents a command to query an account.
+
+    Parameters
+    ----------
+    trader_id : TraderId
+        The trader ID for the command.
+    account_id : AccountId
+        The account ID to query.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    client_id : ClientId, optional
+        The execution client ID for the command.
+    params : dict[str, object], optional
+        Additional parameters for the command.
+    """
+
+    client_id: ClientId
+    trader_id: TraderId
+    account_id: AccountId
+    
+    def __init__(
+        self,
+        trader_id: TraderId,
+        account_id: AccountId,
+        command_id: UUID4,
+        ts_init: int,
+        client_id: ClientId = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        ...
+
+    def __repr__(self) -> str:
+        ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> QueryAccount:
+        """
+        Return a query account command from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        QueryAccount
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: QueryAccount):
         """
         Return a dictionary representation of this object.
 

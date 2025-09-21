@@ -218,6 +218,14 @@ class InstrumentId(Identifier):
 
         """
         ...
+    def is_spread(self) -> bool:
+        """
+        Return whether the instrument ID is a spread instrument (symbol contains '_' separator).
+        Returns
+        -------
+        bool
+        """
+        ...
     @staticmethod
     def from_pyo3(pyo3_instrument_id: InstrumentId) -> InstrumentId:
         """
@@ -244,6 +252,72 @@ class InstrumentId(Identifier):
 
         """
         ...
+    @staticmethod
+    def new_spread(instrument_ratios: list[tuple[InstrumentId, int]]) -> InstrumentId:
+        """
+        Create a spread InstrumentId from a list of (instrument_id, ratio) tuples.
+
+        The resulting symbol will be in the format: (ratio1)symbol1_(ratio2)symbol2_...
+        where positive ratios are shown as (ratio) and negative ratios as ((ratio)).
+        All instrument IDs must have the same venue. The instrument IDs are sorted
+        alphabetically by symbol before creating the spread symbol.
+
+        Parameters
+        ----------
+        instrument_ratios : list[tuple[InstrumentId, int]]
+            List of tuples containing (instrument_id, ratio) where ratio cannot be 0.
+
+        Returns
+        -------
+        InstrumentId
+            The spread instrument ID.
+
+        Raises
+        ------
+        ValueError
+            If the list is empty, ratios are zero, or venues don't match.
+
+        Examples
+        --------
+        >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue
+        >>> id1 = InstrumentId(Symbol("MSFT"), Venue("NASDAQ"))
+        >>> id2 = InstrumentId(Symbol("AAPL"), Venue("NASDAQ"))
+        >>> spread = InstrumentId.new_spread([(id1, 1), (id2, -2)])
+        >>> print(spread.symbol.value)
+        ((2))AAPL_(1)MSFT
+
+        """
+        ...
+
+    def to_list(self) -> list[tuple[InstrumentId, int]]:
+        """
+        Parse this InstrumentId back into a list of (instrument_id, ratio) tuples.
+
+        This is the inverse operation of new_spread(). The symbol must be in the format
+        created by new_spread(): (ratio1)symbol1_(ratio2)symbol2_...
+        The returned list is sorted alphabetically by symbol.
+
+        Returns
+        -------
+        list[tuple[InstrumentId, int]]
+            List of tuples containing (instrument_id, ratio), sorted alphabetically by symbol.
+
+        Raises
+        ------
+        ValueError
+            If the symbol format is not compatible with new_spread() format.
+
+        Examples
+        --------
+        >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue
+        >>> spread = InstrumentId(Symbol("(1)AAPL_((2))MSFT"), Venue("NASDAQ"))
+        >>> result = spread.to_list()
+        >>> print(result)
+        [(InstrumentId('AAPL.NASDAQ'), 1), (InstrumentId('MSFT.NASDAQ'), -2)]
+
+        """
+        ...
+    def n_legs(self) -> int: ...
 
 
 class ComponentId(Identifier):

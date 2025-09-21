@@ -4,12 +4,12 @@ from typing import Any
 import pandas as pd
 
 from nautilus_trader.model.enums import AssetClass
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class OptionSpread(Instrument):
     """
@@ -55,6 +55,8 @@ class OptionSpread(Instrument):
         The fee rate for liquidity takers as a percentage of order value.
     exchange : str, optional
         The exchange ISO 10383 Market Identifier Code (MIC) where the instrument trades.
+    tick_scheme_name : str, optional
+        The name of the tick scheme.
     info : dict[str, object], optional
         The additional instrument information.
 
@@ -106,6 +108,7 @@ class OptionSpread(Instrument):
         maker_fee: Decimal | None = None,
         taker_fee: Decimal | None = None,
         exchange: str | None = None,
+        tick_scheme_name: str | None = None,
         info: dict[Any, Any] | None = None,
     ) -> None: ...
     def __repr__(self) -> str: ...

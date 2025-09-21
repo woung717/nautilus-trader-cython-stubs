@@ -6,22 +6,22 @@ from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import OrderType
 from nautilus_trader.model.enums import TimeInForce
 from nautilus_trader.model.enums import TriggerType
-from stubs.core.message import Event
-from stubs.core.uuid import UUID4
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TradeId
-from stubs.model.identifiers import TraderId
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.core.message import Event
+from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class OrderEvent(Event):
     """
@@ -1356,6 +1356,8 @@ class OrderRejected(OrderEvent):
         UNIX timestamp (nanoseconds) when the object was initialized.
     reconciliation : bool, default False
         If the event was generated during reconciliation.
+    due_post_only : bool, default False
+        If the order was rejected because it was post-only and would execute immediately as a taker.
 
     """
 
@@ -1371,6 +1373,7 @@ class OrderRejected(OrderEvent):
         ts_event: int,
         ts_init: int,
         reconciliation: bool = False,
+        due_post_only: bool = False,
     ) -> None: ...
     def __eq__(self, other: Event) -> bool: ...
     def __hash__(self) -> int: ...
@@ -1458,6 +1461,17 @@ class OrderRejected(OrderEvent):
     def reconciliation(self) -> bool:
         """
         If the event was generated during reconciliation.
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+    @property
+    def due_post_only(self) -> bool:
+        """
+        If the order was rejected because it was post-only and would execute immediately as a taker.
 
         Returns
         -------

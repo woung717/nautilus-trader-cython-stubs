@@ -19,13 +19,11 @@ Follow these rules strictly when extracting information and generating the .pyi 
 - Only standard Python imports which are exist in .pyx should be included.
 - Include all Python-accessible functions, classes (with inheritances), global variables, and class members (variables, methods, and properties) with types.
 - Class variables should be type hinted with 'var: ClassVar[type]' with 'from typing import ClassVar', whereas instance variables should be type hinted with 'var: type'
-- Members that start with an underscore (_) are considered private and should not be included in stubs.
 - Don't type hint with generic types such as Dict, Type, etc... from typing module. Just use original type.
 - If the type is not explicitly specified in the pyx code or documentation, do not infer it; just keep it as it is.
 - Preserve decorators like @property, @staticmethod, @classmethod, and @overload (only if present in the .pyx).
 - If a parameter is nullable or optional (i.e., has a default value of None), the stub type should be written as (param: type | None = None).
 - For collections such as dict or list, always include explicit type hints for their elements .
-- Skip private or internal definitions that are clearly not meant for public access.
 - Function bodies in stub files just be a single ellipsis (...).
 
 
@@ -86,26 +84,25 @@ def main():
     symbol_file.close()
     
     for cython_file_path in glob(module_path + "**/*.pyx", recursive=True):
-        if "indicators" in cython_file_path:
-            relative_path = os.path.relpath(cython_file_path, module_path)
-            stub_filename = os.path.splitext(relative_path)[0] + ".pyi"
-            target_path = os.path.join(stub_file_path, stub_filename)
-            
-            if Path(target_path).is_file():
-                print(f"Stub for {cython_file_path} already exists at {target_path}")
-                continue
+        relative_path = os.path.relpath(cython_file_path, module_path)
+        stub_filename = os.path.splitext(relative_path)[0] + ".pyi"
+        target_path = os.path.join(stub_file_path, stub_filename)
+        
+        if Path(target_path).is_file():
+            print(f"Stub for {cython_file_path} already exists at {target_path}")
+            continue
 
-            with open(cython_file_path, "r") as f:
-                stubs = generate_stubs(
-                    symbol_code=symbol_code,
-                    cython_source_code=f.read()
-                )
+        with open(cython_file_path, "r") as f:
+            stubs = generate_stubs(
+                symbol_code=symbol_code,
+                cython_source_code=f.read()
+            )
 
-                os.makedirs(os.path.dirname(target_path), exist_ok=True)
-                with open(target_path, "w") as f_out:
-                    f_out.write(stubs)
-    
-                print(f"Generated stub for {cython_file_path} at {target_path}")
+            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+            with open(target_path, "w") as f_out:
+                f_out.write(stubs)
+
+            print(f"Generated stub for {cython_file_path} at {target_path}")
 
 
 if __name__ == "__main__":

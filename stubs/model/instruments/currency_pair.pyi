@@ -1,13 +1,13 @@
 from decimal import Decimal
 from typing import Any
 
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class CurrencyPair(Instrument):
     """
@@ -37,6 +37,8 @@ class CurrencyPair(Instrument):
         UNIX timestamp (nanoseconds) when the data event occurred.
     ts_init : uint64_t
         UNIX timestamp (nanoseconds) when the data object was initialized.
+    multiplier : Quantity, default 1
+        The contract multiplier.
     lot_size : Quantity, optional
         The rounded lot unit size.
     max_quantity : Quantity, optional
@@ -102,6 +104,7 @@ class CurrencyPair(Instrument):
     """
 
     base_currency: Currency
+
     def __init__(
         self,
         instrument_id: InstrumentId,
@@ -114,6 +117,7 @@ class CurrencyPair(Instrument):
         size_increment: Quantity,
         ts_event: int,
         ts_init: int,
+        multiplier: Quantity = ...,
         lot_size: Quantity | None = None,
         max_quantity: Quantity | None = None,
         min_quantity: Quantity | None = None,

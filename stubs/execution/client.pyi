@@ -9,35 +9,37 @@ from nautilus_trader.model.enums import LiquiditySide
 from nautilus_trader.model.enums import OmsType
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import OrderType
-from stubs.accounting.accounts.base import Account
-from stubs.cache.cache import Cache
-from stubs.common.component import Clock
-from stubs.common.component import Component
-from stubs.common.component import MessageBus
-from stubs.execution.messages import BatchCancelOrders
-from stubs.execution.messages import CancelAllOrders
-from stubs.execution.messages import CancelOrder
-from stubs.execution.messages import ModifyOrder
-from stubs.execution.messages import QueryOrder
-from stubs.execution.messages import SubmitOrder
-from stubs.execution.messages import SubmitOrderList
-from stubs.model.events.account import AccountState
-from stubs.model.events.order import OrderEvent
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import TradeId
-from stubs.model.identifiers import Venue
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.objects import AccountBalance
-from stubs.model.objects import Currency
-from stubs.model.objects import MarginBalance
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.cache.cache import Cache
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Component
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.execution.messages import BatchCancelOrders
+from nautilus_trader.execution.messages import CancelAllOrders
+from nautilus_trader.execution.messages import CancelOrder
+from nautilus_trader.execution.messages import ModifyOrder
+from nautilus_trader.execution.messages import QueryAccount
+from nautilus_trader.execution.messages import QueryOrder
+from nautilus_trader.execution.messages import SubmitOrder
+from nautilus_trader.execution.messages import SubmitOrderList
+from nautilus_trader.model.events.account import AccountState
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.objects import AccountBalance
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import MarginBalance
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.execution.reports import PositionStatusReport
 
 class ExecutionClient(Component):
     """
@@ -175,6 +177,17 @@ class ExecutionClient(Component):
 
         """
         ...
+    def query_account(self, command: QueryAccount) -> None:
+        """
+        Query the account specified by the command which will generate an `AccountState` event.
+
+        Parameters
+        ----------
+        command : QueryAccount
+            The command to execute.
+
+        """
+        ...
     def query_order(self, command: QueryOrder) -> None:
         """
         Initiate a reconciliation for the queried order which will generate an
@@ -243,6 +256,7 @@ class ExecutionClient(Component):
         client_order_id: ClientOrderId,
         reason: str,
         ts_event: int,
+        due_post_only: bool = False,
     ) -> None:
         """
         Generate an `OrderRejected` event and send it to the `ExecutionEngine`.
@@ -259,6 +273,8 @@ class ExecutionClient(Component):
             The order rejected reason.
         ts_event : uint64_t
             UNIX timestamp (nanoseconds) when the order rejected event occurred.
+        due_post_only : bool, default False
+            If the order was rejected because it was post-only and would execute immediately as a taker.
 
         """
         ...
@@ -526,3 +542,4 @@ class ExecutionClient(Component):
     def _send_mass_status_report(self, report: ExecutionMassStatus) -> None: ...
     def _send_order_status_report(self, report: OrderStatusReport) -> None: ...
     def _send_fill_report(self, report: FillReport) -> None: ...
+    def _send_position_status_report(self, report: PositionStatusReport) -> None: ...

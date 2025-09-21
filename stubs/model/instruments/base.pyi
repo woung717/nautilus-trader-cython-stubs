@@ -3,15 +3,15 @@ from typing import Any
 
 from nautilus_trader.model.enums import AssetClass
 from nautilus_trader.model.enums import InstrumentClass
-from stubs.core.data import Data
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.identifiers import Venue
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.tick_scheme.base import TickScheme
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.tick_scheme.base import TickScheme
 
 EXPIRING_INSTRUMENT_TYPES: set[InstrumentClass]
 
@@ -264,6 +264,29 @@ class Instrument(Data):
         Returns
         -------
         Currency
+
+        """
+        ...
+    def set_tick_scheme(self, tick_scheme_name: str) -> None:
+        """
+        Set the tick scheme for the instrument.
+
+        Sets both the `tick_scheme_name` and the corresponding tick scheme implementation
+        used for price rounding and tick calculations.
+
+        This will override any previously set tick scheme, including the `tick_scheme_name` field.
+
+        Parameters
+        ----------
+        tick_scheme_name : str
+            The name of the registered tick scheme.
+
+        Raises
+        ------
+        ValueError
+            If `tick_scheme_name` is not a valid string.
+        ValueError
+            If `tick_scheme_name` is not a registered tick scheme.
 
         """
         ...

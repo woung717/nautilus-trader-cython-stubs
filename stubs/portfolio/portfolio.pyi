@@ -3,24 +3,24 @@ from typing import Any
 
 from nautilus_trader.analysis.analyzer import PortfolioAnalyzer
 from nautilus_trader.portfolio.config import PortfolioConfig
-from stubs.accounting.accounts.base import Account
-from stubs.accounting.manager import AccountsManager
-from stubs.cache.base import CacheFacade
-from stubs.common.component import Clock
-from stubs.common.component import Logger
-from stubs.common.component import MessageBus
-from stubs.model.data import Bar
-from stubs.model.data import QuoteTick
-from stubs.model.events.account import AccountState
-from stubs.model.events.order import OrderEvent
-from stubs.model.events.position import PositionEvent
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import Venue
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.portfolio.base import PortfolioFacade
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.accounting.manager import AccountsManager
+from nautilus_trader.cache.base import CacheFacade
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Logger
+from nautilus_trader.common.component import MessageBus
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.events.account import AccountState
+from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.position import PositionEvent
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.portfolio.base import PortfolioFacade
 
 class Portfolio(PortfolioFacade):
     """

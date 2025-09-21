@@ -1,5 +1,5 @@
-from stubs.accounting.accounts.base import Account
-from stubs.model.events.account import AccountState
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.model.events.account import AccountState
 
 class AccountFactory:
     """
@@ -40,6 +40,24 @@ class AccountFactory:
         ------
         KeyError
             If an issuer has already been registered for the `issuer`.
+
+        """
+        ...
+    @staticmethod
+    def register_cash_borrowing(issuer: str) -> None:
+        """
+        Register for cash accounts of the given issuer to allow borrowing
+        (negative balances).
+
+        Parameters
+        ----------
+        issuer : str
+            The issuer for the account.
+
+        Raises
+        ------
+        KeyError
+            If cash borrowing has already been registered for the `issuer`.
 
         """
         ...

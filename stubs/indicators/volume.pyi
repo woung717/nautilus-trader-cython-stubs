@@ -1,3 +1,4 @@
+from datetime import datetime
 from nautilus_trader.indicators.averages import MovingAverageType
 from nautilus_trader.indicators.base import Indicator
 from nautilus_trader.model.data import Bar
@@ -52,6 +53,7 @@ class OnBalanceVolume(Indicator):
 
         """
         ...
+    def _reset(self) -> None: ...
 
 class VolumeWeightedAveragePrice(Indicator):
     """
@@ -74,7 +76,7 @@ class VolumeWeightedAveragePrice(Indicator):
         self,
         price: float,
         volume: float,
-        timestamp: pd.Timestamp,
+        timestamp: datetime,
     ) -> None:
         """
         Update the indicator with the given raw values.
@@ -90,6 +92,8 @@ class VolumeWeightedAveragePrice(Indicator):
 
         """
         ...
+    
+    def _reset(self) -> None: ...
 
 class KlingerVolumeOscillator(Indicator):
     """
@@ -149,6 +153,8 @@ class KlingerVolumeOscillator(Indicator):
 
         """
         ...
+
+    def _reset(self) -> None: ...
 
 class Pressure(Indicator):
     """
@@ -212,3 +218,5 @@ class Pressure(Indicator):
 
         """
         ...
+    
+    def _reset(self) -> None: ...

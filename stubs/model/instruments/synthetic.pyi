@@ -1,9 +1,9 @@
 from typing import Any
 
-from stubs.core.data import Data
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import Symbol
-from stubs.model.objects import Price
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.objects import Price
 
 class SyntheticInstrument(Data):
     """

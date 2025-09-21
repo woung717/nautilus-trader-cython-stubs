@@ -2,36 +2,37 @@ from decimal import Decimal
 from typing import Any
 
 from nautilus_trader.core.nautilus_pyo3 import OwnOrderBook
+from nautilus_trader.model.data import FundingRateUpdate
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import OrderStatus
 from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.enums import PriceType
-from stubs.accounting.accounts.base import Account
-from stubs.model.book import OrderBook
-from stubs.model.data import Bar
-from stubs.model.data import BarType
-from stubs.model.data import IndexPriceUpdate
-from stubs.model.data import MarkPriceUpdate
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Venue
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.instruments.base import Instrument
-from stubs.model.instruments.synthetic import SyntheticInstrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.list import OrderList
-from stubs.model.position import Position
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.model.book import OrderBook
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import BarType
+from nautilus_trader.model.data import IndexPriceUpdate
+from nautilus_trader.model.data import MarkPriceUpdate
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.instruments.synthetic import SyntheticInstrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.list import OrderList
+from nautilus_trader.model.position import Position
 
 class CacheFacade:
     """
@@ -87,6 +88,9 @@ class CacheFacade:
         """Abstract method (implement in subclass)."""
         ...
     def index_price(self, instrument_id: InstrumentId, index: int = 0) -> IndexPriceUpdate:
+        """Abstract method (implement in subclass)."""
+        ...
+    def funding_rate(self, instrument_id: InstrumentId) -> FundingRateUpdate:
         """Abstract method (implement in subclass)."""
         ...
     def bar(self, bar_type: BarType, index: int = 0) -> Bar:
@@ -308,7 +312,13 @@ class CacheFacade:
     def position_id(self, client_order_id: ClientOrderId) -> PositionId:
         """Abstract method (implement in subclass)."""
         ...
+    def position_snapshot_ids(self, instrument_id: InstrumentId | None = None) -> set[PositionId]:
+        """Abstract method (implement in subclass)."""
+        ...
     def position_snapshots(self, position_id: PositionId | None = None) -> list[Any]:
+        """Abstract method (implement in subclass)."""
+        ...
+    def position_snapshot_bytes(self, position_id: PositionId) -> list:
         """Abstract method (implement in subclass)."""
         ...
     def positions(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ...) -> list[Position]:

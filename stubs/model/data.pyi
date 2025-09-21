@@ -1,8 +1,11 @@
 from datetime import timedelta
+from decimal import Decimal
 from enum import Enum
 from typing import Any
 
+from nautilus_trader.nautilus_trader.core.nautilus_pyo3 import FundingRateUpdate
 import numpy as np
+import pandas as pd
 
 from nautilus_trader.core import nautilus_pyo3
 from nautilus_trader.model.enums import AggregationSource
@@ -12,11 +15,11 @@ from nautilus_trader.model.enums import InstrumentCloseType
 from nautilus_trader.model.enums import MarketStatusAction
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PriceType
-from stubs.core.data import Data
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import TradeId
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.core.data import Data
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class BarAggregation(Enum): # skip-validate
     TICK = 1
@@ -106,8 +109,45 @@ class BarSpecification:
 
         """
         ...
+    def get_interval_ns(self) -> int:
+        """
+        Return the interval length in nanoseconds for time-based bar specifications.
+
+        Converts the bar specification's time interval to nanoseconds based on its
+        aggregation type and step size. This method is used for time calculations
+        and (TODO: bar alignment).
+
+        Returns
+        -------
+        uint64_t
+            The interval length in nanoseconds.
+
+        Raises
+        ------
+        ValueError
+            If the aggregation is MONTH or YEAR (since months and years have variable
+            lengths 28-31 days or 365-366 days, making fixed nanosecond conversion
+            impossible).
+            If the aggregation is not a time-based aggregation.
+
+        Notes
+        -----
+        Only time-based aggregations can be converted to nanosecond intervals.
+        Threshold-based and information-based aggregations will raise a ValueError.
+
+        Month or year intervals require special handling due to their variable length,
+        which cannot be expressed as a fixed number of nanoseconds. DateOffset is used
+        instead for these aggregations.
+
+        Examples
+        --------
+        >>> spec = BarSpecification(5, BarAggregation.MINUTE, PriceType.LAST)
+        >>> spec.get_interval_ns()  # Returns 5 minutes in nanoseconds
+        300000000000
+        """
+        ...
     @property
-    def timedelta(self) -> timedelta:
+    def timedelta(self) -> pd.Timedelta:
         """
         Return the timedelta for the specification.
 
@@ -1782,7 +1822,7 @@ class InstrumentClose(Data):
 
         """
         ...
-    def to_pyo3(self) -> nautilus_pyo3.IndexPriceUpdate:
+    def to_pyo3(self) -> nautilus_pyo3.InstrumentClose:
         """
         Return a pyo3 object from this legacy Cython instance.
 
@@ -2127,7 +2167,7 @@ class TradeTick(Data):
         """
         ...
     @property
-    def trade_id(self) -> TradeId:
+    def trade_id(self) -> InstrumentId:
         """
         Return the ticks trade match ID.
 
@@ -2495,10 +2535,11 @@ class IndexPriceUpdate(Data):
 
     """
 
-    instrument_id: InstrumentId
-    value: Price
-    ts_event: int
-    ts_init: int
+    instrument_id: InstrumentId # skip-validate
+    value: Price # skip-validate
+    ts_event: int # skip-validate
+    ts_init: int # skip-validate
+    
     def __init__(self, instrument_id: InstrumentId, value: Price, ts_event: int, ts_init: int) -> None: ...
     def __eq__(self, other: IndexPriceUpdate) -> bool: ...
     def __hash__(self) -> int: ...
@@ -2586,6 +2627,133 @@ class IndexPriceUpdate(Data):
         Returns
         -------
         nautilus_pyo3.IndexPriceUpdate
+
+        """
+        ...
+
+class FundingRateUpdate(Data):
+    """
+    Represents a funding rate update for a perpetual swap instrument.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the funding rate.
+    rate : Decimal
+        The current funding rate.
+    next_funding_ns : int, optional
+        UNIX timestamp (nanoseconds) of the next funding payment (if available).
+    ts_event : int
+        UNIX timestamp (nanoseconds) when the update occurred.
+    ts_init : int
+        UNIX timestamp (nanoseconds) when the data object was initialized.
+
+    """
+
+    instrument_id: InstrumentId
+    rate: Decimal
+    next_funding_ns: int
+    _ts_event: int
+    _ts_init: int
+
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        rate: Decimal,
+        ts_event: int,
+        ts_init: int,   
+        next_funding_ns: int | None = None,
+    ) -> None: ...
+
+    def __eq__(self, other: FundingRateUpdate) -> bool: ...
+
+    def __hash__(self) -> int: ...
+
+    def __repr__(self) -> str: ...
+
+    @property
+    def ts_event(self) -> int:
+        """
+        UNIX timestamp (nanoseconds) when the data event occurred.
+
+        Returns
+        -------
+        int
+
+        """
+        ...
+
+    @property
+    def ts_init(self) -> int:
+        """
+        UNIX timestamp (nanoseconds) when the object was initialized.
+
+        Returns
+        -------
+        int
+
+        """
+        ...
+
+    @staticmethod
+    def from_dict(values: dict[str, Any]) -> FundingRateUpdate:
+        """
+        Return a funding rate update from the given dict values.
+
+        Parameters
+        ----------
+        values : dict[str, object]
+            The values for initialization.
+
+        Returns
+        -------
+        FundingRateUpdate
+
+        """
+        ...
+
+    @staticmethod
+    def to_dict(obj: FundingRateUpdate) -> dict[str, object]:
+        """
+        Return a dictionary representation of this object.
+
+        Returns
+        -------
+        dict[str, object]
+
+        """
+        ...
+
+    @staticmethod
+    def from_pyo3_list(pyo3_funding_rates: list[FundingRateUpdate]) -> list[FundingRateUpdate]:
+        """
+        Return legacy Cython funding rate updates converted from the given pyo3 Rust objects.
+
+        Parameters
+        ----------
+        pyo3_funding_rates : list[nautilus_pyo3.FundingRateUpdate]
+            The pyo3 Rust funding rate updates to convert from.
+
+        Returns
+        -------
+        list[FundingRateUpdate]
+
+        """
+        ...
+
+    @staticmethod
+    def from_pyo3(pyo3_funding_rate: FundingRateUpdate) -> FundingRateUpdate:
+        """
+        Return a legacy Cython funding rate update converted from the given pyo3 Rust object.
+
+        Parameters
+        ----------
+        pyo3_funding_rate : nautilus_pyo3.FundingRateUpdate
+            The pyo3 Rust funding rate update to convert from.
+
+        Returns
+        -------
+        FundingRateUpdate
 
         """
         ...

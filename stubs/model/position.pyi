@@ -3,22 +3,22 @@ from typing import Any
 
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PositionSide
-from stubs.model.events.order import OrderFilled
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Symbol
-from stubs.model.identifiers import TradeId
-from stubs.model.identifiers import TraderId
-from stubs.model.identifiers import Venue
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Symbol
+from nautilus_trader.model.identifiers import TradeId
+from nautilus_trader.model.identifiers import TraderId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class Position:
     """

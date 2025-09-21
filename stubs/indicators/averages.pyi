@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any
 
 from nautilus_trader.model.enums import PriceType
@@ -6,15 +5,6 @@ from nautilus_trader.indicators.base import Indicator
 from nautilus_trader.indicators.momentum import ChandeMomentumOscillator
 from nautilus_trader.model.data import Bar, QuoteTick, TradeTick
 
-class MovingAverageType(Enum):
-    SIMPLE = 0
-    EXPONENTIAL = 1
-    DOUBLE_EXPONENTIAL = 2
-    WILDER = 3
-    HULL = 4
-    ADAPTIVE = 5
-    WEIGHTED = 6
-    VARIABLE_INDEX_DYNAMIC = 7
 
 class MovingAverage(Indicator):
     """The base class for all moving average type indicators.
@@ -33,7 +23,7 @@ class MovingAverage(Indicator):
     This class should not be used directly, but through a concrete subclass.
     """
 
-    peiod: int
+    period: int
     price_type: PriceType
     value: float
     count: int
@@ -48,6 +38,13 @@ class MovingAverage(Indicator):
         value : double
             The update value.
         """
+        ...
+    
+    def _increment_count(self) -> None:
+        ...
+    def _reset(self) -> None:
+        ...
+    def _reset_ma(self) -> None:
         ...
 
 
@@ -109,6 +106,9 @@ class SimpleMovingAverage(MovingAverage):
         value : double
             The update value.
         """
+        ...
+
+    def _reset_ma(self) -> None:
         ...
 
 
@@ -236,6 +236,9 @@ class DoubleExponentialMovingAverage(MovingAverage):
         """
         ...
 
+    def _reset_ma(self) -> None:
+        ...
+
 
 class WeightedMovingAverage(MovingAverage):
     """An indicator which calculates a weighted moving average across a rolling window.
@@ -300,6 +303,9 @@ class WeightedMovingAverage(MovingAverage):
         """
         ...
 
+    def _reset_ma(self) -> None:
+        ...
+
 
 class HullMovingAverage(MovingAverage):
     """An indicator which calculates a Hull Moving Average (HMA) across a rolling
@@ -361,6 +367,9 @@ class HullMovingAverage(MovingAverage):
         value : double
             The update value.
         """
+        ...
+
+    def _reset_ma(self) -> None:
         ...
 
 
@@ -437,6 +446,9 @@ class AdaptiveMovingAverage(MovingAverage):
         value : double
             The update value.
         """
+        ...
+
+    def _reset_ma(self) -> None:
         ...
 
 

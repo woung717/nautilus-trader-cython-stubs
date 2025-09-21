@@ -5,16 +5,16 @@ from decimal import Decimal
 
 import pandas as pd
 
-from stubs.common.component import Clock
-from stubs.common.component import Logger
-from stubs.common.component import TimeEvent
-from stubs.model.data import Bar
-from stubs.model.data import BarType
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
-from stubs.model.instruments.base import Instrument
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
+from nautilus_trader.common.component import Clock
+from nautilus_trader.common.component import Logger
+from nautilus_trader.common.component import TimeEvent
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import BarType
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
 
 class BarBuilder:
     """
@@ -63,7 +63,7 @@ class BarBuilder:
 
         """
         ...
-    def update(self, price: Price, size: Quantity, ts_event: int) -> None:
+    def update(self, price: Price, size: Quantity, ts_init: int) -> None:
         """
         Update the bar builder.
 
@@ -73,7 +73,7 @@ class BarBuilder:
             The update price.
         size : Decimal
             The update size.
-        ts_event : uint64_t
+        ts_init : uint64_t
             UNIX timestamp (nanoseconds) of the update.
 
         """
@@ -370,3 +370,4 @@ class TimeBarAggregator(BarAggregator):
     def _start_batch_time(self, time_ns: int): ...
     def _build_bar(self, event: TimeEvent) -> None: ...
 
+def find_closest_smaller_time(now: pd.Timestamp, daily_time_origin: pd.Timedelta, period: pd.Timedelta) -> pd.Timestamp: ...

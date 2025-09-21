@@ -10,38 +10,39 @@ from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import OrderStatus
 from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.enums import PriceType
-from stubs.accounting.accounts.base import Account
-from stubs.cache.base import CacheFacade
-from stubs.cache.facade import CacheDatabaseFacade
-from stubs.common.actor import Actor
-from stubs.model.book import OrderBook
-from stubs.model.data import Bar
-from stubs.model.data import BarType
-from stubs.model.data import IndexPriceUpdate
-from stubs.model.data import MarkPriceUpdate
-from stubs.model.data import QuoteTick
-from stubs.model.data import TradeTick
-from stubs.model.identifiers import AccountId
-from stubs.model.identifiers import ClientId
-from stubs.model.identifiers import ClientOrderId
-from stubs.model.identifiers import ComponentId
-from stubs.model.identifiers import ExecAlgorithmId
-from stubs.model.identifiers import InstrumentId
-from stubs.model.identifiers import OrderListId
-from stubs.model.identifiers import PositionId
-from stubs.model.identifiers import StrategyId
-from stubs.model.identifiers import Venue
-from stubs.model.identifiers import VenueOrderId
-from stubs.model.instruments.base import Instrument
-from stubs.model.instruments.synthetic import SyntheticInstrument
-from stubs.model.objects import Currency
-from stubs.model.objects import Money
-from stubs.model.objects import Price
-from stubs.model.objects import Quantity
-from stubs.model.orders.base import Order
-from stubs.model.orders.list import OrderList
-from stubs.model.position import Position
-from stubs.trading.strategy import Strategy
+from nautilus_trader.accounting.accounts.base import Account
+from nautilus_trader.cache.base import CacheFacade
+from nautilus_trader.cache.facade import CacheDatabaseFacade
+from nautilus_trader.common.actor import Actor
+from nautilus_trader.model.book import OrderBook
+from nautilus_trader.model.data import Bar
+from nautilus_trader.model.data import BarType
+from nautilus_trader.model.data import IndexPriceUpdate
+from nautilus_trader.model.data import MarkPriceUpdate
+from nautilus_trader.model.data import FundingRateUpdate
+from nautilus_trader.model.data import QuoteTick
+from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.identifiers import AccountId
+from nautilus_trader.model.identifiers import ClientId
+from nautilus_trader.model.identifiers import ClientOrderId
+from nautilus_trader.model.identifiers import ComponentId
+from nautilus_trader.model.identifiers import ExecAlgorithmId
+from nautilus_trader.model.identifiers import InstrumentId
+from nautilus_trader.model.identifiers import OrderListId
+from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import StrategyId
+from nautilus_trader.model.identifiers import Venue
+from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.instruments.synthetic import SyntheticInstrument
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.objects import Money
+from nautilus_trader.model.objects import Price
+from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.orders.base import Order
+from nautilus_trader.model.orders.list import OrderList
+from nautilus_trader.model.position import Position
+from nautilus_trader.trading.strategy import Strategy
 
 class Cache(CacheFacade):
     """
@@ -518,6 +519,17 @@ class Cache(CacheFacade):
         ----------
         index_price : IndexPriceUpdate
             The index price update to add.
+
+        """
+        ...
+    def add_funding_rate(self, funding_rate: FundingRateUpdate) -> None:
+        """
+        Add the given funding rate update to the cache.
+
+        Parameters
+        ----------
+        funding_rate : FundingRateUpdate
+            The funding rate update to add.
 
         """
         ...
@@ -1265,6 +1277,22 @@ class Cache(CacheFacade):
         Notes
         -----
         Reverse indexed (most recent index price at index 0).
+
+        """
+        ...
+    def funding_rate(self, instrument_id: InstrumentId ) -> FundingRateUpdate:
+        """
+        Return the funding rate for the given instrument ID (if found).
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the funding rate to get.
+
+        Returns
+        -------
+        FundingRateUpdate or ``None``
+            If no funding rate then returns ``None``.
 
         """
         ...
@@ -2626,6 +2654,38 @@ class Cache(CacheFacade):
         Returns
         -------
         list[Position]
+
+        """
+        ...
+    def position_snapshot_ids(self, instrument_id :InstrumentId | None = None) -> set[PositionId]:
+        """
+        Return all position IDs for position snapshots with the given instrument filter.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId, optional
+            The instrument ID query filter.
+
+        Returns
+        -------
+        set[PositionId]
+
+        """
+        ...
+
+    def position_snapshot_bytes(self, position_id: PositionId) -> list[bytes]:
+        """
+        Return the raw pickled snapshot bytes for the given position ID.
+
+        Parameters
+        ----------
+        position_id : PositionId
+            The position ID to get snapshot bytes for.
+
+        Returns
+        -------
+        list[bytes]
+            The list of pickled snapshot bytes, or empty list if no snapshots exist.
 
         """
         ...
