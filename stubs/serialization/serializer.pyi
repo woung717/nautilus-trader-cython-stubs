@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 from nautilus_trader.serialization.base import Serializer
 
@@ -67,3 +68,5 @@ class MsgSpecSerializer(Serializer):
 
         """
         ...
+
+def _serializer_encoding_hook(obj: Any) -> Any: ...

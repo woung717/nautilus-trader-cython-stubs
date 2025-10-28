@@ -29,7 +29,8 @@ from nautilus_trader.model.objects import Quantity
 
 STOP_ORDER_TYPES: set[OrderType]
 LIMIT_ORDER_TYPES: set[OrderType]
-LOCAL_ACTIVE_ORDER_STATUS: set[OrderStatus]
+CANCELLABLE_ORDER_STATUSES: set[OrderStatus]
+LOCAL_ACTIVE_ORDER_STATUSES: set[OrderStatus]
 
 class Order:
     """
@@ -154,6 +155,7 @@ class Order:
 
         """
         ...
+    def set_quote_quantity(self, value: bool) -> None: ...
     def to_own_book_order(self) -> nautilus_pyo3.OwnBookOrder:
         """
         Returns an own/user order representation of this order.

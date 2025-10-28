@@ -226,6 +226,32 @@ class ExecutionClient(Component):
 
         """
         ...
+    def generate_order_denied(
+        self,
+        strategy_id: StrategyId,
+        instrument_id: InstrumentId,
+        client_order_id: ClientOrderId,
+        reason: str,
+        ts_event: int,
+    ) -> None:
+        """
+        Generate an `OrderDenied` event and send it to the `ExecutionEngine`.
+
+        Parameters
+        ----------
+        strategy_id : StrategyId
+            The strategy ID associated with the event.
+        instrument_id : InstrumentId
+            The instrument ID.
+        client_order_id : ClientOrderId
+            The client order ID.
+        reason : str
+            The order denied reason.
+        ts_event : uint64_t
+            UNIX timestamp (nanoseconds) when the order denied event occurred.
+
+        """
+        ...
     def generate_order_submitted(
         self,
         strategy_id: StrategyId,

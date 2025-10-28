@@ -501,6 +501,9 @@ class BacktestEngine:
         The generator should yield ``list[Data]`` objects sorted by `ts_init` timestamp.
         """
         ...
+    
+    @classmethod
+    def default_time_range_generator(cls, initial_time: int, params: dict) -> None: ...
 
     def dump_pickled_data(self) -> bytes:
         """
@@ -701,11 +704,10 @@ class BacktestEngine:
     def _update_subscription_data(
         self, 
         subscription_name: str, 
-        duration_ns: Any, 
-        iteration_index: int, 
-        point_data: bool
+        start_time: int, 
+        end_time: int
     ) -> None: ...
-    def _subscription_generator(self, subscription_name: str, point_data: bool) -> Generator: ...  # Generator
+    def _subscription_generator(self, subscription_name: str, time_range_generator) -> Generator: ...  # Generator
     
     def _run(
         self,
@@ -1954,3 +1956,7 @@ class OrderMatchingEngine:
         commission: Money,
         liquidity_side: LiquiditySide,
     ) -> None: ...
+
+TimeRangeGenerator = Callable[[int, dict[str, Any]], Generator[int, bool, None]]
+
+def register_time_range_generator(name: str, function: TimeRangeGenerator) -> None: ...

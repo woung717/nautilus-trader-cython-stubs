@@ -19,6 +19,8 @@ from nautilus_trader.model.orders.base import Order
 from nautilus_trader.model.orders.list import OrderList
 from nautilus_trader.model.identifiers import AccountId, Venue
 
+def _ns_to_datetime(value: Any) -> datetime: ...
+
 class ExecutionReportCommand(Command):
     """
     The base class for all execution report commands.

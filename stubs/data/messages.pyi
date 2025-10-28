@@ -464,7 +464,6 @@ class SubscribeBars(SubscribeData):
         venue: Venue | None,
         command_id: UUID4,
         ts_init: int,
-        await_partial: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
@@ -703,6 +702,12 @@ class UnsubscribeOrderBook(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+    def to_request(
+        self,
+        start: datetime | None,
+        end: datetime | None,
+        callback: Callable[[Any], None],
+    ) -> RequestOrderBookDepth: ...
 
 
 class UnsubscribeQuoteTicks(UnsubscribeData):
@@ -1197,6 +1202,63 @@ class RequestOrderBookSnapshot(RequestData):
         ts_init: int,
         params: dict[str, Any] | None,
     ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+cdef class RequestOrderBookDepth(RequestData):
+    """
+    Represents a request for historical `OrderBookDepth10` data.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the request.
+    start : datetime
+        The start datetime (UTC) of request time range (inclusive).
+    end : datetime
+        The end datetime (UTC) of request time range.
+        The inclusiveness depends on individual data client implementation.
+    limit : int
+        The limit on the amount of depth snapshots received.
+    depth : int
+        The maximum depth for the order book depth data (default is 10).
+    client_id : ClientId or ``None``
+        The data client ID for the request.
+    venue : Venue or ``None``
+        The venue for the request.
+    callback : Callable[[Any], None]
+        The delegate to call with the data.
+    request_id : UUID4
+        The request ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object]
+        Additional parameters for the request.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+    depth: int
+
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime | None,
+        end: datetime | None,
+        limit: int,
+        depth: int,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        callback: Callable[[Any], None],
+        request_id: UUID4,
+        ts_init: int,
+        params: dict[str, any] | None,
+    ) -> None: ...
+
+    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestOrderBookDepth: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 

@@ -2939,6 +2939,21 @@ class Cache(CacheFacade):
 
         """
         ...
+    def force_remove_from_own_order_book(self, client_order_id: ClientOrderId) -> None:
+        """
+        Force removal of an order from own order books and clean up all indexes.
+
+        This method is used when order.apply() fails and we need to ensure terminal
+        orders are properly cleaned up from own books and all relevant indexes.
+        Replicates the index cleanup that update_order performs for closed orders.
+
+        Parameters
+        ----------
+        client_order_id : ClientOrderId
+            The client order ID to remove.
+
+        """
+        ...
     def audit_own_order_books(self) -> None:
         """
         Audit all own order books against public order books.
