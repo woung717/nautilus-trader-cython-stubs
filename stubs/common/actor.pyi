@@ -1827,7 +1827,7 @@ class Actor(Component):
     def request_bars(
         self,
         bar_type: BarType,
-        start: dt.datetime | None = None,
+        start: dt.datetime,
         end: dt.datetime | None = None,
         limit: int = 0,
         client_id: ClientId | None = None,
