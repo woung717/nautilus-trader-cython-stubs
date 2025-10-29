@@ -41,7 +41,6 @@ class BarBuilder:
     volume: Quantity
 
     _bar_type: BarType
-    _partial_set: bool
     _last_close: Price
     _open: Price
     _high: Price
@@ -50,19 +49,6 @@ class BarBuilder:
 
     def __init__(self, instrument: Instrument, bar_type: BarType) -> None: ...
     def __repr__(self) -> str: ...
-    def set_partial(self, partial_bar: Bar) -> None:
-        """
-        Set the initial values for a partially completed bar.
-
-        This method can only be called once per instance.
-
-        Parameters
-        ----------
-        partial_bar : Bar
-            The partial bar with values to set.
-
-        """
-        ...
     def update(self, price: Price, size: Quantity, ts_init: int) -> None:
         """
         Update the bar builder.
@@ -136,8 +122,6 @@ class BarAggregator:
         The bar type for the aggregator.
     handler : Callable[[Bar], None]
         The bar handler for the aggregator.
-    await_partial : bool, default False
-        If the aggregator should await an initial partial bar prior to aggregating.
 
     Raises
     ------
@@ -150,16 +134,14 @@ class BarAggregator:
 
     _handler: Callable[[Bar], None]
     _handler_backup: Callable[[Bar], None]
-    _await_partial: bool
     _log: Logger
     _builder: BarBuilder
     _batch_mode: bool
-    
-    def __init__(self, instrument: Instrument, bar_type: BarType, handler: Callable[[Bar], None], await_partial: bool = False) -> None: ...
+
+    def __init__(self, instrument: Instrument, bar_type: BarType, handler: Callable[[Bar], None]) -> None: ...
     def start_batch_update(self, handler: Callable[[Bar], None], time_ns: int) -> None: ...
     def _start_batch_time(self, time_ns: int): ...
     def stop_batch_update(self) -> None: ...
-    def set_await_partial(self, value: bool) -> None: ...
     def handle_quote_tick(self, tick: QuoteTick) -> None:
         """
         Update the aggregator with the given tick.
@@ -190,19 +172,6 @@ class BarAggregator:
         ----------
         bar : Bar
             The bar for the update.
-
-        """
-        ...
-    def set_partial(self, partial_bar: Bar) -> None:
-        """
-        Set the initial values for a partially completed bar.
-
-        This method can only be called once per instance.
-
-        Parameters
-        ----------
-        partial_bar : Bar
-            The partial bar with values to set.
 
         """
         ...
@@ -369,5 +338,33 @@ class TimeBarAggregator(BarAggregator):
         ...
     def _start_batch_time(self, time_ns: int): ...
     def _build_bar(self, event: TimeEvent) -> None: ...
+
+class RenkoBarAggregator(BarAggregator):
+    """
+    Provides a means of building Renko bars from ticks.
+
+    Renko bars are created when the price moves by a fixed amount (brick size)
+    regardless of time or volume. Each bar represents a price movement equal
+    to the step size in the bar specification.
+
+    Parameters
+    ----------
+    instrument : Instrument
+        The instrument for the aggregator.
+    bar_type : BarType
+        The bar type for the aggregator.
+    handler : Callable[[Bar], None]
+        The bar handler for the aggregator.
+
+    Raises
+    ------
+    ValueError
+        If `instrument.id` != `bar_type.instrument_id`.
+    """
+
+    brick_size: Decimal
+    _last_close: Price
+
+    def __init__(self, instrument: Instrument, bar_type: BarType, handler: Callable[[Bar], None]) -> None: ...
 
 def find_closest_smaller_time(now: pd.Timestamp, daily_time_origin: pd.Timedelta, period: pd.Timedelta) -> pd.Timestamp: ...

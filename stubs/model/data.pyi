@@ -44,6 +44,37 @@ def capsule_to_list(capsule) -> list[Data]: ...
 def capsule_to_data(capsule) -> Data: ...
 
 
+def supported_bar_aggregations_str() -> str:
+    """
+    Return the supported bar aggregations as a formatted string.
+
+    Returns
+    -------
+    str
+
+    """
+    ...
+
+def bar_aggregation_not_implemented_message(aggregation: BarAggregation) -> str:
+    """
+    Return an error message for an unsupported bar aggregation.
+
+    Parameters
+    ----------
+    aggregation : BarAggregation
+        The unsupported bar aggregation.
+
+    Returns
+    -------
+    str
+
+    """
+    ...
+
+
+_SUPPORTED_BAR_AGGREGATIONS: tuple[BarAggregation, ...]
+
+
 class BarSpecification:
     """
     Represents a bar aggregation specification including a step, aggregation
@@ -1572,6 +1603,19 @@ class OrderBookDepth10(Data):
         Returns
         -------
         list[OrderBookDepth10]
+
+        """
+        ...
+    def to_quote_tick(self) -> QuoteTick | None:
+        """
+        Return a `QuoteTick` created from the top of book levels.
+
+        Returns ``None`` when the top-of-book bid or ask is missing or invalid
+        (NULL order or zero size).
+
+        Returns
+        -------
+        QuoteTick or ``None``
 
         """
         ...

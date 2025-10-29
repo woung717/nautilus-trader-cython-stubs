@@ -433,6 +433,19 @@ class OrderBook(Data):
 
         """
         ...
+    def to_quote_tick(self) -> QuoteTick | None:
+        """
+        Return a `QuoteTick` created from the top of book levels.
+
+        Returns ``None`` when the top-of-book bid or ask is missing or invalid
+        (zero size).
+
+        Returns
+        -------
+        QuoteTick or ``None``
+
+        """
+        ...
     def pprint(self, num_levels: int = 3) -> str:
         """
         Return a string representation of the order book in a human-readable table format.

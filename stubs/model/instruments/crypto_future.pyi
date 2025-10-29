@@ -167,6 +167,51 @@ class CryptoFuture(Instrument):
 
         """
         ...
+    def get_cost_currency(self) -> Currency:
+        """
+        Return the currency used for PnL calculations for the instrument.
+
+        - Standard linear instruments = quote_currency
+        - Inverse instruments = underlying (base currency)
+        - Quanto instruments = settlement_currency
+
+        Returns
+        -------
+        Currency
+
+        """
+        ...
+    def notional_value(
+        self,
+        quantity: Quantity,
+        price: Price,
+        use_quote_for_inverse: bool = False,
+    ) -> Money:
+        """
+        Calculate the notional value.
+
+        Result will be in quote currency for standard instruments, underlying
+        currency for inverse instruments, or settlement currency for quanto
+        instruments.
+
+        Parameters
+        ----------
+        quantity : Quantity
+            The total quantity.
+        price : Price
+            The price for the calculation.
+        use_quote_for_inverse : bool
+            For inverse instruments only: if True, treats the quantity as already representing
+            notional value in quote currency and returns it directly without calculation.
+            This is useful when quantity already represents a USD value that doesn't need
+            conversion (e.g., for display purposes). Has no effect on linear or quanto instruments.
+
+        Returns
+        -------
+        Money
+
+        """
+        ...
     @property
     def activation_utc(self) -> pd.Timestamp:
         """

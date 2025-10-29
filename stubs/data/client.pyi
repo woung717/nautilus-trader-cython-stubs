@@ -257,6 +257,22 @@ class MarketDataClient(DataClient):
         """
         ...
 
+    def subscribe_order_book_depth(self, command: SubscribeOrderBook) -> None:
+        """
+        Subscribe to `OrderBookDepth10` data for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The order book instrument to subscribe to.
+        depth : int, optional
+            The maximum depth for the order book (defaults to 10).
+        params : dict[str, Any], optional
+            Additional params for the subscription.
+
+        """
+        ...
+
     def subscribe_quote_ticks(self, command: SubscribeQuoteTicks) -> None:
         """
         Subscribe to `QuoteTick` data for the given instrument ID.
@@ -426,6 +442,20 @@ class MarketDataClient(DataClient):
     def unsubscribe_order_book_snapshots(self, command: UnsubscribeOrderBook) -> None:
         """
         Unsubscribe from `OrderBook` snapshots data for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The order book instrument to unsubscribe from.
+        params : dict[str, Any], optional
+            Additional params for the subscription.
+
+        """
+        ...
+
+    def unsubscribe_order_book_depth(self, command: UnsubscribeOrderBook) -> None:
+        """
+        Unsubscribe from `OrderBookDepth10` data for the given instrument ID.
 
         Parameters
         ----------
@@ -742,7 +772,17 @@ class MarketDataClient(DataClient):
         self,
         bar_type: BarType,
         bars: list,
-        partial: Bar,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object] = None,
+    ) -> None:
+        ...
+
+    def _handle_order_book_depths_py(
+        self,
+        instrument_id: InstrumentId,
+        depths: list,
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -810,7 +850,17 @@ class MarketDataClient(DataClient):
         self,
         bar_type: BarType,
         bars: list,
-        partial: Bar,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object],
+    ) -> None:
+        ...
+
+    def _handle_order_book_depths(
+        self,
+        instrument_id: InstrumentId,
+        depths: list,
         correlation_id: UUID4,
         start: datetime,
         end: datetime,

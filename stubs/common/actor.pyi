@@ -1,5 +1,6 @@
 import asyncio
 import datetime as dt
+from datetime import datetime
 from collections.abc import Callable
 from concurrent.futures import Executor
 from typing import Any
@@ -29,6 +30,7 @@ from nautilus_trader.model.data import MarkPriceUpdate
 from nautilus_trader.model.data import OrderBookDepth10
 from nautilus_trader.model.data import QuoteTick
 from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.events.order import OrderFilled
 from nautilus_trader.model.greeks import GreeksCalculator
 from nautilus_trader.model.identifiers import ClientId
 from nautilus_trader.model.identifiers import InstrumentId
@@ -442,6 +444,21 @@ class Actor(Component):
 
         """
         ...
+    def on_order_filled(self, event: OrderFilled) -> None:
+        """
+        Actions to be performed when running and receives an order filled event.
+
+        Parameters
+        ----------
+        event : OrderFilled
+            The event received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
     def on_event(self, event: Event) -> None:
         """
         Actions to be performed running and receives an event.
@@ -842,6 +859,7 @@ class Actor(Component):
         self,
         venue: Venue,
         client_id: ClientId | None = None,
+        update_catalog: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -857,6 +875,9 @@ class Actor(Component):
         client_id : ClientId, optional
             The specific client ID for the command.
             If ``None`` then will be inferred from the venue.
+        update_catalog : bool, optional
+            Whether to update a catalog with the received data.
+            Only useful when downloading data during a backtest.
         params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
@@ -866,6 +887,7 @@ class Actor(Component):
         self,
         instrument_id: InstrumentId,
         client_id: ClientId | None = None,
+        update_catalog: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -881,6 +903,9 @@ class Actor(Component):
         client_id : ClientId, optional
             The specific client ID for the command.
             If ``None`` then will be inferred from the venue in the instrument ID.
+        update_catalog : bool, optional
+            Whether to update a catalog with the received data.
+            Only useful when downloading data during a backtest.
         params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
@@ -932,6 +957,7 @@ class Actor(Component):
         client_id: ClientId | None = None,
         managed: bool = True,
         pyo3_conversion: bool = False,
+        update_catalog: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -954,6 +980,9 @@ class Actor(Component):
         pyo3_conversion : bool, default False
             If received deltas should be converted to `nautilus_pyo3.OrderBookDepth`
             prior to being passed to the `on_order_book_depth` handler.
+        update_catalog : bool, optional
+            Whether to update a catalog with the received data.
+            Only useful when downloading data during a backtest.
         params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
@@ -1141,7 +1170,6 @@ class Actor(Component):
         self,
         bar_type: BarType,
         client_id: ClientId | None = None,
-        await_partial: bool = False,
         update_catalog: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
@@ -1158,9 +1186,6 @@ class Actor(Component):
         client_id : ClientId, optional
             The specific client ID for the command.
             If ``None`` then will be inferred from the venue in the instrument ID.
-        await_partial : bool, default False
-            If the bar aggregator should await the arrival of a historical partial bar prior
-            to actively aggregating new bars.
         update_catalog : bool, optional
             Whether to update a catalog with the received data.
             Only useful when downloading data during a backtest.
@@ -1214,6 +1239,20 @@ class Actor(Component):
             If ``None`` then will be inferred from the venue in the instrument ID.
         params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def subscribe_order_fills(self, instrument_id: InstrumentId) -> None:
+        """
+        Subscribe to all order fills for the given instrument ID.
+
+        Once subscribed, any matching order fills published on the message bus are forwarded
+        to the `on_order_filled` handler.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to subscribe to fills for.
 
         """
         ...
@@ -1495,6 +1534,41 @@ class Actor(Component):
 
         """
         ...
+    def unsubscribe_instrument_close(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId=None,
+        params: dict[str, Any]=None,
+    ) -> None:
+        """
+        Unsubscribe from close updates for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to unsubscribe from close updates for.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def unsubscribe_order_fills(
+        self,
+        instrument_id: InstrumentId,
+    ) -> None:
+        """
+        Unsubscribe from all order fills for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to unsubscribe from fills for.
+
+        """
+        ...
     def publish_data(self, data_type: DataType, data: Data) -> None:
         """
         Publish the given data to the message bus.
@@ -1743,6 +1817,63 @@ class Actor(Component):
         callback : Callable[[UUID4], None] | None = None,
             The registered callback, to be called with the request ID when the response has completed processing.
         params : dict[str, Any] | None = None,
+            Additional parameters potentially used by a specific client.
+
+        Returns
+        -------
+        UUID4
+            The `request_id` for the request.
+
+        Raises
+        ------
+        ValueError
+            If the instrument_id is None.
+        TypeError
+            If callback is not None and not of type Callable.
+
+        """
+        ...
+    def request_order_book_depth(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime,
+        end: datetime = None,
+        limit: int = 0,
+        depth:int = 10,
+        client_id: ClientId = None,
+        callback: Callable[[UUID4], None] | None = None,
+        update_catalog: bool = True,
+        params: dict[str, Any] = None,
+    ) -> UUID4:
+        """
+        Request historical `OrderBookDepth10` snapshots.
+
+        Once the response is received, the order book depth data is forwarded from the message bus
+        to the `on_historical_data` handler.
+
+        If the request fails, then an error is logged.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the order book depths request.
+        start : datetime
+            The start datetime (UTC) of request time range (inclusive).
+        end : datetime, optional
+            The end datetime (UTC) of request time range.
+            The inclusiveness depends on individual data client implementation.
+        limit : int, optional
+            The limit on the amount of depth snapshots received.
+        depth : int, optional
+            The maximum depth for the returned order book data (default is 10).
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If None, it will be inferred from the venue in the instrument ID.
+        callback : Callable[[UUID4], None], optional
+            The registered callback, to be called with the request ID when the response has completed processing.
+        update_catalog : bool, default True
+            If the data catalog should be updated with the received data.
+        params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
         Returns
@@ -2404,6 +2535,7 @@ class Actor(Component):
     def _handle_bars_response(self, response: DataResponse) -> None: ...
     def _handle_aggregated_bars_response(self, response: DataResponse) -> None: ...
     def _finish_response(self, request_id: UUID4) -> None: ...
+    def _handle_order_filled(self, event: OrderFilled) -> None: ...
     def _handle_indicators_for_quote(self, indicators: list[Indicator], tick: QuoteTick) -> None: ...
     def _handle_indicators_for_trade(self, indicators: list[Indicator], tick: TradeTick) -> None: ...
     def _handle_indicators_for_bar(self, indicators: list[Indicator], bar: Bar) -> None: ...

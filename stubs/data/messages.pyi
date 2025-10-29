@@ -227,6 +227,12 @@ class SubscribeOrderBook(SubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+    def to_request(
+        self,
+        start: datetime | None,
+        end: datetime | None,
+        callback: Callable[[Any], None],
+    ) -> RequestOrderBookDepth: ...
 
 
 class SubscribeQuoteTicks(SubscribeData):
@@ -702,12 +708,6 @@ class UnsubscribeOrderBook(UnsubscribeData):
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
-    def to_request(
-        self,
-        start: datetime | None,
-        end: datetime | None,
-        callback: Callable[[Any], None],
-    ) -> RequestOrderBookDepth: ...
 
 
 class UnsubscribeQuoteTicks(UnsubscribeData):
@@ -1205,7 +1205,7 @@ class RequestOrderBookSnapshot(RequestData):
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
-cdef class RequestOrderBookDepth(RequestData):
+class RequestOrderBookDepth(RequestData):
     """
     Represents a request for historical `OrderBookDepth10` data.
 
