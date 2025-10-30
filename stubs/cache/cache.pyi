@@ -2642,7 +2642,7 @@ class Cache(CacheFacade):
 
         """
         ...
-    def position_snapshots(self, position_id: PositionId | None = None) -> list[Any]:
+    def position_snapshots(self, position_id: PositionId | None = None) -> list[Position]:
         """
         Return all position snapshots with the given optional identifier filter.
 
@@ -2695,7 +2695,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
-    ) -> list[Any]:
+    ) -> list[Position]:
         """
         Return all positions with the given query filters.
 
@@ -2724,7 +2724,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
-    ) -> list[Any]:
+    ) -> list[Position]:
         """
         Return all open positions with the given query filters.
 
@@ -2752,7 +2752,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
-    ) -> list[Any]:
+    ) -> list[Position]:
         """
         Return all closed positions with the given query filters.
 
