@@ -11,6 +11,7 @@ from nautilus_trader.model.enums import TriggerType
 from nautilus_trader.core.fsm import FiniteStateMachine
 from nautilus_trader.core.uuid import UUID4
 from nautilus_trader.model.events.order import OrderEvent
+from nautilus_trader.model.events.order import OrderFilled
 from nautilus_trader.model.events.order import OrderInitialized
 from nautilus_trader.model.identifiers import AccountId
 from nautilus_trader.model.identifiers import ClientOrderId
@@ -621,6 +622,21 @@ class Order:
             If `event` is not a valid trigger from the current `order.status`.
         KeyError
             If `event` is `OrderFilled` and `event.trade_id` already applied to the order.
+
+        """
+        ...
+    def is_duplicate_fill(self, fill: OrderFilled) -> bool:
+        """
+        Return whether a fill with matching trade_id, side, qty, and price already exists.
+
+        Parameters
+        ----------
+        fill : OrderFilled
+            The fill event to check.
+
+        Returns
+        -------
+        bool
 
         """
         ...

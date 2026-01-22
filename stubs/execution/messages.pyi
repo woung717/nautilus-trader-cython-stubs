@@ -57,7 +57,9 @@ class ExecutionReportCommand(Command):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
+        
 
 class GenerateOrderStatusReport(ExecutionReportCommand):
     """
@@ -90,6 +92,7 @@ class GenerateOrderStatusReport(ExecutionReportCommand):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str:
@@ -160,6 +163,7 @@ class GenerateOrderStatusReports(ExecutionReportCommand):
         ts_init: int,
         params: dict[str, Any] | None = None,
         log_receipt_level: LogLevel = ...,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -225,6 +229,7 @@ class GenerateFillReports(ExecutionReportCommand):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -286,6 +291,8 @@ class GeneratePositionStatusReports(ExecutionReportCommand):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        log_receipt_level: LogLevel = LogLevel.INFO,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str:
@@ -352,6 +359,7 @@ class GenerateExecutionMassStatus(ExecutionReportCommand):
         ts_init: int,
         venue: Venue | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None:
         ...
 
@@ -426,6 +434,7 @@ class TradingCommand(Command):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
 
 class SubmitOrder(TradingCommand):
@@ -468,6 +477,7 @@ class SubmitOrder(TradingCommand):
         position_id: PositionId | None = None,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -546,6 +556,7 @@ class SubmitOrderList(TradingCommand):
         position_id: PositionId | None = None,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -631,6 +642,7 @@ class ModifyOrder(TradingCommand):
         ts_init: int,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -706,6 +718,7 @@ class CancelOrder(TradingCommand):
         ts_init: int,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -771,6 +784,7 @@ class CancelAllOrders(TradingCommand):
         ts_init: int,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -843,6 +857,7 @@ class BatchCancelOrders(TradingCommand):
         ts_init: int,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -912,6 +927,7 @@ class QueryOrder(TradingCommand):
         ts_init: int,
         client_id: ClientId | None = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -975,6 +991,7 @@ class QueryAccount(Command):
         ts_init: int,
         client_id: ClientId = None,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4 | None = None,
     ) -> None:
         ...
 

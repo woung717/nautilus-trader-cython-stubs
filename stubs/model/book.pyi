@@ -399,6 +399,29 @@ class OrderBook(Data):
 
         """
         ...
+    def get_all_crossed_levels(self, order_side: OrderSide, price: Price, size_prec: int) -> list[tuple[Price, Quantity]]:
+        """
+        Return all price levels that would be crossed by an order at the given price.
+
+        Unlike `simulate_fills`, this returns ALL crossed levels regardless of
+        order quantity. Used when liquidity consumption tracking needs visibility
+        into all available levels.
+
+        Parameters
+        ----------
+        order_side : OrderSide
+            The order side (BUY or SELL).
+        price : Price
+            The limit price to check against.
+        size_prec : uint8_t
+            The size precision for the quantities.
+
+        Returns
+        -------
+        list[(Price, Quantity)]
+
+        """
+        ...
     def update_quote_tick(self, tick: QuoteTick) -> None:
         """
         Update the order book with the given quote tick.

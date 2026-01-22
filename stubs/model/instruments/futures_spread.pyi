@@ -136,6 +136,31 @@ class FuturesSpread(Instrument):
 
         """
         ...
+    def is_spread(self) -> bool:
+        """
+        Return whether the instrument is a spread instrument.
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+
+    def legs(self) -> list[tuple[InstrumentId, int]]:
+        """
+        Return the list of leg tuples (instrument_id, ratio) for this spread.
+
+        If the instrument ID corresponds to a generic spread ID, returns the
+        parsed legs using generic_spread_id_to_list. Otherwise returns an empty list.
+
+        Returns
+        -------
+        list[tuple[InstrumentId, int]]
+            List of tuples containing (instrument_id, ratio) for each leg.
+
+        """
+        ...
     @staticmethod
     def from_dict(values: dict[str, Any]) -> FuturesSpread:
         """

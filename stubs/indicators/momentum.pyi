@@ -145,6 +145,22 @@ class ChandeMomentumOscillator(Indicator):
     def _reset(self) -> None: ...
 
 
+class StochasticsDMethod:
+    """
+    Method for calculating %D in the Stochastics indicator.
+
+    The %D line is the smoothed version of %K and provides trading signals.
+    Two calculation methods are supported:
+
+    - **RATIO**: Nautilus original method using `100 * SUM(close-LL) / SUM(HH-LL)` over `period_d`.
+      This is range-weighted and has less lag than MA-based methods.
+    - **MOVING_AVERAGE**: Standard method using MA of slowed %K values, compatible with
+      cTrader/MetaTrader implementations.
+    """
+    RATIO = "ratio"
+    MOVING_AVERAGE = "moving_average"
+
+
 class Stochastics(Indicator):
     """
     An oscillator which can indicate when an asset may be over bought or over
@@ -177,7 +193,7 @@ class Stochastics(Indicator):
     value_k: float
     value_d: float
 
-    def __init__(self, period_k: int, period_d: int) -> None: ...
+    def __init__(self, period_k: int, period_d: int, slowing: int = 1, ma_type = None, d_method: str = "ratio") -> None: ...
     def handle_bar(self, bar: Bar) -> None: 
         """
         Update the indicator with the given bar.

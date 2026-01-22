@@ -13,7 +13,8 @@ from nautilus_trader.model.objects import Price
 from nautilus_trader.model.objects import Quantity
 from nautilus_trader.model.tick_scheme.base import TickScheme
 
-EXPIRING_INSTRUMENT_TYPES: set[InstrumentClass]
+EXPIRING_INSTRUMENT_CLASSES: set[InstrumentClass]
+NEGATIVE_PRICE_INSTRUMENT_CLASSES: tuple[InstrumentClass]
 
 class Instrument(Data):
     """
@@ -226,6 +227,31 @@ class Instrument(Data):
         Returns
         -------
         Venue
+
+        """
+        ...
+    def is_spread(self) -> bool:
+        """
+        Return whether the instrument is a spread instrument.
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+
+    def legs(self) -> list[tuple[InstrumentId, int]]:
+        """
+        Return the list of leg tuples (instrument_id, ratio) for this spread.
+
+        Base implementation returns an empty list. Override in spread instrument
+        classes to return the actual legs.
+
+        Returns
+        -------
+        list[tuple[InstrumentId, int]]
+            List of tuples containing (instrument_id, ratio) for each leg.
 
         """
         ...

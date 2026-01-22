@@ -1,16 +1,129 @@
+from typing import List, Tuple, Any
+
+from nautilus_trader.core import nautilus_pyo3
+
+
+GENERIC_SPREAD_ID_SEPARATOR: str = "___"
+
+
+def new_generic_spread_id(instrument_ratios: List[Tuple[InstrumentId, int]]) -> InstrumentId:
+    """
+    Create a spread InstrumentId from a list of (instrument_id, ratio) tuples.
+
+    The resulting symbol will be in the format: (ratio1)symbol1_(ratio2)symbol2_...
+    where positive ratios are shown as (ratio) and negative ratios as ((ratio)).
+    All instrument IDs must have the same venue. The instrument IDs are sorted
+    alphabetically by symbol before creating the spread symbol.
+
+    Parameters
+    ----------
+    instrument_ratios : list[tuple[InstrumentId, int]]
+        List of tuples containing (instrument_id, ratio) where ratio cannot be 0.
+
+    Returns
+    -------
+    InstrumentId
+        The spread instrument ID.
+
+    Raises
+    ------
+    ValueError
+        If the list is empty, ratios are zero, or venues don't match.
+
+    Examples
+    --------
+    >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue, new_generic_spread_id
+    >>> id1 = InstrumentId(Symbol("MSFT"), Venue("NASDAQ"))
+    >>> id2 = InstrumentId(Symbol("AAPL"), Venue("NASDAQ"))
+    >>> spread = new_generic_spread_id([(id1, 1), (id2, -2)])
+    >>> print(spread.symbol.value)
+    ((2))AAPL___(1)MSFT
+
+    """
+    ...
+
+
+def generic_spread_id_to_list(instrument_id: InstrumentId) -> List[Tuple[InstrumentId, int]]:
+    """
+    Parse this InstrumentId back into a list of (instrument_id, ratio) tuples.
+
+    This is the inverse operation of new_generic_spread_id(). The symbol must be in the format
+    created by new_generic_spread_id(): (ratio1)symbol1___(ratio2)symbol2___...
+    The returned list is sorted alphabetically by symbol.
+
+    Returns
+    -------
+    list[tuple[InstrumentId, int]]
+        List of tuples containing (instrument_id, ratio), sorted alphabetically by symbol.
+
+    Raises
+    ------
+    ValueError
+        If the symbol format is not compatible with new_generic_spread_id() format.
+
+    Examples
+    --------
+    >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue, generic_spread_id_to_list
+    >>> spread = InstrumentId(Symbol("(1)AAPL___((2))MSFT"), Venue("NASDAQ"))
+    >>> result = generic_spread_id_to_list(spread)
+    >>> print(result)
+    [(InstrumentId('AAPL.NASDAQ'), 1), (InstrumentId('MSFT.NASDAQ'), -2)]
+
+    """
+    ...
+
+
+def is_generic_spread_id(instrument_id: InstrumentId) -> bool:
+    """
+    Return whether the instrument ID is a spread instrument (symbol contains '_' separator).
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID to check.
+
+    Returns
+    -------
+    bool
+        True if the instrument ID is a spread, False otherwise.
+
+    """
+    ...
+
+
+def generic_spread_id_n_legs(instrument_id: InstrumentId) -> int:
+    ...
+    
+
 class Identifier:
     """
     The abstract base class for all identifiers.
     """
 
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __lt__(self, other: Identifier) -> bool: ...
-    def __le__(self, other: Identifier) -> bool: ...
-    def __gt__(self, other: Identifier) -> bool: ...
-    def __ge__(self, other: Identifier) -> bool: ...
-    def __str__(self) -> str: ...
-    def __repr__(self) -> str: ...
+    def __getstate__(self) -> Any:
+        ...
+
+    def __setstate__(self, state: Any) -> None:
+        ...
+
+    def __lt__(self, other: Identifier) -> bool:
+        ...
+
+    def __le__(self, other: Identifier) -> bool:
+        ...
+
+    def __gt__(self, other: Identifier) -> bool:
+        ...
+
+    def __ge__(self, other: Identifier) -> bool:
+        ...
+
+    def __str__(self) -> str:
+        ...
+
+    def __repr__(self) -> str:
+        ...
+
     @property
     def value(self) -> str:
         """
@@ -47,11 +160,21 @@ class Symbol(Identifier):
     https://en.wikipedia.org/wiki/Ticker_symbol
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: Symbol) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: Symbol) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     def is_composite(self) -> bool:
         """
         Returns true if the symbol string contains a period ('.').
@@ -62,6 +185,7 @@ class Symbol(Identifier):
 
         """
         ...
+
     def root(self) -> str:
         """
         Return the symbol root.
@@ -77,6 +201,7 @@ class Symbol(Identifier):
 
         """
         ...
+
     def topic(self) -> str:
         """
         Return the symbol topic.
@@ -107,11 +232,21 @@ class Venue(Identifier):
         If `name` is not a valid string.
     """
 
-    def __init__(self, name: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: Venue) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, name: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: Venue) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     def is_synthetic(self) -> bool:
         """
         Return whether the venue is synthetic ('SYNTH').
@@ -122,8 +257,9 @@ class Venue(Identifier):
 
         """
         ...
+
     @staticmethod
-    def from_code(code: str) -> Venue | None:
+    def from_code(code: str) -> Venue:
         """
         Return the venue with the given `code` from the built-in internal map (if found).
 
@@ -141,7 +277,6 @@ class Venue(Identifier):
         """
         ...
 
-
 class InstrumentId(Identifier):
     """
     Represents a valid instrument ID.
@@ -156,7 +291,9 @@ class InstrumentId(Identifier):
         The instruments trading venue.
     """
 
-    def __init__(self, symbol: Symbol, venue: Venue) -> None: ...
+    def __init__(self, symbol: Symbol, venue: Venue) -> None:
+        ...
+
     @property
     def symbol(self) -> Symbol:
         """
@@ -168,6 +305,7 @@ class InstrumentId(Identifier):
 
         """
         ...
+
     @property
     def venue(self) -> Venue:
         """
@@ -179,10 +317,19 @@ class InstrumentId(Identifier):
 
         """
         ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: InstrumentId) -> bool: ...
-    def __hash__(self) -> int: ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: InstrumentId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     @staticmethod
     def from_str(value: str) -> InstrumentId:
         """
@@ -208,6 +355,7 @@ class InstrumentId(Identifier):
 
         """
         ...
+
     def is_synthetic(self) -> bool:
         """
         Return whether the instrument ID is a synthetic instrument (with venue of 'SYNTH').
@@ -218,16 +366,9 @@ class InstrumentId(Identifier):
 
         """
         ...
-    def is_spread(self) -> bool:
-        """
-        Return whether the instrument ID is a spread instrument (symbol contains '_' separator).
-        Returns
-        -------
-        bool
-        """
-        ...
+
     @staticmethod
-    def from_pyo3(pyo3_instrument_id: InstrumentId) -> InstrumentId:
+    def from_pyo3(pyo3_instrument_id) -> InstrumentId:
         """
         Return an instrument ID from the given PyO3 instance.
 
@@ -242,7 +383,8 @@ class InstrumentId(Identifier):
 
         """
         ...
-    def to_pyo3(self) -> InstrumentId:
+
+    def to_pyo3(self) -> nautilus_pyo3.InstrumentId:
         """
         Return a pyo3 object from this legacy Cython instance.
 
@@ -252,72 +394,6 @@ class InstrumentId(Identifier):
 
         """
         ...
-    @staticmethod
-    def new_spread(instrument_ratios: list[tuple[InstrumentId, int]]) -> InstrumentId:
-        """
-        Create a spread InstrumentId from a list of (instrument_id, ratio) tuples.
-
-        The resulting symbol will be in the format: (ratio1)symbol1_(ratio2)symbol2_...
-        where positive ratios are shown as (ratio) and negative ratios as ((ratio)).
-        All instrument IDs must have the same venue. The instrument IDs are sorted
-        alphabetically by symbol before creating the spread symbol.
-
-        Parameters
-        ----------
-        instrument_ratios : list[tuple[InstrumentId, int]]
-            List of tuples containing (instrument_id, ratio) where ratio cannot be 0.
-
-        Returns
-        -------
-        InstrumentId
-            The spread instrument ID.
-
-        Raises
-        ------
-        ValueError
-            If the list is empty, ratios are zero, or venues don't match.
-
-        Examples
-        --------
-        >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue
-        >>> id1 = InstrumentId(Symbol("MSFT"), Venue("NASDAQ"))
-        >>> id2 = InstrumentId(Symbol("AAPL"), Venue("NASDAQ"))
-        >>> spread = InstrumentId.new_spread([(id1, 1), (id2, -2)])
-        >>> print(spread.symbol.value)
-        ((2))AAPL_(1)MSFT
-
-        """
-        ...
-
-    def to_list(self) -> list[tuple[InstrumentId, int]]:
-        """
-        Parse this InstrumentId back into a list of (instrument_id, ratio) tuples.
-
-        This is the inverse operation of new_spread(). The symbol must be in the format
-        created by new_spread(): (ratio1)symbol1_(ratio2)symbol2_...
-        The returned list is sorted alphabetically by symbol.
-
-        Returns
-        -------
-        list[tuple[InstrumentId, int]]
-            List of tuples containing (instrument_id, ratio), sorted alphabetically by symbol.
-
-        Raises
-        ------
-        ValueError
-            If the symbol format is not compatible with new_spread() format.
-
-        Examples
-        --------
-        >>> from nautilus_trader.model.identifiers import InstrumentId, Symbol, Venue
-        >>> spread = InstrumentId(Symbol("(1)AAPL_((2))MSFT"), Venue("NASDAQ"))
-        >>> result = spread.to_list()
-        >>> print(result)
-        [(InstrumentId('AAPL.NASDAQ'), 1), (InstrumentId('MSFT.NASDAQ'), -2)]
-
-        """
-        ...
-    def n_legs(self) -> int: ...
 
 
 class ComponentId(Identifier):
@@ -339,12 +415,20 @@ class ComponentId(Identifier):
     The ID value must be unique at the trader level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: ComponentId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
 
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: ComponentId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 class ClientId(Identifier):
     """
@@ -365,11 +449,20 @@ class ClientId(Identifier):
     The ID value must be unique at the trader level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: ClientId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: ClientId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class TraderId(Identifier):
@@ -400,11 +493,21 @@ class TraderId(Identifier):
     The name and tag combination ID value must be unique at the firm level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: TraderId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: TraderId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     def get_tag(self) -> str:
         """
         Return the order ID tag value for this ID.
@@ -445,11 +548,21 @@ class StrategyId(Identifier):
     The name and tag combination must be unique at the trader level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: StrategyId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: StrategyId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     def get_tag(self) -> str:
         """
         Return the order ID tag value for this ID.
@@ -460,6 +573,7 @@ class StrategyId(Identifier):
 
         """
         ...
+
     def is_external(self) -> bool:
         """
         If the strategy ID is the global 'external' strategy. This represents
@@ -489,11 +603,20 @@ class ExecAlgorithmId(Identifier):
         If `value` is not a valid string.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: ExecAlgorithmId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: ExecAlgorithmId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class AccountId(Identifier):
@@ -521,11 +644,21 @@ class AccountId(Identifier):
     The issuer and number ID combination must be unique at the firm level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: AccountId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: AccountId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
+
     def get_issuer(self) -> str:
         """
         Return the account issuer for this ID.
@@ -536,6 +669,7 @@ class AccountId(Identifier):
 
         """
         ...
+
     def get_id(self) -> str:
         """
         Return the account ID without issuer name.
@@ -567,11 +701,20 @@ class ClientOrderId(Identifier):
     The ID value must be unique at the firm level.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: ClientOrderId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: ClientOrderId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class VenueOrderId(Identifier):
@@ -589,11 +732,20 @@ class VenueOrderId(Identifier):
         If `value` is not a valid string.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: VenueOrderId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: VenueOrderId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class OrderListId(Identifier):
@@ -611,11 +763,20 @@ class OrderListId(Identifier):
         If `value` is not a valid string.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: OrderListId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: OrderListId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class PositionId(Identifier):
@@ -633,11 +794,20 @@ class PositionId(Identifier):
         If `value` is not a valid string containing a hyphen.
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: PositionId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: PositionId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...
 
 
 class TradeId(Identifier):
@@ -667,8 +837,17 @@ class TradeId(Identifier):
     https://www.onixs.biz/fix-dictionary/5.0/tagnum_1003.html
     """
 
-    def __init__(self, value: str) -> None: ...
-    def __getstate__(self): ...
-    def __setstate__(self, state) -> None: ...
-    def __eq__(self, other: TradeId) -> bool: ...
-    def __hash__(self) -> int: ...
+    def __init__(self, value: str) -> None:
+        ...
+
+    def __getstate__(self):
+        ...
+
+    def __setstate__(self, state):
+        ...
+
+    def __eq__(self, other: TradeId) -> bool:
+        ...
+
+    def __hash__(self) -> int:
+        ...

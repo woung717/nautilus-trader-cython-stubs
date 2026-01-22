@@ -1,4 +1,5 @@
 from decimal import Decimal
+import decimal
 
 QUANTITY_MAX: float = ...
 QUANTITY_MIN: float = ...
@@ -207,6 +208,38 @@ class Quantity:
 
         """
         ...
+    @staticmethod
+    def from_decimal(value: decimal.Decimal) -> Quantity:
+        """
+        Return a quantity from the given Decimal value.
+
+        Handles up to 16 decimals of precision (in high-precision mode).
+
+        Parameters
+        ----------
+        value : Decimal
+            The Decimal value for the quantity.
+
+        Returns
+        -------
+        Quantity
+
+        Raises
+        ------
+        ValueError
+            If inferred precision is greater than 16.
+        ValueError
+            If raw value is outside the valid representable range [0, `QUANTITY_RAW_MAX`].
+        OverflowError
+            If inferred precision is negative (< 0).
+
+        Warnings
+        --------
+        The decimal precision will be inferred from the number of digits
+        following the '.' point (if no point then precision zero).
+
+        """
+        ...
     def to_formatted_str(self) -> str:
         """
         Return the formatted string representation of the quantity.
@@ -406,6 +439,38 @@ class Price:
 
         """
         ...
+    @staticmethod
+    def from_decimal(value: decimal.Decimal) -> Price:
+        """
+        Return a price from the given Decimal value.
+
+        Handles up to 16 decimals of precision (in high-precision mode).
+
+        Parameters
+        ----------
+        value : Decimal
+            The Decimal value for the price.
+
+        Returns
+        -------
+        Price
+
+        Raises
+        ------
+        ValueError
+            If inferred precision is greater than 16.
+        ValueError
+            If raw value is outside the valid representable range [`PRICE_RAW_MIN`, `PRICE_RAW_MAX`].
+        OverflowError
+            If inferred precision is negative (< 0).
+
+        Warnings
+        --------
+        The decimal precision will be inferred from the number of digits
+        following the '.' point (if no point then precision zero).
+
+        """
+        ...
     def to_formatted_str(self) -> str:
         """
         Return the formatted string representation of the price.
@@ -557,6 +622,40 @@ class Money:
             If inferred currency precision is greater than 16.
         OverflowError
             If inferred currency precision is negative (< 0).
+
+        """
+        ...
+    @staticmethod
+    def from_decimal(amount: decimal.Decimal, currency: Currency) -> Money:
+        """
+        Return money from the given Decimal amount and currency.
+
+        Handles up to 16 decimals of precision (in high-precision mode).
+
+        Parameters
+        ----------
+        amount : Decimal
+            The Decimal amount for the money.
+        currency : Currency
+            The currency of the money.
+
+        Returns
+        -------
+        Money
+
+        Raises
+        ------
+        ValueError
+            If inferred currency precision is greater than 16.
+        ValueError
+            If raw value is outside the valid representable range [`MONEY_RAW_MIN`, `MONEY_RAW_MAX`].
+        OverflowError
+            If inferred currency precision is negative (< 0).
+
+        Warnings
+        --------
+        The decimal precision will be inferred from the number of digits
+        following the '.' point (if no point then precision zero).
 
         """
         ...

@@ -18,8 +18,7 @@ from __future__ import annotations
 from collections import deque
 import datetime
 import decimal
-import uuid
-from collections.abc import Callable, Generator
+from collections.abc import Generator
 from typing import Any
 
 import pandas as pd
@@ -30,19 +29,18 @@ from nautilus_trader.backtest.modules import SimulationModule
 from nautilus_trader.backtest.results import BacktestResult
 from nautilus_trader.cache.base import CacheFacade
 from nautilus_trader.common.actor import Actor
-from nautilus_trader.common.component import Clock, Logger
+from nautilus_trader.common.component import Logger
 from nautilus_trader.config import BacktestEngineConfig
 from nautilus_trader.core.data import Data
 from nautilus_trader.core.rust.model import AccountType, BookType, OmsType
 from nautilus_trader.core.uuid import UUID4
-from nautilus_trader.data.engine import DataEngine
+from nautilus_trader.data.engine import DataEngine, TimeRangeGenerator
 from nautilus_trader.data.messages import RequestData
 from nautilus_trader.execution.algorithm import ExecAlgorithm
 from nautilus_trader.execution.messages import TradingCommand
 from nautilus_trader.model.data import (
     Bar,
     BarType,
-    BookOrder,
     InstrumentClose,
     InstrumentStatus,
     OrderBookDelta,
@@ -330,8 +328,10 @@ class BacktestEngine:
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
         trade_execution: bool = False,
+        liquidity_consumption: bool = False,
         allow_cash_borrowing: bool = False,
         frozen_account: bool = False,
+        price_protection_points: int | None = None,
     ) -> None:
         """
         Add a `SimulatedExchange` with the given parameters to the backtest engine.
@@ -502,8 +502,7 @@ class BacktestEngine:
         """
         ...
     
-    @classmethod
-    def default_time_range_generator(cls, initial_time: int, params: dict) -> None: ...
+    
 
     def dump_pickled_data(self) -> bytes:
         """
@@ -702,12 +701,13 @@ class BacktestEngine:
     def _handle_unsubscribe(self, command: UnsubscribeData) -> None: ...
     def _handle_data_response(self, response: DataResponse) -> None: ...
     def _update_subscription_data(
-        self, 
-        subscription_name: str, 
-        start_time: int, 
-        end_time: int
+        self,
+        subscription_name: str,
+        request_start_ns: int,
+        request_end_ns: int,
     ) -> None: ...
-    def _subscription_generator(self, subscription_name: str, time_range_generator) -> Generator: ...  # Generator
+
+    def _subscription_generator(self, subscription_name: str, time_range_generator: TimeRangeGenerator) -> Generator[int, bool, None]: ...
     
     def _run(
         self,
@@ -785,7 +785,7 @@ class BacktestDataIterator:
 
     def __init__(self) -> None: ...
 
-    def add_data(self, data_name: str, data: list[Data], append_data: bool = True) -> None:  # list[Data]
+    def add_data(self, data_name: str, data: list[Data], append_data: bool = True, presorted: bool = False) -> None:  # list[Data]
         """
         Add (or replace) a named, pre-sorted data list for static data loading.
         If a stream with the same ``data_name`` already exists, it will be replaced
@@ -1079,6 +1079,8 @@ class SimulatedExchange:
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
         trade_execution: bool = False,
+        liquidity_consumption: bool = False,
+        price_protection_points: int | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -1471,8 +1473,6 @@ class OrderMatchingEngine:
     _fill_model: FillModel
     _fee_model: FeeModel
     _book: OrderBook
-    _opening_auction_book: OrderBook
-    _closing_auction_book: OrderBook
     _account_ids: dict[TraderId, AccountId]
     _execution_bar_types: dict[InstrumentId, BarType]
     _execution_bar_deltas: dict[BarType, datetime.timedelta]
@@ -1509,6 +1509,8 @@ class OrderMatchingEngine:
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
         trade_execution: bool = False,
+        liquidity_consumption: bool = False,
+        price_protection_points: int | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -1692,8 +1694,6 @@ class OrderMatchingEngine:
         """
         ...
 
-    def process_auction_book(self, book: OrderBook) -> None:  # OrderBook
-        ...
 
     def process_order(self, order: Order, account_id: AccountId) -> None: ...
 
@@ -1957,6 +1957,4 @@ class OrderMatchingEngine:
         liquidity_side: LiquiditySide,
     ) -> None: ...
 
-TimeRangeGenerator = Callable[[int, dict[str, Any]], Generator[int, bool, None]]
-
-def register_time_range_generator(name: str, function: TimeRangeGenerator) -> None: ...
+ 

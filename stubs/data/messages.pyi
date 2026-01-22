@@ -46,6 +46,7 @@ class DataCommand(Command):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -87,12 +88,13 @@ class SubscribeData(DataCommand):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def to_request(
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
     ) -> RequestData: ...
 
 
@@ -126,6 +128,7 @@ class SubscribeInstruments(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -133,7 +136,7 @@ class SubscribeInstruments(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
     ) -> RequestInstruments: ...
 
 
@@ -170,6 +173,7 @@ class SubscribeInstrument(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -224,6 +228,7 @@ class SubscribeOrderBook(SubscribeData):
         managed: bool = True,
         interval_ms: int = 0,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -231,7 +236,7 @@ class SubscribeOrderBook(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
     ) -> RequestOrderBookDepth: ...
 
 
@@ -268,6 +273,7 @@ class SubscribeQuoteTicks(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -275,7 +281,7 @@ class SubscribeQuoteTicks(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any],],
+        callback: Callable[[Any], None] | None
     ) -> RequestQuoteTicks: ...
 
 
@@ -312,6 +318,7 @@ class SubscribeTradeTicks(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -319,7 +326,7 @@ class SubscribeTradeTicks(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
     ) -> RequestTradeTicks: ...
 
 
@@ -356,6 +363,7 @@ class SubscribeMarkPrices(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -394,6 +402,7 @@ class SubscribeIndexPrices(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -432,6 +441,7 @@ class SubscribeFundingRates(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -471,6 +481,7 @@ class SubscribeBars(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -478,7 +489,7 @@ class SubscribeBars(SubscribeData):
         self,
         start: datetime | None,
         end: datetime | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
     ) -> RequestBars: ...
 
 
@@ -515,6 +526,7 @@ class SubscribeInstrumentStatus(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -553,6 +565,7 @@ class SubscribeInstrumentClose(SubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -594,6 +607,7 @@ class UnsubscribeData(DataCommand):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
 
 class UnsubscribeInstruments(UnsubscribeData):
@@ -626,6 +640,7 @@ class UnsubscribeInstruments(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -664,6 +679,7 @@ class UnsubscribeInstrument(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -705,6 +721,7 @@ class UnsubscribeOrderBook(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -743,6 +760,7 @@ class UnsubscribeQuoteTicks(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -781,6 +799,7 @@ class UnsubscribeTradeTicks(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -819,6 +838,7 @@ class UnsubscribeMarkPrices(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -857,6 +877,7 @@ class UnsubscribeIndexPrices(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -895,6 +916,7 @@ class UnsubscribeFundingRates(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -933,6 +955,7 @@ class UnsubscribeBars(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -971,6 +994,7 @@ class UnsubscribeInstrumentStatus(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -1009,6 +1033,7 @@ class UnsubscribeInstrumentClose(UnsubscribeData):
         command_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -1059,12 +1084,13 @@ class RequestData(Request):
         limit: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestData: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestData: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1108,10 +1134,11 @@ class RequestInstrument(RequestData):
         end: datetime | None,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -1152,12 +1179,13 @@ class RequestInstruments(RequestData):
         end: datetime | None,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestInstruments: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestInstruments: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1197,10 +1225,11 @@ class RequestOrderBookSnapshot(RequestData):
         limit: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
@@ -1252,13 +1281,14 @@ class RequestOrderBookDepth(RequestData):
         depth: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
 
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestOrderBookDepth: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestOrderBookDepth: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1304,12 +1334,13 @@ class RequestQuoteTicks(RequestData):
         limit: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestQuoteTicks: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestQuoteTicks: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1356,12 +1387,13 @@ class RequestTradeTicks(RequestData):
         limit: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestTradeTicks: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestTradeTicks: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
@@ -1408,14 +1440,66 @@ class RequestBars(RequestData):
         limit: int,
         client_id: ClientId | None,
         venue: Venue | None,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
         params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
     ) -> None: ...
-    def with_dates(self, start: datetime, end: datetime, ts_init: int) -> RequestBars: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestBars: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
+
+
+class RequestJoin(RequestData):
+    """
+    Represents a request to join multiple data requests.
+
+    Parameters
+    ----------
+    request_ids : tuple[UUID4]
+        The tuple of sub-request IDs to join.
+    start : datetime
+        The start datetime (UTC) of request time range (inclusive).
+    end : datetime
+        The end datetime (UTC) of request time range.
+        The inclusiveness depends on individual data client implementation.
+    callback : Callable[[Any], None]
+        The delegate to call with the data.
+    request_id : UUID4
+        The request ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object]
+        Additional parameters for the request.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+
+    def __init__(
+        self,
+        request_ids: tuple,
+        start: datetime | None,
+        end: datetime | None,
+        callback: Callable[[Any], None] | None,
+        request_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
+    ) -> None: ...
+
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestJoin:
+        ...
+
+    def __str__(self) -> str:
+        ...
+
+    def __repr__(self) -> str:
+        ...
 
 
 class DataResponse(Response):
@@ -1471,7 +1555,7 @@ class DataResponse(Response):
         ts_init: int,
         start: datetime,
         end: datetime,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None
     ) -> None: ...
 
     def __str__(self) -> str: ...

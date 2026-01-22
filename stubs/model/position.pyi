@@ -4,6 +4,7 @@ from typing import Any
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.events.order import OrderFilled
+from nautilus_trader.model.events.position import PositionAdjusted
 from nautilus_trader.model.identifiers import AccountId
 from nautilus_trader.model.identifiers import ClientOrderId
 from nautilus_trader.model.identifiers import InstrumentId
@@ -191,6 +192,17 @@ class Position:
         """
         ...
     @property
+    def adjustments(self):
+        """
+        Return the position adjustment events.
+
+        Returns
+        -------
+        list[PositionAdjusted]
+
+        """
+        ...
+    @property
     def last_event(self) -> OrderFilled | None:
         """
         Return the last order fill event (if any after purging).
@@ -341,6 +353,24 @@ class Position:
         ------
         KeyError
             If `fill.trade_id` already applied to the position.
+
+        """
+        ...
+    def apply_adjustment(self, adjustment: PositionAdjusted) -> None:
+        """
+        Applies a position adjustment event.
+
+        This method handles adjustments to position quantity or realized PnL that occur
+        outside of normal order fills, such as:
+        - Commission adjustments in base currency (crypto spot markets)
+        - Funding payments (perpetual futures)
+
+        The adjustment event is stored in the position's adjustment history for full audit trail.
+
+        Parameters
+        ----------
+        adjustment : PositionAdjusted
+            The position adjustment event to apply.
 
         """
         ...

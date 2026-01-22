@@ -705,6 +705,7 @@ class Strategy(Actor):
         tags: list[str] | None = None,
         time_in_force: TimeInForce = ...,
         reduce_only: bool = True,
+        quote_quantity: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -740,6 +741,7 @@ class Strategy(Actor):
         tags: list[str] | None = None,
         time_in_force: TimeInForce = ...,
         reduce_only: bool = True,
+        quote_quantity: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """

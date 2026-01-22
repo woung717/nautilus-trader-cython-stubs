@@ -1,5 +1,7 @@
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import PositionSide
+from decimal import Decimal
+from nautilus_trader.model.enums import PositionAdjustmentType
 from nautilus_trader.core.message import Event
 from nautilus_trader.core.uuid import UUID4
 from nautilus_trader.model.events.order import OrderFilled
@@ -575,3 +577,85 @@ class PositionClosed(PositionEvent):
 
         """
         ...
+
+class PositionAdjusted(Event):
+    """
+    Represents an adjustment to a position's quantity or realized PnL.
+
+    Parameters
+    ----------
+    trader_id : TraderId
+        The trader ID.
+    strategy_id : StrategyId
+        The strategy ID.
+    instrument_id : InstrumentId
+        The instrument ID.
+    position_id : PositionId
+        The position ID.
+    account_id : AccountId
+        The account ID.
+    adjustment_type : PositionAdjustmentType
+        The type of adjustment.
+    quantity_change : Decimal | None
+        The quantity change (positive increases quantity, negative decreases).
+    pnl_change : Money | None
+        The PnL change.
+    reason : str | None
+        Optional reason or reference for the adjustment.
+    event_id : UUID4
+        The event ID.
+    ts_event : int
+        UNIX timestamp (nanoseconds) when the event occurred.
+    ts_init : int
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    """
+
+    trader_id: TraderId
+    strategy_id: StrategyId
+    instrument_id: InstrumentId
+    position_id: PositionId
+    account_id: AccountId
+    adjustment_type: PositionAdjustmentType
+    quantity_change: Decimal | None
+    pnl_change: Money | None
+    reason: str | None
+
+    _event_id: UUID4
+    _ts_event: int
+    _ts_init: int
+
+    def __init__(
+        self,
+        trader_id: TraderId,
+        strategy_id: StrategyId,
+        instrument_id: InstrumentId,
+        position_id: PositionId,
+        account_id: AccountId,
+        adjustment_type: PositionAdjustmentType,
+        quantity_change: Decimal | None,
+        pnl_change: Money | None,
+        reason: str | None,
+        event_id: UUID4,
+        ts_event: int,
+        ts_init: int,
+    ) -> None: ...
+
+    def __eq__(self, other: Event) -> bool: ...
+    def __hash__(self) -> int: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+    @property
+    def id(self) -> UUID4: ...
+
+    @property
+    def ts_event(self) -> int: ...
+
+    @property
+    def ts_init(self) -> int: ...
+
+    @staticmethod
+    def from_dict(values: dict[str, object]) -> PositionAdjusted: ...
+
+    @staticmethod
+    def to_dict(obj: PositionAdjusted) -> dict[str, object]: ...

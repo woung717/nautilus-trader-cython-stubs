@@ -3,6 +3,8 @@ import litellm
 from glob import glob
 from pathlib import Path
 
+os.environ["OPENROUTER_API_KEY"] = ""
+
 module_path = "nautilus_trader/nautilus_trader/"
 stub_file_path = "stubs/"
 symbol_file_path = "nautilus_trader/nautilus_trader/core/nautilus_pyo3.pyi"

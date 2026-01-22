@@ -26,6 +26,7 @@ class Command:
         self,
         command_id: UUID4,
         ts_init: int,
+        correlation_id: UUID4 = None
     ) -> None: ...
     def __getstate__(self): ...
     def __setstate__(self, state): ...
@@ -132,9 +133,10 @@ class Request:
 
     def __init__(
         self,
-        callback: Callable[[Any], None],
+        callback: Callable[[Any], None] | None,
         request_id: UUID4,
         ts_init: int,
+        correlation_id: UUID4 = None,
     ) -> None: ...
     def __getstate__(self): ...
     def __setstate__(self, state): ...

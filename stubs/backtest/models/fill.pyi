@@ -32,7 +32,6 @@ class FillModel:
     def __init__(
         self,
         prob_fill_on_limit: float = 1.0,
-        prob_fill_on_stop: float = 1.0,
         prob_slippage: float = 0.0,
         random_seed: int | None = None,
         config = None,
@@ -41,17 +40,6 @@ class FillModel:
     def is_limit_filled(self) -> bool:
         """
         Return a value indicating whether a ``LIMIT`` order filled.
-
-        Returns
-        -------
-        bool
-
-        """
-        ...
-
-    def is_stop_filled(self) -> bool:
-        """
-        Return a value indicating whether a ``STOP-MARKET`` order filled.
 
         Returns
         -------
@@ -269,7 +257,6 @@ class MarketHoursFillModel(FillModel):
     def __init__(
         self,
         prob_fill_on_limit: float = 1.0,
-        prob_fill_on_stop: float = 1.0,
         prob_slippage: float = 0.0,
         random_seed: int | None = None,
     ) -> None: ...
@@ -310,7 +297,6 @@ class VolumeSensitiveFillModel(FillModel):
     def __init__(
         self,
         prob_fill_on_limit: float = 1.0,
-        prob_fill_on_stop: float = 1.0,
         prob_slippage: float = 0.0,
         random_seed: int | None = None,
     ) -> None: ...
@@ -345,7 +331,6 @@ class CompetitionAwareFillModel(FillModel):
     def __init__(
         self,
         prob_fill_on_limit: float = 1.0,
-        prob_fill_on_stop: float = 1.0,
         prob_slippage: float = 0.0,
         random_seed: int | None = None,
         liquidity_factor: float = 0.3,

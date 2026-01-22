@@ -480,6 +480,20 @@ class BarType:
         ...
     def standard(self) -> BarType: ...
     def composite(self) -> BarType: ...
+    def id_spec_key(self) -> tuple[InstrumentId, BarSpecification]:
+        """
+        Return the instrument ID and bar specification as a tuple key.
+
+        Useful as a hashmap key when aggregation source should be ignored,
+        such as for indicator registration where INTERNAL and EXTERNAL bars
+        should trigger the same indicators.
+
+        Returns
+        -------
+        tuple[InstrumentId, BarSpecification]
+
+        """
+        ...
 
 class Bar(Data):
     """

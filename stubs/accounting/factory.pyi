@@ -62,6 +62,20 @@ class AccountFactory:
         """
         ...
     @staticmethod
+    def deregister_cash_borrowing(issuer: str) -> None:
+        """
+        Deregister cash borrowing for the given issuer.
+
+        This is primarily intended for test cleanup to prevent global state leakage.
+
+        Parameters
+        ----------
+        issuer : str
+            The issuer to deregister.
+
+        """
+        ...
+    @staticmethod
     def create(event: AccountState) -> Account:
         """
         Create an account based on the events account type.

@@ -30,6 +30,7 @@ from nautilus_trader.model.data import MarkPriceUpdate
 from nautilus_trader.model.data import OrderBookDepth10
 from nautilus_trader.model.data import QuoteTick
 from nautilus_trader.model.data import TradeTick
+from nautilus_trader.model.events.order import OrderCanceled
 from nautilus_trader.model.events.order import OrderFilled
 from nautilus_trader.model.greeks import GreeksCalculator
 from nautilus_trader.model.identifiers import ClientId
@@ -451,6 +452,21 @@ class Actor(Component):
         Parameters
         ----------
         event : OrderFilled
+            The event received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def on_order_canceled(self, event: OrderCanceled) -> None:
+        """
+        Actions to be performed when running and receives an order canceled event.
+
+        Parameters
+        ----------
+        event : OrderCanceled
             The event received.
 
         Warnings
@@ -1043,6 +1059,7 @@ class Actor(Component):
         instrument_id: InstrumentId,
         client_id: ClientId | None = None,
         update_catalog: bool = False,
+        aggregate_spread_quotes: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -1256,6 +1273,20 @@ class Actor(Component):
 
         """
         ...
+    def subscribe_order_cancels(self, instrument_id: InstrumentId) -> None:
+        """
+        Subscribe to all order cancels for the given instrument ID.
+
+        Once subscribed, any matching order cancels published on the message bus are forwarded
+        to the `on_order_canceled` handler.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to subscribe to cancels for.
+
+        """
+        ...
     def unsubscribe_data(
         self,
         data_type: DataType,
@@ -1271,8 +1302,8 @@ class Actor(Component):
         data_type : DataType
             The data type to unsubscribe from.
         client_id : ClientId, optional
-            The data client ID. If supplied then an `Unsubscribe` command will
-            be sent to the data client.
+            The data client ID. If supplied then an `Unsubscribe` command will be
+            sent to the corresponding data client.
         params : dict[str, Any], optional
             Additional parameters potentially used by a specific client.
 
@@ -1392,6 +1423,7 @@ class Actor(Component):
         self,
         instrument_id: InstrumentId,
         client_id: ClientId | None = None,
+        aggregate_spread_quotes: bool = False,
         params: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -1569,6 +1601,20 @@ class Actor(Component):
 
         """
         ...
+    def unsubscribe_order_cancels(
+        self,
+        instrument_id: InstrumentId,
+    ) -> None:
+        """
+        Unsubscribe from order cancel notifications for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to unsubscribe from cancel events for.
+
+        """
+        ...
     def publish_data(self, data_type: DataType, data: Data) -> None:
         """
         Publish the given data to the message bus.
@@ -1622,11 +1668,13 @@ class Actor(Component):
         data_type: DataType,
         client_id: ClientId,
         instrument_id: InstrumentId | None = None,
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         limit: int = 0,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -1674,11 +1722,13 @@ class Actor(Component):
     def request_instrument(
         self,
         instrument_id: InstrumentId,
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -1733,11 +1783,13 @@ class Actor(Component):
     def request_instruments(
         self,
         venue: Venue,
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -1795,6 +1847,8 @@ class Actor(Component):
         limit: int = 0,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -1843,7 +1897,9 @@ class Actor(Component):
         client_id: ClientId = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = True,
-        params: dict[str, Any] = None,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
+        params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
         Request historical `OrderBookDepth10` snapshots.
@@ -1893,12 +1949,15 @@ class Actor(Component):
     def request_quote_ticks(
         self,
         instrument_id: InstrumentId,
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         limit: int = 0,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
+        aggregate_spread_quotes: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -1955,12 +2014,14 @@ class Actor(Component):
     def request_trade_ticks(
         self,
         instrument_id: InstrumentId,
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         limit: int = 0,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -2017,13 +2078,15 @@ class Actor(Component):
     def request_bars(
         self,
         bar_type: BarType,
-        start: dt.datetime,
-        end: dt.datetime | None = None,
+        start: datetime,
+        end: datetime | None = None,
         limit: int = 0,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         update_catalog: bool = False,
-        params: dict[str, Any] | None = None,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
+        params: dict[str, Any] | None = None
     ) -> UUID4:
         """
         Request historical `Bar` data.
@@ -2079,14 +2142,16 @@ class Actor(Component):
     def request_aggregated_bars(
         self,
         bar_types: list[BarType],
-        start: dt.datetime | None = None,
-        end: dt.datetime | None = None,
+        start: datetime | None = None,
+        end: datetime | None = None,
         limit: int = 0,
         client_id: ClientId | None = None,
         callback: Callable[[UUID4], None] | None = None,
         include_external_data: bool = False,
         update_subscriptions: bool = False,
         update_catalog: bool = False,
+        aggregate_spread_quotes: bool = False,
+        request_id: UUID4 | None = None,
         params: dict[str, Any] | None = None,
     ) -> UUID4:
         """
@@ -2154,6 +2219,36 @@ class Actor(Component):
 
         """
         ...
+    def request_join(
+        self,
+        request_ids: tuple,
+        start: datetime,
+        end: datetime | None = None,
+        client_id: ClientId | None = None,
+        venue: Venue | None = None,
+        callback: Callable[[UUID4], None] | None = None,
+        request_id: UUID4 | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> UUID4:
+        """
+        Request a join to a live feed (join operation) from a data client.
+
+        Parameters
+        ----------
+        client_id : ClientId
+            The client id to join.
+        callback : Callable[[UUID4], None], optional
+            Callback invoked with the request id when the operation completes.
+        params : dict[str, Any], optional
+            Additional parameters for the join operation.
+
+        Returns
+        -------
+        UUID4
+            The request id for the join.
+
+        """
+        ...
     def is_pending_request(self, request_id: UUID4) -> bool:
         """
         Return whether the request for the given identifier is pending processing.
@@ -2208,21 +2303,7 @@ class Actor(Component):
 
         """
         ...
-    def handle_instruments(self, instruments: list[Instrument]) -> None:
-        """
-        Handle the given instruments data by handling each instrument individually.
-
-        Parameters
-        ----------
-        instruments : list[Instrument]
-            The instruments received.
-
-        Warnings
-        --------
-        System method (not intended to be called by user code).
-
-        """
-        ...
+    
     def handle_order_book_deltas(self, deltas) -> None:
         """
         Handle the given order book deltas.
@@ -2242,7 +2323,7 @@ class Actor(Component):
 
         """
         ...
-    def handle_order_book_depth(self, depth: OrderBookDepth10) -> None:
+    def handle_order_book_depth(self, depth: OrderBookDepth10, historical: bool = False) -> None:
         """
         Handle the given order book depth
 
@@ -2257,6 +2338,11 @@ class Actor(Component):
         --------
         System method (not intended to be called by user code).
 
+        """
+        ...
+    def handle_historical_order_book_depth(self, depth: OrderBookDepth10) -> None:
+        """
+        Handle a historical order book depth message.
         """
         ...
     def handle_order_book(self, order_book: OrderBook) -> None:
@@ -2276,7 +2362,7 @@ class Actor(Component):
 
         """
         ...
-    def handle_quote_tick(self, tick: QuoteTick) -> None:
+    def handle_quote_tick(self, tick: QuoteTick, historical: bool = False) -> None:
         """
         Handle the given quote tick.
 
@@ -2293,22 +2379,13 @@ class Actor(Component):
 
         """
         ...
-    def handle_quote_ticks(self, ticks: list[QuoteTick]) -> None:
+    def handle_historical_quote_tick(self, tick: QuoteTick) -> None:
         """
-        Handle the given historical quote tick data by handling each tick individually.
-
-        Parameters
-        ----------
-        ticks : list[QuoteTick]
-            The ticks received.
-
-        Warnings
-        --------
-        System method (not intended to be called by user code).
-
+        Handle a historical quote tick message.
         """
         ...
-    def handle_trade_tick(self, tick: TradeTick) -> None:
+    
+    def handle_trade_tick(self, tick: TradeTick, historical: bool = False) -> None:
         """
         Handle the given trade tick.
 
@@ -2323,6 +2400,11 @@ class Actor(Component):
         --------
         System method (not intended to be called by user code).
 
+        """
+        ...
+    def handle_historical_trade_tick(self, tick: TradeTick) -> None:
+        """
+        Handle a historical trade tick message.
         """
         ...
     def handle_mark_price(self, mark_price: MarkPriceUpdate) -> None:
@@ -2376,22 +2458,8 @@ class Actor(Component):
 
         """
         ...
-    def handle_trade_ticks(self, ticks: list[TradeTick]) -> None:
-        """
-        Handle the given historical trade tick data by handling each tick individually.
-
-        Parameters
-        ----------
-        ticks : list[TradeTick]
-            The ticks received.
-
-        Warnings
-        --------
-        System method (not intended to be called by user code).
-
-        """
-        ...
-    def handle_bar(self, bar: Bar) -> None:
+    
+    def handle_bar(self, bar: Bar, historical: bool = False) -> None:
         """
         Handle the given bar data.
 
@@ -2408,26 +2476,12 @@ class Actor(Component):
 
         """
         ...
-    def handle_bars(self, bars: list[Bar]) -> None:
+    def handle_historical_bar(self, bar: Bar) -> None:
         """
-        Handle the given historical bar data by handling each bar individually.
-
-        Parameters
-        ----------
-        bars : list[Bar]
-            The bars to handle.
-
-        Warnings
-        --------
-        System method (not intended to be called by user code).
-
-        Raises
-        ------
-        RuntimeError
-            If bar data has incorrectly sorted timestamps (not monotonically increasing).
-
+        Handle a historical bar message.
         """
         ...
+    
     def handle_instrument_status(self, data: InstrumentStatus) -> None:
         """
         Handle the given instrument status update.
@@ -2534,9 +2588,14 @@ class Actor(Component):
     def _handle_trade_ticks_response(self, response: DataResponse) -> None: ...
     def _handle_bars_response(self, response: DataResponse) -> None: ...
     def _handle_aggregated_bars_response(self, response: DataResponse) -> None: ...
+    def _handle_order_book_depth_response(self, response: DataResponse) -> None: ...
+    def _handle_order_book_snapshot_response(self, response: DataResponse) -> None: ...
+    def _handle_join_response(self, response: DataResponse) -> None: ...
     def _finish_response(self, request_id: UUID4) -> None: ...
     def _handle_order_filled(self, event: OrderFilled) -> None: ...
+    def _handle_order_canceled(self, event: OrderCanceled) -> None: ...
     def _handle_indicators_for_quote(self, indicators: list[Indicator], tick: QuoteTick) -> None: ...
     def _handle_indicators_for_trade(self, indicators: list[Indicator], tick: TradeTick) -> None: ...
     def _handle_indicators_for_bar(self, indicators: list[Indicator], bar: Bar) -> None: ...
+    def _unsubscribe_historical_aggregated_bars(self, bar_types: tuple, include_external_data: bool = False) -> None: ...
 
