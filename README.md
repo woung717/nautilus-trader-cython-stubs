@@ -1,5 +1,8 @@
 # Type stubs for NautilusTrader
 
+<img width="1792" height="846" alt="image" src="https://github.com/user-attachments/assets/efbaadb8-0103-4b74-bc00-fac456e95e57" />
+
+
 `nautilus-trader-cython-stubs` provides **`.pyi` type stubs** for the [NautilusTrader](https://github.com/nautechsystems/nautilus_trader) trading platform, specifically for its **Cython interface**.
 
 These stubs serve the following purposes:
