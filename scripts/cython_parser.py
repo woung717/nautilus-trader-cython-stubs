@@ -4,6 +4,7 @@ import traceback
 from dataclasses import dataclass
 from dataclasses import field
 
+from Cython.Compiler import Errors
 from Cython.Compiler import PyrexTypes
 from Cython.Compiler.Main import CompilationOptions
 from Cython.Compiler.Main import Context
@@ -382,6 +383,7 @@ def analyze_cython_code(name: str, code_content: str) -> CythonCodeAnalyzer:
     context = Context(include_directories=["./"], compiler_directives={}, options=options)
 
     try:
+        Errors.init_thread()
         tree = parse_from_strings(name, code_content)
         if tree:
             analyzer = CythonCodeAnalyzer(context)
