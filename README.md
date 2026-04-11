@@ -11,9 +11,19 @@ These stubs serve the following purposes:
 - Enable proper **import resolution** for Cython-based APIs 
 
 ## Installation
+
+**`install.py` script**
+
+Run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`)
+
+```bash
+python ./install.py {python_path}/lib/{python_version}/site-packages/nautilus_trader
+```
+
+**OS Command**
+
 Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
 
-For example:
 ```bash
 rsync -a ./stubs/ {path/to/python/site-packages}/nautilus_trader
 ```
