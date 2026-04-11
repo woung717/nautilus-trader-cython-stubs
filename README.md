@@ -29,7 +29,8 @@ Select a directory [1-2] (or 'q' to quit):
 
 ```
 
-Or run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) This will install the stubs in the provided directory.
+Or run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) 
+This will install the stubs in the provided directory.
 
 ```bash
 python ./install.py {python_path}/lib/{python_version}/site-packages/nautilus_trader
@@ -37,7 +38,7 @@ python ./install.py {python_path}/lib/{python_version}/site-packages/nautilus_tr
 
 **Manual Installation**
 
-Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
+Copy all files under the `stubs` directory into your installed `nautilus_trader` directory using `rsync` or equivalent, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
 
 ```bash
 rsync -a ./stubs/ {path/to/python/site-packages}/nautilus_trader
