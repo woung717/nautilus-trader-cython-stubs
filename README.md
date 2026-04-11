@@ -31,7 +31,7 @@ cd ..
 Note: Python3 and Cython dependencies are required.
 
 ## AI Stub generation/fix (OpenRouter Account required)
-To synchronized with the NautilusTrader API using LLM, run the follwing command:
+To synchronized with the NautilusTrader API using AI, run the follwing command:
 
 ```bash
 cd nautilus-trader
