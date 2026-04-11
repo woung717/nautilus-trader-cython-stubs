@@ -1,5 +1,7 @@
 # Type stubs for NautilusTrader
 
+<img width="1792" height="846" alt="image" src="https://github.com/user-attachments/assets/efbaadb8-0103-4b74-bc00-fac456e95e57" />
+
 `nautilus-trader-cython-stubs` provides **`.pyi` type stubs** for the [NautilusTrader](https://github.com/nautechsystems/nautilus_trader) trading platform, specifically for its **Cython interface**.
 
 These stubs serve the following purposes:
@@ -27,6 +29,17 @@ cd ..
 ```
 
 Note: Python3 and Cython dependencies are required.
+
+## AI Stub generation/fix (OpenRouter Account required)
+To synchronized with the NautilusTrader API using LLM, run the follwing command:
+
+```bash
+cd nautilus-trader
+git checkout {branch_name|tag_name} # branch or tag(release) of nautilus_trader 
+cd ..
+python ./scripts/stub_agent.py # OpenRouter API Key setup required using env
+```
+Though the AI model can resolve most inconsistencies, some import parts should be checked and fixed manually by the developer.
 
 ## Limitations
 
