@@ -257,7 +257,7 @@ class Condition:
         ...
     @staticmethod
     def list_type(
-        argument: list,
+        argument: list[Any],
         expected_type: type,
         param: str,
         ex_type: builtins.type[Exception] | None = None,
@@ -285,7 +285,7 @@ class Condition:
         ...
     @staticmethod
     def dict_types(
-        argument: dict,
+        argument: dict[Any, Any],
         key_type: type,
         value_type: type,
         param: str,
@@ -823,7 +823,7 @@ class PyCondition:
         """
         ...
     @staticmethod
-    def list_type(argument: list, expected_type: type, param: str, ex_type: builtins.type[Exception] | None = None) -> None:
+    def list_type(argument: list[Any], expected_type: type, param: str, ex_type: builtins.type[Exception] | None = None) -> None:
         """
         Check the list only contains types of the given expected type.
 
@@ -846,7 +846,7 @@ class PyCondition:
         """
         ...
     @staticmethod
-    def dict_types(argument: dict, key_type: type, value_type: type, param: str, ex_type: builtins.type[Exception] | None = None) -> None:
+    def dict_types(argument: dict[Any, Any], key_type: type, value_type: type, param: str, ex_type: builtins.type[Exception] | None = None) -> None:
         """
         Check the dictionary only contains types of the given key and value types to contain.
 

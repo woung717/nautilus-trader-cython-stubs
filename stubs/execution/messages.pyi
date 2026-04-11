@@ -852,7 +852,7 @@ class BatchCancelOrders(TradingCommand):
         trader_id: TraderId,
         strategy_id: StrategyId,
         instrument_id: InstrumentId,
-        cancels: list,
+        cancels: list[CancelOrder],
         command_id: UUID4,
         ts_init: int,
         client_id: ClientId | None = None,

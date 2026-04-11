@@ -9,6 +9,7 @@ from nautilus_trader.data.messages import RequestBars, RequestData, RequestForwa
 from nautilus_trader.model.data import Bar, BarType, DataType
 from nautilus_trader.model.identifiers import ClientId, InstrumentId, Venue
 from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.data import ForwardPrice, FundingRateUpdate, OrderBookDeltas, OrderBookDepth10, QuoteTick, TradeTick
 
 
 class DataClient(Component):
@@ -774,7 +775,7 @@ class MarketDataClient(DataClient):
     def _handle_instruments_py(
         self,
         venue: Venue,
-        instruments: list,
+        instruments: list[Instrument],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -785,7 +786,7 @@ class MarketDataClient(DataClient):
     def _handle_quote_ticks_py(
         self,
         instrument_id: InstrumentId,
-        ticks: list,
+        ticks: list[QuoteTick],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -796,7 +797,7 @@ class MarketDataClient(DataClient):
     def _handle_trade_ticks_py(
         self,
         instrument_id: InstrumentId,
-        ticks: list,
+        ticks: list[TradeTick],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -807,7 +808,7 @@ class MarketDataClient(DataClient):
     def _handle_bars_py(
         self,
         bar_type: BarType,
-        bars: list,
+        bars: list[Bar],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -818,7 +819,7 @@ class MarketDataClient(DataClient):
     def _handle_order_book_depths_py(
         self,
         instrument_id: InstrumentId,
-        depths: list,
+        depths: list[OrderBookDepth10],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -829,7 +830,7 @@ class MarketDataClient(DataClient):
     def _handle_funding_rates_py(
         self,
         instrument_id: InstrumentId,
-        funding_rates: list,
+        funding_rates: list[FundingRateUpdate],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -840,7 +841,7 @@ class MarketDataClient(DataClient):
     def _handle_order_book_deltas_py(
         self,
         instrument_id: InstrumentId,
-        deltas: list,
+        deltas: list[OrderBookDeltas],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -850,7 +851,7 @@ class MarketDataClient(DataClient):
 
     def _handle_forward_prices_py(
         self,
-        forward_prices: list,
+        forward_prices: list[ForwardPrice],
         correlation_id: UUID4,
         params: dict[str, object] = None,
     ) -> None:
@@ -882,7 +883,7 @@ class MarketDataClient(DataClient):
     def _handle_instruments(
         self,
         venue: Venue,
-        instruments: list,
+        instruments: list[Instrument],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -893,7 +894,7 @@ class MarketDataClient(DataClient):
     def _handle_quote_ticks(
         self,
         instrument_id: InstrumentId,
-        ticks: list,
+        ticks: list[QuoteTick],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -904,7 +905,7 @@ class MarketDataClient(DataClient):
     def _handle_trade_ticks(
         self,
         instrument_id: InstrumentId,
-        ticks: list,
+        ticks: list[TradeTick],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -915,7 +916,7 @@ class MarketDataClient(DataClient):
     def _handle_bars(
         self,
         bar_type: BarType,
-        bars: list,
+        bars: list[Bar],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -926,7 +927,7 @@ class MarketDataClient(DataClient):
     def _handle_order_book_depths(
         self,
         instrument_id: InstrumentId,
-        depths: list,
+        depths: list[OrderBookDepth10],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -937,7 +938,7 @@ class MarketDataClient(DataClient):
     def _handle_funding_rates(
         self,
         instrument_id: InstrumentId,
-        funding_rates: list,
+        funding_rates: list[FundingRateUpdate],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -948,7 +949,7 @@ class MarketDataClient(DataClient):
     def _handle_order_book_deltas(
         self,
         instrument_id: InstrumentId,
-        deltas: list,
+        deltas: list[OrderBookDeltas],
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
@@ -958,7 +959,7 @@ class MarketDataClient(DataClient):
 
     def _handle_forward_prices(
         self,
-        forward_prices: list,
+        forward_prices: list[ForwardPrice],
         correlation_id: UUID4,
         params: dict[str, object],
     ) -> None:

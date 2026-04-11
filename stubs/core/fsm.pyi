@@ -38,7 +38,7 @@ class FiniteStateMachine:
 
     def __init__(
         self,
-        state_transition_table: dict,
+        state_transition_table: dict[tuple, object],
         initial_state: int,
         trigger_parser: Callable[[int], str] = ...,
         state_parser: Callable[[int], str] = ...,

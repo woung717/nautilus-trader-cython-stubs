@@ -40,7 +40,7 @@ class MovingAverage(Indicator):
     value: float
     count: int
 
-    def __init__(self, period: int, params: list, price_type: PriceType) -> None: ...
+    def __init__(self, period: int, params: list[Any], price_type: PriceType) -> None: ...
 
     def update_raw(self, value: float) -> None:
         """Update the indicator with the given raw value.
