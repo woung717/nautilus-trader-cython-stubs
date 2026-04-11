@@ -237,7 +237,7 @@ class SubscribeOrderBook(SubscribeData):
         start: datetime | None,
         end: datetime | None,
         callback: Callable[[Any], None] | None,
-    ) -> RequestOrderBookDepth: ...
+    ) -> RequestOrderBookDepth | RequestOrderBookDeltas: ...
 
 
 class SubscribeQuoteTicks(SubscribeData):
@@ -570,6 +570,83 @@ class SubscribeInstrumentClose(SubscribeData):
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
+
+class SubscribeOptionGreeks(SubscribeData):
+    """
+    Represents a command to subscribe to option Greeks for an instrument.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the subscription.
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+
+class SubscribeOptionChain(SubscribeData):
+    """
+    Represents a command to subscribe to an option chain.
+
+    Parameters
+    ----------
+    series_id : object
+        The option series ID for the subscription.
+    strike_range : object
+        The strike range for filtering the chain.
+    snapshot_interval_ms : int, optional
+        The snapshot interval in milliseconds (None for raw mode).
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    """
+    series_id: object
+    strike_range: object
+    snapshot_interval_ms: object
+
+    def __init__(
+        self,
+        series_id: object,
+        strike_range: object,
+        snapshot_interval_ms: object,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
 
 class UnsubscribeData(DataCommand):
     """
@@ -1039,6 +1116,75 @@ class UnsubscribeInstrumentClose(UnsubscribeData):
     def __repr__(self) -> str: ...
 
 
+class UnsubscribeOptionGreeks(UnsubscribeData):
+    """
+    Represents a command to unsubscribe from option Greeks for an instrument.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the subscription.
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+
+class UnsubscribeOptionChain(UnsubscribeData):
+    """
+    Represents a command to unsubscribe from an option chain.
+
+    Parameters
+    ----------
+    series_id : object
+        The option series ID for the subscription.
+    client_id : ClientId or ``None``
+        The data client ID for the command.
+    venue : Venue or ``None``
+        The venue for the command.
+    command_id : UUID4
+        The command ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object], optional
+        Additional parameters for the subscription.
+
+    """
+    series_id: object
+
+    def __init__(
+        self,
+        series_id: object,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        command_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None = None,
+        correlation_id: UUID4  = None
+    ) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
 class RequestData(Request):
     """
     Represents a request for data.
@@ -1293,6 +1439,59 @@ class RequestOrderBookDepth(RequestData):
     def __repr__(self) -> str: ...
 
 
+class RequestOrderBookDeltas(RequestData):
+    """
+    Represents a request for historical `OrderBookDeltas` data.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the request.
+    start : datetime
+        The start datetime (UTC) of request time range (inclusive).
+    end : datetime
+        The end datetime (UTC) of request time range.
+        The inclusiveness depends on individual data client implementation.
+    limit : int
+        The limit on the amount of deltas received.
+    client_id : ClientId or ``None``
+        The data client ID for the request.
+    venue : Venue or ``None``
+        The venue for the request.
+    callback : Callable[[Any], None]
+        The delegate to call with the data.
+    request_id : UUID4
+        The request ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object]
+        Additional parameters for the request.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime | None,
+        end: datetime | None,
+        limit: int,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        callback: Callable[[Any], None] | None,
+        request_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
+    ) -> None: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestOrderBookDeltas: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+
 class RequestQuoteTicks(RequestData):
     """
     Represents a request for quote ticks.
@@ -1447,6 +1646,104 @@ class RequestBars(RequestData):
         correlation_id: UUID4 = None,
     ) -> None: ...
     def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestBars: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+
+class RequestFundingRates(RequestData):
+    """
+    Represents a request for funding rates.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID for the request.
+    start : datetime
+        The start datetime (UTC) of request time range (inclusive).
+    end : datetime
+        The end datetime (UTC) of request time range.
+        The inclusiveness depends on individual data client implementation.
+    limit : int
+        The limit on the amount of trade ticks received.
+    client_id : ClientId or ``None``
+        The data client ID for the request.
+    venue : Venue or ``None``
+        The venue for the request.
+    callback : Callable[[Any], None]
+        The delegate to call with the data.
+    request_id : UUID4
+        The request ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    params : dict[str, object]
+        Additional parameters for the request.
+
+    Raises
+    ------
+    ValueError
+        If both `client_id` and `venue` are both ``None`` (not enough routing info).
+
+    """
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime | None,
+        end: datetime | None,
+        limit: int,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        callback: Callable[[Any], None] | None,
+        request_id: UUID4,
+        ts_init: int,
+        params: dict[str, Any] | None,
+        correlation_id: UUID4 = None,
+    ) -> None: ...
+    def with_dates(self, start: datetime, end: datetime, ts_init: int, callback: Callable[[Any], None] | None = None) -> RequestFundingRates: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+
+
+class RequestForwardPrices(RequestData):
+    """
+    Represents a request for forward prices for option chain ATM tracking.
+
+    Parameters
+    ----------
+    underlying : str
+        The underlying asset symbol.
+    client_id : ClientId or ``None``
+        The data client ID for the request.
+    venue : Venue or ``None``
+        The venue for the request.
+    callback : Callable, optional
+        The registered callback for the response.
+    request_id : UUID4
+        The request ID.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+    sample_instrument_id : InstrumentId, optional
+        A sample instrument ID for single-instrument fast path (1 HTTP call).
+    params : dict[str, object], optional
+        Additional parameters for the request.
+    correlation_id : UUID4, optional
+        The correlation ID for the request.
+
+    """
+    underlying: str
+    sample_instrument_id: InstrumentId | None
+
+    def __init__(
+        self,
+        underlying: str,
+        client_id: ClientId | None,
+        venue: Venue | None,
+        callback: Callable[[Any], None] | None,
+        request_id: UUID4,
+        ts_init: int,
+        sample_instrument_id: InstrumentId | None = None,
+        params: dict[str, Any] | None = None,
+        correlation_id: UUID4 = None,
+    ) -> None: ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 

@@ -57,6 +57,9 @@ class CacheFacade:
     def index_prices(self, instrument_id: InstrumentId) -> list[IndexPriceUpdate]:
         """Abstract method (implement in subclass)."""
         ...
+    def funding_rates(self, instrument_id: InstrumentId) -> list[FundingRateUpdate]:
+        """Abstract method (implement in subclass)."""
+        ...
     def bars(self, bar_type: BarType) -> list[Bar]:
         """Abstract method (implement in subclass)."""
         ...
@@ -90,7 +93,7 @@ class CacheFacade:
     def index_price(self, instrument_id: InstrumentId, index: int = 0) -> IndexPriceUpdate:
         """Abstract method (implement in subclass)."""
         ...
-    def funding_rate(self, instrument_id: InstrumentId) -> FundingRateUpdate:
+    def funding_rate(self, instrument_id: InstrumentId, index: int = 0) -> FundingRateUpdate:
         """Abstract method (implement in subclass)."""
         ...
     def bar(self, bar_type: BarType, index: int = 0) -> Bar:
@@ -111,6 +114,9 @@ class CacheFacade:
     def index_price_count(self, instrument_id: InstrumentId) -> int:
         """Abstract method (implement in subclass)."""
         ...
+    def funding_rate_count(self, instrument_id: InstrumentId) -> int:
+        """Abstract method (implement in subclass)."""
+        ...
     def bar_count(self, bar_type: BarType) -> int:
         """Abstract method (implement in subclass)."""
         ...
@@ -127,6 +133,9 @@ class CacheFacade:
         """Abstract method (implement in subclass)."""
         ...
     def has_index_prices(self, instrument_id: InstrumentId) -> bool:
+        """Abstract method (implement in subclass)."""
+        ...
+    def has_funding_rates(self, instrument_id: InstrumentId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
     def has_bars(self, bar_type: BarType) -> bool:
@@ -171,40 +180,43 @@ class CacheFacade:
     def set_specific_venue(self, venue: Venue) -> None:
         """Abstract method (implement in subclass)."""
         ...
-    def account_for_venue(self, venue: Venue) -> Account:
+    def account_for_venue(self, venue: Venue | None = None, account_id: AccountId | None = None) -> Account:
         """Abstract method (implement in subclass)."""
         ...
     def account_id(self, venue: Venue) -> AccountId:
         """Abstract method (implement in subclass)."""
         ...
+    def set_account_id_for_venue(self, venue: Venue, account_id: AccountId) -> None:
+        """Abstract method (implement in subclass)."""
+        ...
     def accounts(self) -> list[Account]:
         """Abstract method (implement in subclass)."""
         ...
-    def client_order_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def client_order_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def client_order_ids_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def client_order_ids_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def client_order_ids_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def client_order_ids_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def client_order_ids_emulated(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def client_order_ids_emulated(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def client_order_ids_inflight(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def client_order_ids_inflight(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def order_list_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def order_list_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def position_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def position_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def position_open_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def position_open_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
-    def position_closed_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> set:
+    def position_closed_ids(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> set:
         """Abstract method (implement in subclass)."""
         ...
     def actor_ids(self) -> set:
@@ -228,19 +240,19 @@ class CacheFacade:
     def client_id(self, client_order_id: ClientOrderId) -> ClientId:
         """Abstract method (implement in subclass)."""
         ...
-    def orders(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_emulated(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders_emulated(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_inflight(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders_inflight(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
     def orders_for_position(self, position_id: PositionId) -> list[Order]:
@@ -264,31 +276,31 @@ class CacheFacade:
     def is_order_pending_cancel_local(self, client_order_id: ClientOrderId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_open_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> int:
+    def orders_open_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_closed_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> int:
+    def orders_closed_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_emulated_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> int:
+    def orders_emulated_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_inflight_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> int:
+    def orders_inflight_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_total_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> int:
+    def orders_total_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
     def order_list(self, order_list_id: OrderListId) -> OrderList:
         """Abstract method (implement in subclass)."""
         ...
-    def order_lists(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> list[OrderList]:
+    def order_lists(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> list[OrderList]:
         """Abstract method (implement in subclass)."""
         ...
     def order_list_exists(self, order_list_id: OrderListId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
-    def orders_for_exec_algorithm(self, exec_algorithm_id: ExecAlgorithmId, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ...) -> list[Order]:
+    def orders_for_exec_algorithm(self, exec_algorithm_id: ExecAlgorithmId, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: OrderSide = ..., account_id: AccountId | None = None) -> list[Order]:
         """Abstract method (implement in subclass)."""
         ...
     def orders_for_exec_spawn(self, exec_spawn_id: ClientOrderId) -> list[Order]:
@@ -312,25 +324,25 @@ class CacheFacade:
     def position_id(self, client_order_id: ClientOrderId) -> PositionId:
         """Abstract method (implement in subclass)."""
         ...
-    def position_snapshot_ids(self, instrument_id: InstrumentId | None = None) -> set[PositionId]:
+    def position_snapshot_ids(self, instrument_id: InstrumentId | None = None, account_id: AccountId | None = None) -> set[PositionId]:
         """Abstract method (implement in subclass)."""
         ...
-    def position_snapshots(self, position_id: PositionId | None = None) -> list[Any]:
+    def position_snapshots(self, position_id: PositionId | None = None, account_id: AccountId | None = None) -> list[Any]:
         """Abstract method (implement in subclass)."""
         ...
     def position_snapshot_bytes(self, position_id: PositionId) -> list:
         """Abstract method (implement in subclass)."""
         ...
-    def positions(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ...) -> list[Position]:
+    def positions(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., account_id: AccountId | None = None) -> list[Position]:
         """Abstract method (implement in subclass)."""
         ...
     def position_exists(self, position_id: PositionId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
-    def positions_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ...) -> list[Position]:
+    def positions_open(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., account_id: AccountId | None = None) -> list[Position]:
         """Abstract method (implement in subclass)."""
         ...
-    def positions_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> list[Position]:
+    def positions_closed(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> list[Position]:
         """Abstract method (implement in subclass)."""
         ...
     def is_position_open(self, position_id: PositionId) -> bool:
@@ -339,13 +351,13 @@ class CacheFacade:
     def is_position_closed(self, position_id: PositionId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
-    def positions_open_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ...) -> int:
+    def positions_open_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def positions_closed_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None) -> int:
+    def positions_closed_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
-    def positions_total_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ...) -> int:
+    def positions_total_count(self, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., account_id: AccountId | None = None) -> int:
         """Abstract method (implement in subclass)."""
         ...
     def strategy_id_for_order(self, client_order_id: ClientOrderId) -> StrategyId:

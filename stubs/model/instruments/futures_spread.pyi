@@ -136,16 +136,6 @@ class FuturesSpread(Instrument):
 
         """
         ...
-    def is_spread(self) -> bool:
-        """
-        Return whether the instrument is a spread instrument.
-
-        Returns
-        -------
-        bool
-
-        """
-        ...
 
     def legs(self) -> list[tuple[InstrumentId, int]]:
         """

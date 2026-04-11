@@ -766,7 +766,7 @@ class DataType:
     type: type
     metadata: dict
     topic: str
-    def __init__(self, type: type, metadata: dict[Any, Any] | None = None) -> None: ...
+    def __init__(self, type: type, metadata: dict[Any, Any] | None = None, identifier: str | None = None) -> None: ...
     def __eq__(self, other: DataType) -> bool: ...
     def __lt__(self, other: DataType) -> bool: ...
     def __le__(self, other: DataType) -> bool: ...
@@ -1405,6 +1405,22 @@ class OrderBookDeltas(Data):
         """
         ...
     def to_capsule(self) -> Any: ...
+    @staticmethod
+    def from_pyo3(pyo3_deltas: nautilus_pyo3.OrderBookDeltas) -> OrderBookDeltas:
+        """
+        Return legacy Cython orderbook deltas converted from the given pyo3 Rust object.
+
+        Parameters
+        ----------
+        pyo3_deltas : nautilus_pyo3.OrderBookDeltas
+            The pyo3 Rust orderbook deltas to convert from.
+
+        Returns
+        -------
+        OrderBookDeltas
+
+        """
+        ...
     def to_pyo3(self) -> nautilus_pyo3.OrderBookDeltas:
         """
         Return a pyo3 object from this legacy Cython instance.
@@ -2710,6 +2726,7 @@ class FundingRateUpdate(Data):
 
     instrument_id: InstrumentId
     rate: Decimal
+    interval: int
     next_funding_ns: int
     _ts_event: int
     _ts_init: int
@@ -2719,7 +2736,8 @@ class FundingRateUpdate(Data):
         instrument_id: InstrumentId,
         rate: Decimal,
         ts_event: int,
-        ts_init: int,   
+        ts_init: int,
+        interval: int | None = None,
         next_funding_ns: int | None = None,
     ) -> None: ...
 
@@ -2812,6 +2830,102 @@ class FundingRateUpdate(Data):
         Returns
         -------
         FundingRateUpdate
+
+        """
+        ...
+
+class OptionGreeks(Data):
+    """
+    Represents exchange-provided option Greeks and implied volatility for a single instrument.
+
+    Parameters
+    ----------
+    instrument_id : InstrumentId
+        The instrument ID these Greeks apply to.
+    delta : double
+        The delta.
+    gamma : double
+        The gamma.
+    vega : double
+        The vega.
+    theta : double
+        The theta.
+    rho : double
+        The rho.
+    mark_iv : float, optional
+        The mark implied volatility.
+    bid_iv : float, optional
+        The bid implied volatility.
+    ask_iv : float, optional
+        The ask implied volatility.
+    underlying_price : float, optional
+        The underlying price at time of Greeks calculation.
+    open_interest : float, optional
+        The open interest for the instrument.
+    ts_event : uint64_t
+        UNIX timestamp (nanoseconds) when the data event occurred.
+    ts_init : uint64_t
+        UNIX timestamp (nanoseconds) when the object was initialized.
+
+    """
+
+    instrument_id: InstrumentId
+    delta: float
+    gamma: float
+    vega: float
+    theta: float
+    rho: float
+    mark_iv: float | None
+    bid_iv: float | None
+    ask_iv: float | None
+    underlying_price: float | None
+    open_interest: float | None
+
+    def __init__(
+        self,
+        instrument_id: InstrumentId,
+        delta: float,
+        gamma: float,
+        vega: float,
+        theta: float,
+        rho: float,
+        mark_iv: float | None = None,
+        bid_iv: float | None = None,
+        ask_iv: float | None = None,
+        underlying_price: float | None = None,
+        open_interest: float | None = None,
+        ts_event: int | None = None,
+        ts_init: int | None = None,
+    ) -> None: ...
+
+    def __repr__(self) -> str: ...
+
+    def __str__(self) -> str: ...
+
+    @staticmethod
+    def from_pyo3(pyo3_greeks: nautilus_pyo3.OptionGreeks) -> OptionGreeks:
+        """
+        Return a legacy Cython OptionGreeks converted from the given pyo3 Rust object.
+
+        Parameters
+        ----------
+        pyo3_greeks : nautilus_pyo3.OptionGreeks
+            The pyo3 Rust option greeks to convert from.
+
+        Returns
+        -------
+        OptionGreeks
+
+        """
+        ...
+
+    def to_pyo3(self) -> nautilus_pyo3.OptionGreeks:
+        """
+        Return a pyo3 object from this legacy Cython instance.
+
+        Returns
+        -------
+        nautilus_pyo3.OptionGreeks
 
         """
         ...

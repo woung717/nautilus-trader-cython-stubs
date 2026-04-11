@@ -73,7 +73,7 @@ class Position:
     realized_pnl: Money | None
 
     _events: list[OrderFilled]
-    _trade_ids: list[TradeId]
+    _trade_ids: set[TradeId]
     _buy_qty: Quantity
     _sell_qty: Quantity
     _commissions: dict[Currency, Money]
@@ -374,7 +374,12 @@ class Position:
 
         """
         ...
-    def notional_value(self, price: Price) -> Money:
+    def notional_value(
+        self,
+        price: Price,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
+    ) -> Money:
         """
         Return the current notional value of the position, using a reference
         price for the calculation (e.g., bid, ask, mid, last, or mark).
@@ -393,6 +398,37 @@ class Position:
         -------
         Money
             Denominated in quote currency for standard instruments, or base currency if inverse.
+
+        """
+        ...
+    def cross_notional_value(
+        self,
+        price: Price,
+        quote_price: Price,
+        base_price: Price,
+        target_currency: Currency,
+    ) -> Money:
+        """
+        Return the current notional value of the position in a cross/target currency.
+
+        The `quote_price` is the Quote/Target conversion price, and `base_price`
+        is the Base/Target conversion price.
+
+        Parameters
+        ----------
+        price : Price
+            The reference price for the calculation.
+        quote_price : Price
+            The Quote/Target conversion price.
+        base_price : Price
+            The Base/Target conversion price.
+        target_currency : Currency
+            The target currency for conversion.
+
+        Returns
+        -------
+        Money
+            The notional value in the target currency.
 
         """
         ...

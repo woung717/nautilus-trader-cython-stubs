@@ -45,6 +45,24 @@ class CashAccount(Account):
     def to_dict(obj: CashAccount) -> dict: ...
     @staticmethod
     def from_dict(values: dict) -> CashAccount: ...
+    def apply(self, event: AccountState) -> None:
+        """
+        Apply the given account event to the account.
+
+        Clears per-instrument locked balances only for externally reported state,
+        since external state is authoritative. Internal state preserves lock tracking.
+
+        Parameters
+        ----------
+        event : AccountState
+            The account event to apply.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
     def update_balances(self, balances: list[AccountBalance]) -> None:
         """
         Update the account balances.

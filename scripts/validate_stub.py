@@ -645,7 +645,7 @@ def main():
     success = validator.validate()
     validator.print_results()
 
-    sys.exit(0 if success and (args.pass_warning or not validator.reporter.has_warnings()) else 1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

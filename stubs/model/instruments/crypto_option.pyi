@@ -189,6 +189,8 @@ class CryptoOption(Instrument):
         quantity: Quantity,
         price: Price,
         use_quote_for_inverse: bool = False,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
     ) -> Money:
         """
         Calculate the notional value.
@@ -207,6 +209,10 @@ class CryptoOption(Instrument):
             notional value in quote currency and returns it directly without calculation.
             This is useful when quantity already represents a USD value that doesn't need
             conversion (e.g., for display purposes). Has no effect on linear instruments.
+        target_currency : Currency, optional
+            The currency to convert the result to. If None, uses the default settlement currency.
+        conversion_price : Price, optional
+            The price to use for currency conversion if target_currency is specified.
 
         Returns
         -------

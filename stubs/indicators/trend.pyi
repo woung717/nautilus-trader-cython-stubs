@@ -225,4 +225,60 @@ class Swings(Indicator):
     def update_raw(self, high: float, low: float, timestamp: datetime) -> None: ...
 
     def _reset(self) -> None: ...
-    
+
+class IchimokuCloud(Indicator):
+    """
+    Ichimoku Cloud (Kinko Hyo) with five components.
+
+    - Tenkan-sen (Conversion Line): (tenkan_period high + tenkan_period low) / 2.
+    - Kijun-sen (Base Line): (kijun_period high + kijun_period low) / 2.
+    - Senkou Span A (Leading Span A): (Tenkan + Kijun) / 2, displaced forward by displacement.
+    - Senkou Span B (Leading Span B): (senkou_period high + senkou_period low) / 2, displaced forward by displacement.
+    - Chikou Span (Lagging Span): Close displaced backward by displacement.
+
+    The indicator becomes ``initialized`` after ``senkou_period`` bars,
+    at which point tenkan_sen, kijun_sen are valid. The displaced outputs
+    (senkou_span_a, senkou_span_b, chikou_span) require an additional
+    ``displacement`` bars before they become non-zero.
+
+    Parameters
+    ----------
+    tenkan_period : int
+        Period for Tenkan-sen (default 9).
+    kijun_period : int
+        Period for Kijun-sen (default 26).
+    senkou_period : int
+        Period for Senkou Span B (default 52).
+    displacement : int
+        Displacement for leading/lagging spans (default 26).
+
+    Raises
+    ------
+    ValueError
+        If any period or displacement is not positive.
+    ValueError
+        If senkou_period is not >= kijun_period or kijun_period is not >= tenkan_period.
+    """
+    tenkan_period: int
+    kijun_period: int
+    senkou_period: int
+    displacement: int
+    tenkan_sen: float
+    kijun_sen: float
+    senkou_span_a: float
+    senkou_span_b: float
+    chikou_span: float
+
+    def __init__(
+        self,
+        tenkan_period: int = 9,
+        kijun_period: int = 26,
+        senkou_period: int = 52,
+        displacement: int = 26,
+    ) -> None: ...
+
+    def handle_bar(self, bar: Bar) -> None: ...
+
+    def update_raw(self, high: float, low: float, close: float) -> None: ...
+
+    def _reset(self) -> None: ...

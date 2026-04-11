@@ -186,6 +186,8 @@ class CryptoFuture(Instrument):
         quantity: Quantity,
         price: Price,
         use_quote_for_inverse: bool = False,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
     ) -> Money:
         """
         Calculate the notional value.

@@ -9,6 +9,8 @@ from nautilus_trader.model.instruments.base import Instrument
 from nautilus_trader.model.objects import Money
 from nautilus_trader.model.objects import Price
 from nautilus_trader.model.objects import Quantity
+from nautilus_trader.model.objects import Currency
+
 
 class BettingInstrument(Instrument):
     """
@@ -98,7 +100,12 @@ class BettingInstrument(Instrument):
         """
         ...
     def notional_value(
-        self, quantity: Quantity, price: Price, use_quote_for_inverse: bool = False
+        self,
+        quantity: Quantity,
+        price: Price,
+        use_quote_for_inverse: bool = False,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
     ) -> Money: ...
 
 

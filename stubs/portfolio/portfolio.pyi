@@ -16,6 +16,7 @@ from nautilus_trader.model.events.order import OrderEvent
 from nautilus_trader.model.events.position import PositionEvent
 from nautilus_trader.model.identifiers import InstrumentId
 from nautilus_trader.model.identifiers import PositionId
+from nautilus_trader.model.identifiers import AccountId
 from nautilus_trader.model.identifiers import Venue
 from nautilus_trader.model.objects import Currency
 from nautilus_trader.model.objects import Money
@@ -96,17 +97,6 @@ class Portfolio(PortfolioFacade):
         ----------
         value : bool
             The value to set.
-
-        """
-        ...
-    def set_specific_venue(self, venue: Venue) -> None:
-        """
-        Set a specific venue for the portfolio.
-
-        Parameters
-        ----------
-        venue : Venue
-            The specific venue to set.
 
         """
         ...
@@ -231,14 +221,16 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def account(self, venue: Venue) -> Account | None:
+    def account(self, venue: Venue | None = None, account_id: AccountId | None = None) -> Account | None:
         """
-        Return the account for the given venue (if found).
+        Return the account for the given venue or account ID (if found).
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
 
         Returns
         -------
@@ -246,14 +238,16 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def balances_locked(self, venue: Venue) -> dict[Currency, Money] | None:
+    def balances_locked(self, venue: Venue | None = None, account_id: AccountId | None = None) -> dict[Currency, Money] | None:
         """
-        Return the balances locked for the given venue (if found).
+        Return the balances locked for the given venue or account ID (if found).
 
         Parameters
         ----------
-        venue : Venue
-            The venue for the margin.
+        venue : Venue, optional
+            The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
 
         Returns
         -------
@@ -261,37 +255,41 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def margins_init(self, venue: Venue) -> dict[Currency, Money] | None:
+    def margins_init(self, venue: Venue | None = None, account_id: AccountId | None = None) -> dict[Currency, Money] | None:
         """
-        Return the initial (order) margins for the given venue (if found).
+        Return the initial (order) margins for the given venue or account ID (if found).
 
         Parameters
         ----------
-        venue : Venue
-            The venue for the margin.
+        venue : Venue, optional
+            The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
 
         Returns
         -------
-        dict[Currency, Money] or ``None``
+        dict[InstrumentId, Money] or ``None``
 
         """
         ...
-    def margins_maint(self, venue: Venue) -> dict[Currency, Money] | None:
+    def margins_maint(self, venue: Venue | None = None, account_id: AccountId | None = None) -> dict[Currency, Money] | None:
         """
-        Return the maintenance (position) margins for the given venue (if found).
+        Return the maintenance (position) margins for the given venue or account ID (if found).
 
         Parameters
         ----------
-        venue : Venue
-            The venue for the margin.
+        venue : Venue, optional
+            The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
 
         Returns
         -------
-        dict[Currency, Money] or ``None``
+        dict[InstrumentId, Money] or ``None``
 
         """
         ...
-    def realized_pnls(self, venue: Venue) -> dict[Currency, Money]:
+    def realized_pnls(self, venue: Venue | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> dict[Currency, Money]:
         """
         Return the realized PnLs for the given venue (if found).
 
@@ -300,8 +298,12 @@ class Portfolio(PortfolioFacade):
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the realized PnLs.
+        account_id : AccountId, optional
+            The account ID for the realized PnLs.
+        target_currency : Currency, optional
+            The currency to convert the PnLs into.
 
         Returns
         -------
@@ -309,14 +311,18 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def unrealized_pnls(self, venue: Venue) -> dict[Currency, Money]:
+    def unrealized_pnls(self, venue: Venue | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> dict[Currency, Money]:
         """
         Return the unrealized PnLs for the given venue (if found).
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the unrealized PnLs.
+        account_id : AccountId, optional
+            The account ID for the unrealized PnLs.
+        target_currency : Currency, optional
+            The currency to convert the PnLs into.
 
         Returns
         -------
@@ -324,14 +330,18 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def total_pnls(self, venue: Venue) -> dict[Currency, Money]:
+    def total_pnls(self, venue: Venue | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> dict[Currency, Money]:
         """
         Return the total PnLs for the given venue (if found).
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the total PnLs.
+        account_id : AccountId, optional
+            The account ID for the total PnLs.
+        target_currency : Currency, optional
+            The currency to convert the PnLs into.
 
         Returns
         -------
@@ -339,14 +349,18 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def net_exposures(self, venue: Venue) -> dict[Currency, Money] | None:
+    def net_exposures(self, venue: Venue | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> dict[Currency, Money] | None:
         """
         Return the net exposures for the given venue (if found).
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the market value.
+        account_id : AccountId, optional
+            The account ID for the net exposures.
+        target_currency : Currency, optional
+            The currency to convert the exposures into.
 
         Returns
         -------
@@ -354,7 +368,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def realized_pnl(self, instrument_id: InstrumentId) -> Money | None:
+    def realized_pnl(self, instrument_id: InstrumentId, account_id: AccountId | None = None, target_currency: Currency | None = None) -> Money | None:
         """
         Return the realized PnL for the given instrument ID (if found).
 
@@ -362,6 +376,10 @@ class Portfolio(PortfolioFacade):
         ----------
         instrument_id : InstrumentId
             The instrument for the realized PnL.
+        account_id : AccountId, optional
+            The account ID for the realized PnL. If None, aggregates across all accounts.
+        target_currency : Currency, optional
+            The currency to convert the PnL into.
 
         Returns
         -------
@@ -369,7 +387,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def unrealized_pnl(self, instrument_id: InstrumentId, price: Price | None = None) -> Money | None:
+    def unrealized_pnl(self, instrument_id: InstrumentId, price: Price | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> Money | None:
         """
         Return the unrealized PnL for the given instrument ID (if found).
 
@@ -398,7 +416,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def total_pnl(self, instrument_id: InstrumentId, price: Price | None = None) -> Money | None:
+    def total_pnl(self, instrument_id: InstrumentId, price: Price | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> Money | None:
         """
         Return the total PnL for the given instrument ID (if found).
 
@@ -409,6 +427,10 @@ class Portfolio(PortfolioFacade):
         price : Price, optional
             The reference price for the calculation. This could be the last, mid, bid, ask,
             a mark-to-market price, or any other suitably representative value.
+        account_id : AccountId, optional
+            The account ID for the total PnL.
+        target_currency : Currency, optional
+            The currency to convert the PnL into.
 
         Returns
         -------
@@ -416,7 +438,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def net_exposure(self, instrument_id: InstrumentId, price: Price | None = None) -> Money | None:
+    def net_exposure(self, instrument_id: InstrumentId, price: Price | None = None, account_id: AccountId | None = None, target_currency: Currency | None = None) -> Money | None:
         """
         Return the net exposure for the given instrument (if found).
 
@@ -427,6 +449,10 @@ class Portfolio(PortfolioFacade):
         price : Price, optional
             The reference price for the calculation. This could be the last, mid, bid, ask,
             a mark-to-market price, or any other suitably representative value.
+        account_id : AccountId, optional
+            The account ID for the net exposure.
+        target_currency : Currency, optional
+            The currency to convert the exposure into.
 
         Returns
         -------
@@ -434,15 +460,19 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def net_position(self, instrument_id: InstrumentId) -> object:
+    def net_position(self, instrument_id: InstrumentId, account_id: AccountId | None = None) -> object:
         """
-        Return the total net position for the given instrument ID.
+        Return the net position for the given instrument ID.
+        If account_id is provided, returns the net position for that account.
+        If account_id is None, aggregates across all accounts.
         If no positions for instrument_id then will return `Decimal('0')`.
 
         Parameters
         ----------
         instrument_id : InstrumentId
             The instrument for the query.
+        account_id : AccountId, optional
+            The account ID. If None, aggregates across all accounts.
 
         Returns
         -------
@@ -450,7 +480,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def is_net_long(self, instrument_id: InstrumentId) -> bool:
+    def is_net_long(self, instrument_id: InstrumentId, account_id: AccountId | None = None) -> bool:
         """
         Return a value indicating whether the portfolio is net long the given
         instrument ID.
@@ -459,6 +489,8 @@ class Portfolio(PortfolioFacade):
         ----------
         instrument_id : InstrumentId
             The instrument for the query.
+        account_id : AccountId, optional
+            The account ID. If None, aggregates across all accounts.
 
         Returns
         -------
@@ -467,7 +499,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def is_net_short(self, instrument_id: InstrumentId) -> bool:
+    def is_net_short(self, instrument_id: InstrumentId, account_id: AccountId | None = None) -> bool:
         """
         Return a value indicating whether the portfolio is net short the given
         instrument ID.
@@ -476,6 +508,8 @@ class Portfolio(PortfolioFacade):
         ----------
         instrument_id : InstrumentId
             The instrument for the query.
+        account_id : AccountId, optional
+            The account ID. If None, aggregates across all accounts.
 
         Returns
         -------
@@ -484,7 +518,7 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def is_flat(self, instrument_id: InstrumentId) -> bool:
+    def is_flat(self, instrument_id: InstrumentId, account_id: AccountId | None = None) -> bool:
         """
         Return a value indicating whether the portfolio is flat for the given
         instrument ID.
@@ -493,6 +527,8 @@ class Portfolio(PortfolioFacade):
         ----------
         instrument_id : InstrumentId
             The instrument query filter.
+        account_id : AccountId, optional
+            The account ID. If None, aggregates across all accounts.
 
         Returns
         -------
@@ -501,9 +537,14 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
-    def is_completely_flat(self) -> bool:
+    def is_completely_flat(self, account_id: AccountId | None = None) -> bool:
         """
         Return a value indicating whether the portfolio is completely flat.
+
+        Parameters
+        ----------
+        account_id : AccountId, optional
+            The account ID. If None, checks across all accounts.
 
         Returns
         -------

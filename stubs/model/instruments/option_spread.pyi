@@ -132,17 +132,6 @@ class OptionSpread(Instrument):
             tz-aware UTC.
         """
         ...
-    def is_spread(self) -> bool:
-        """
-        Return whether the instrument is a spread instrument.
-
-        Returns
-        -------
-        bool
-
-        """
-        ...
-
     def legs(self) -> list[tuple[InstrumentId, int]]:
         """
         Return the list of leg tuples (instrument_id, ratio) for this spread.

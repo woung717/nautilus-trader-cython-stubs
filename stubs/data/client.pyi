@@ -5,7 +5,7 @@ from nautilus_trader.cache.cache import Cache
 from nautilus_trader.common.component import Clock, Component, MessageBus
 from nautilus_trader.core.data import Data
 from nautilus_trader.core.uuid import UUID4
-from nautilus_trader.data.messages import RequestBars, RequestData, RequestInstrument, RequestInstruments, RequestOrderBookSnapshot, RequestQuoteTicks, RequestTradeTicks, SubscribeBars, SubscribeData, SubscribeFundingRates, SubscribeIndexPrices, SubscribeInstrument, SubscribeInstrumentClose, SubscribeInstrumentStatus, SubscribeInstruments, SubscribeMarkPrices, SubscribeOrderBook, SubscribeQuoteTicks, SubscribeTradeTicks, UnsubscribeBars, UnsubscribeData, UnsubscribeFundingRates, UnsubscribeIndexPrices, UnsubscribeInstrument, UnsubscribeInstrumentClose, UnsubscribeInstrumentStatus, UnsubscribeInstruments, UnsubscribeMarkPrices, UnsubscribeOrderBook, UnsubscribeQuoteTicks, UnsubscribeTradeTicks
+from nautilus_trader.data.messages import RequestBars, RequestData, RequestForwardPrices, RequestFundingRates, RequestInstrument, RequestInstruments, RequestOrderBookDeltas, RequestOrderBookSnapshot, RequestQuoteTicks, RequestTradeTicks, SubscribeBars, SubscribeData, SubscribeFundingRates, SubscribeIndexPrices, SubscribeInstrument, SubscribeInstrumentClose, SubscribeInstrumentStatus, SubscribeInstruments, SubscribeMarkPrices, SubscribeOptionGreeks, SubscribeOrderBook, SubscribeQuoteTicks, SubscribeTradeTicks, UnsubscribeBars, UnsubscribeData, UnsubscribeFundingRates, UnsubscribeIndexPrices, UnsubscribeInstrument, UnsubscribeInstrumentClose, UnsubscribeInstrumentStatus, UnsubscribeInstruments, UnsubscribeMarkPrices, UnsubscribeOptionGreeks, UnsubscribeOrderBook, UnsubscribeQuoteTicks, UnsubscribeTradeTicks
 from nautilus_trader.model.data import Bar, BarType, DataType
 from nautilus_trader.model.identifiers import ClientId, InstrumentId, Venue
 from nautilus_trader.model.instruments.base import Instrument
@@ -167,7 +167,7 @@ class MarketDataClient(DataClient):
 
     def subscribed_order_book_deltas(self) -> list[InstrumentId]: ...
 
-    def subscribed_order_book_snapshots(self) -> list[InstrumentId]: ...
+    def subscribed_order_book_depth(self) -> list[InstrumentId]: ...
 
     def subscribed_quote_ticks(self) -> list[InstrumentId]: ...
 
@@ -184,6 +184,8 @@ class MarketDataClient(DataClient):
     def subscribed_instrument_status(self) -> list[InstrumentId]: ...
 
     def subscribed_instrument_close(self) -> list[InstrumentId]: ...
+
+    def subscribed_option_greeks(self) -> list[InstrumentId]: ...
 
     def subscribe(self, command: SubscribeData) -> None:
         """
@@ -233,24 +235,6 @@ class MarketDataClient(DataClient):
             The order book type.
         depth : int, optional, default None
             The maximum depth for the subscription.
-        params : dict[str, Any], optional
-            Additional params for the subscription.
-
-        """
-        ...
-
-    def subscribe_order_book_snapshots(self, command: SubscribeOrderBook) -> None:
-        """
-        Subscribe to `OrderBook` snapshots data for the given instrument ID.
-
-        Parameters
-        ----------
-        instrument_id : InstrumentId
-            The order book instrument to subscribe to.
-        book_type : BookType {``L1_MBP``, ``L2_MBP``, ``L3_MBO``}
-            The order book level.
-        depth : int, optional
-            The maximum depth for the order book. A depth of 0 is maximum depth.
         params : dict[str, Any], optional
             Additional params for the subscription.
 
@@ -371,6 +355,18 @@ class MarketDataClient(DataClient):
         """
         ...
 
+    def subscribe_option_greeks(self, command: SubscribeOptionGreeks) -> None:
+        """
+        Subscribe to `OptionGreeks` data for the given instrument ID.
+
+        Parameters
+        ----------
+        command : SubscribeOptionGreeks
+            The subscribe command.
+
+        """
+        ...
+
     def subscribe_bars(self, command: SubscribeBars) -> None:
         """
         Subscribe to `Bar` data for the given bar type.
@@ -428,20 +424,6 @@ class MarketDataClient(DataClient):
     def unsubscribe_order_book_deltas(self, command: UnsubscribeOrderBook) -> None:
         """
         Unsubscribe from `OrderBookDeltas` data for the given instrument ID.
-
-        Parameters
-        ----------
-        instrument_id : InstrumentId
-            The order book instrument to unsubscribe from.
-        params : dict[str, Any], optional
-            Additional params for the subscription.
-
-        """
-        ...
-
-    def unsubscribe_order_book_snapshots(self, command: UnsubscribeOrderBook) -> None:
-        """
-        Unsubscribe from `OrderBook` snapshots data for the given instrument ID.
 
         Parameters
         ----------
@@ -579,6 +561,18 @@ class MarketDataClient(DataClient):
         """
         ...
 
+    def unsubscribe_option_greeks(self, command: UnsubscribeOptionGreeks) -> None:
+        """
+        Unsubscribe from `OptionGreeks` data for the given instrument ID.
+
+        Parameters
+        ----------
+        command : UnsubscribeOptionGreeks
+            The unsubscribe command.
+
+        """
+        ...
+
     def _add_subscription(self, data_type: DataType) -> None:
         ...
 
@@ -588,7 +582,7 @@ class MarketDataClient(DataClient):
     def _add_subscription_order_book_deltas(self, instrument_id: InstrumentId) -> None:
         ...
 
-    def _add_subscription_order_book_snapshots(self, instrument_id: InstrumentId) -> None:
+    def _add_subscription_order_book_depth(self, instrument_id: InstrumentId) -> None:
         ...
 
     def _add_subscription_quote_ticks(self, instrument_id: InstrumentId) -> None:
@@ -615,6 +609,9 @@ class MarketDataClient(DataClient):
     def _add_subscription_instrument_close(self, instrument_id: InstrumentId) -> None:
         ...
 
+    def _add_subscription_option_greeks(self, instrument_id: InstrumentId) -> None:
+        ...
+
     def _remove_subscription(self, data_type: DataType) -> None:
         ...
 
@@ -624,7 +621,7 @@ class MarketDataClient(DataClient):
     def _remove_subscription_order_book_deltas(self, instrument_id: InstrumentId) -> None:
         ...
 
-    def _remove_subscription_order_book_snapshots(self, instrument_id: InstrumentId) -> None:
+    def _remove_subscription_order_book_depth(self, instrument_id: InstrumentId) -> None:
         ...
 
     def _remove_subscription_quote_ticks(self, instrument_id: InstrumentId) -> None:
@@ -649,6 +646,9 @@ class MarketDataClient(DataClient):
         ...
 
     def _remove_subscription_instrument_close(self, instrument_id: InstrumentId) -> None:
+        ...
+
+    def _remove_subscription_option_greeks(self, instrument_id: InstrumentId) -> None:
         ...
 
     def request_instrument(self, request: RequestInstrument) -> None:
@@ -723,6 +723,42 @@ class MarketDataClient(DataClient):
         """
         ...
 
+    def request_order_book_deltas(self, request: RequestOrderBookDeltas) -> None:
+        """
+        Request historical `OrderBookDeltas` data.
+
+        Parameters
+        ----------
+        request : RequestOrderBookDeltas
+            The message for the data request.
+
+        """
+        ...
+
+    def request_funding_rates(self, request: RequestFundingRates) -> None:
+        """
+        Request historical `FundingRateUpdate` data.
+
+        Parameters
+        ----------
+        request : RequestFundingRates
+            The message for the data request.
+
+        """
+        ...
+
+    def request_forward_prices(self, request: RequestForwardPrices) -> None:
+        """
+        Request forward prices for option chain ATM determination.
+
+        Parameters
+        ----------
+        request : RequestForwardPrices
+            The message for the data request.
+
+        """
+        ...
+
     def _handle_data_py(self, data: Data) -> None: ...
 
     def _handle_instrument_py(
@@ -786,6 +822,36 @@ class MarketDataClient(DataClient):
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
+        params: dict[str, object] = None,
+    ) -> None:
+        ...
+
+    def _handle_funding_rates_py(
+        self,
+        instrument_id: InstrumentId,
+        funding_rates: list,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object] = None,
+    ) -> None:
+        ...
+
+    def _handle_order_book_deltas_py(
+        self,
+        instrument_id: InstrumentId,
+        deltas: list,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object] = None,
+    ) -> None:
+        ...
+
+    def _handle_forward_prices_py(
+        self,
+        forward_prices: list,
+        correlation_id: UUID4,
         params: dict[str, object] = None,
     ) -> None:
         ...
@@ -864,6 +930,36 @@ class MarketDataClient(DataClient):
         correlation_id: UUID4,
         start: datetime,
         end: datetime,
+        params: dict[str, object],
+    ) -> None:
+        ...
+
+    def _handle_funding_rates(
+        self,
+        instrument_id: InstrumentId,
+        funding_rates: list,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object],
+    ) -> None:
+        ...
+
+    def _handle_order_book_deltas(
+        self,
+        instrument_id: InstrumentId,
+        deltas: list,
+        correlation_id: UUID4,
+        start: datetime,
+        end: datetime,
+        params: dict[str, object],
+    ) -> None:
+        ...
+
+    def _handle_forward_prices(
+        self,
+        forward_prices: list,
+        correlation_id: UUID4,
         params: dict[str, object],
     ) -> None:
         ...

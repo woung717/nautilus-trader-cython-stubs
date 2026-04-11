@@ -1031,6 +1031,21 @@ class Cache(CacheFacade):
 
         """
         ...
+    def funding_rates(self, instrument_id: InstrumentId) -> list[FundingRateUpdate]:
+        """
+        Return funding rates for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the mark prices to get.
+
+        Returns
+        -------
+        list[FundingRateUpdate]
+
+        """
+        ...
     def bars(self, bar_type: BarType) -> list[Bar]:
         """
         Return bars for the given bar type.
@@ -1280,19 +1295,27 @@ class Cache(CacheFacade):
 
         """
         ...
-    def funding_rate(self, instrument_id: InstrumentId ) -> FundingRateUpdate:
+    def funding_rate(self, instrument_id: InstrumentId, index: int = 0) -> FundingRateUpdate | None:
         """
-        Return the funding rate for the given instrument ID (if found).
+        Return the funding rate for the given instrument ID at the given index (if found).
+
+        Last funding rate if no index specified.
 
         Parameters
         ----------
         instrument_id : InstrumentId
             The instrument ID for the funding rate to get.
+        index : int, optional
+            The index for the funding rate to get.
 
         Returns
         -------
         FundingRateUpdate or ``None``
-            If no funding rate then returns ``None``.
+            If no funding rates or no funding rate at the index then returns ``None``.
+
+        Notes
+        -----
+        Reverse indexed (most recent index price at index 0).
 
         """
         ...
@@ -1397,6 +1420,21 @@ class Cache(CacheFacade):
 
         """
         ...
+    def funding_rate_count(self, instrument_id: InstrumentId) -> int:
+        """
+        The count of funding rates for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the index prices.
+
+        Returns
+        -------
+        int
+
+        """
+        ...
     def bar_count(self, bar_type: BarType) -> int:
         """
         The count of bars for the given bar type.
@@ -1485,6 +1523,22 @@ class Cache(CacheFacade):
         ----------
         instrument_id : InstrumentId
             The instrument ID for the index prices.
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+    def has_funding_rates(self, instrument_id: InstrumentId) -> bool:
+        """
+        Return a value indicating whether the cache has funding rates for the
+        given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the funding rates.
 
         Returns
         -------
@@ -1730,16 +1784,16 @@ class Cache(CacheFacade):
 
         """
         ...
-    def account_for_venue(self, venue: Venue) -> Account | None:
+    def account_for_venue(self, venue: Venue | None = None, account_id: AccountId | None = None) -> Account | None:
         """
-        Return the account matching the given client ID (if found).
-
-        If unique_venue is set, it will be used instead of the provided venue.
+        Return the account matching the given venue or account ID (if found).
 
         Parameters
         ----------
-        venue : Venue
+        venue : Venue, optional
             The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
 
         Returns
         -------
@@ -1762,6 +1816,22 @@ class Cache(CacheFacade):
 
         """
         ...
+    def set_account_id_for_venue(self, venue: Venue, account_id: AccountId) -> None:
+        """
+        Set the account_id for a venue in the cache index.
+
+        This allows explicitly setting the mapping between a venue and account_id,
+        which may differ from the account_id's issuer.
+
+        Parameters
+        ----------
+        venue : Venue
+            The venue to set the account_id for.
+        account_id : AccountId
+            The account_id to set for the venue.
+
+        """
+        ...
     def accounts(self) -> list[Account]:
         """
         Return all accounts in the cache.
@@ -1777,6 +1847,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[ClientOrderId]:
         """
         Return all client order IDs with the given query filters.
@@ -1789,6 +1860,8 @@ class Cache(CacheFacade):
             The instrument ID query filter.
         strategy_id : StrategyId, optional
             The strategy ID query filter.
+        account_id : AccountId, optional
+            The account ID query filter.
 
         Returns
         -------
@@ -1801,6 +1874,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[ClientOrderId]:
         """
         Return all open client order IDs with the given query filters.
@@ -1825,6 +1899,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[ClientOrderId]:
         """
         Return all closed client order IDs with the given query filters.
@@ -1849,6 +1924,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[ClientOrderId]:
         """
         Return all emulated client order IDs with the given query filters.
@@ -1873,6 +1949,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[ClientOrderId]:
         """
         Return all in-flight client order IDs with the given query filters.
@@ -1897,6 +1974,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[OrderListId]:
         """
         Return all order list IDs.
@@ -1912,6 +1990,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[PositionId]:
         """
         Return all position IDs with the given query filters.
@@ -1936,6 +2015,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[PositionId]:
         """
         Return all open position IDs with the given query filters.
@@ -1960,6 +2040,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> set[PositionId]:
         """
         Return all closed position IDs with the given query filters.
@@ -2060,6 +2141,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all orders matching the given query filters.
@@ -2089,6 +2171,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all open orders with the given query filters.
@@ -2118,6 +2201,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all closed orders with the given query filters.
@@ -2147,6 +2231,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all emulated orders with the given query filters.
@@ -2176,6 +2261,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all in-flight orders with the given query filters.
@@ -2310,6 +2396,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of open orders with the given query filters.
@@ -2337,6 +2424,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of closed orders with the given query filters.
@@ -2364,6 +2452,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of emulated orders with the given query filters.
@@ -2391,6 +2480,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of in-flight orders with the given query filters.
@@ -2418,6 +2508,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the total count of orders with the given query filters.
@@ -2454,6 +2545,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> list[OrderList]:
         """
         Return all order lists matching the given query filters.
@@ -2488,6 +2580,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: OrderSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Order]:
         """
         Return all execution algorithm orders for the given query filters.
@@ -2642,7 +2735,11 @@ class Cache(CacheFacade):
 
         """
         ...
-    def position_snapshots(self, position_id: PositionId | None = None) -> list[Position]:
+    def position_snapshots(
+        self,
+        position_id: PositionId | None = None,
+        account_id: AccountId | None = None,
+    ) -> list[Position]:
         """
         Return all position snapshots with the given optional identifier filter.
 
@@ -2657,7 +2754,11 @@ class Cache(CacheFacade):
 
         """
         ...
-    def position_snapshot_ids(self, instrument_id :InstrumentId | None = None) -> set[PositionId]:
+    def position_snapshot_ids(
+        self,
+        instrument_id: InstrumentId | None = None,
+        account_id: AccountId | None = None,
+    ) -> set[PositionId]:
         """
         Return all position IDs for position snapshots with the given instrument filter.
 
@@ -2695,6 +2796,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Position]:
         """
         Return all positions with the given query filters.
@@ -2724,6 +2826,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
+        account_id: AccountId | None = None,
     ) -> list[Position]:
         """
         Return all open positions with the given query filters.
@@ -2752,6 +2855,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> list[Position]:
         """
         Return all closed positions with the given query filters.
@@ -2826,6 +2930,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of open positions with the given query filters.
@@ -2852,6 +2957,7 @@ class Cache(CacheFacade):
         venue: Venue | None = None,
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the count of closed positions with the given query filters.
@@ -2877,6 +2983,7 @@ class Cache(CacheFacade):
         instrument_id: InstrumentId | None = None,
         strategy_id: StrategyId | None = None,
         side: PositionSide = ...,
+        account_id: AccountId | None = None,
     ) -> int:
         """
         Return the total count of positions with the given query filters.

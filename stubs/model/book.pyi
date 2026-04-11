@@ -382,6 +382,60 @@ class OrderBook(Data):
 
         """
         ...
+    def get_worst_px_for_quantity(self, quantity: Quantity, order_side: OrderSide) -> Price | None:
+        """
+        Return the worst (last-touched) price required to fill the given `quantity`
+        based on the current state of the order book.
+
+        Parameters
+        ----------
+        quantity : Quantity
+            The quantity for the calculation.
+        order_side : OrderSide
+            The order side for the calculation.
+
+        Returns
+        -------
+        Price or ``None``
+
+        Raises
+        ------
+        ValueError
+            If `order_side` is equal to ``NO_ORDER_SIDE``
+
+        Warnings
+        --------
+        If no worst price can be calculated then returns ``None``.
+
+        """
+        ...
+    def get_quantity_at_level(self, price: Price, order_side: OrderSide, size_precision: int) -> Quantity:
+        """
+        Return the quantity at a specific price level only.
+
+        Unlike `get_quantity_for_price` which returns cumulative quantity across
+        multiple levels, this returns only the quantity at the exact price level.
+
+        Parameters
+        ----------
+        price : Price
+            The price level to query.
+        order_side : OrderSide
+            The order side for the calculation.
+        size_precision : uint8_t
+            The precision for the returned quantity.
+
+        Returns
+        -------
+        Quantity
+
+        Raises
+        ------
+        ValueError
+            If `order_side` is equal to ``NO_ORDER_SIDE``
+
+        """
+        ...
     def simulate_fills(self, order: Order, price_prec: int, size_prec: int, is_aggressive: bool) -> list[tuple[Price, Quantity]]:
         """
         Simulate filling the book with the given order.
@@ -468,6 +522,8 @@ class OrderBook(Data):
         QuoteTick or ``None``
 
         """
+        ...
+    def to_deltas_c(self, ts_event: int, ts_init: int) -> OrderBookDeltas:
         ...
     def pprint(self, num_levels: int = 3) -> str:
         """

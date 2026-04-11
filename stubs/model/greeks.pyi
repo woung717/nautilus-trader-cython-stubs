@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import Any
 
 from nautilus_trader.model.enums import PositionSide
 from nautilus_trader.model.greeks_data import GreeksData
@@ -44,8 +45,8 @@ class GreeksCalculator:
 
     """
 
-    def __init__(self, msgbus: MessageBus, cache: CacheFacade, clock: Clock) -> None: ...
-    def instrument_greeks(self, instrument_id: InstrumentId, flat_interest_rate: float = 0.0425, flat_dividend_yield: float | None = None, spot_shock: float = 0.0, vol_shock: float = 0.0, time_to_expiry_shock: float = 0.0, use_cached_greeks: bool = False, cache_greeks: bool = False, publish_greeks: bool = False, ts_event: int = 0, position: Position | None = None, percent_greeks: bool = False, index_instrument_id: InstrumentId | None = None, beta_weights: dict[InstrumentId, float] | None = None, vega_time_weight_base: int | None = None) -> GreeksData | None:
+    def __init__(self, cache: CacheFacade, clock: Clock) -> None: ...
+    def instrument_greeks(self, instrument_id: InstrumentId, flat_interest_rate: float = 0.0425, flat_dividend_yield: float | None = None, spot_shock: float = 0.0, vol_shock: float = 0.0, time_to_expiry_shock: float = 0.0, use_cached_greeks: bool = False, update_vol: bool = False, cache_greeks: bool = False, ts_event: int = 0, position: Position | None = None, percent_greeks: bool = False, index_instrument_id: InstrumentId | None = None, beta_weights: dict[InstrumentId, float] | None = None, vega_time_weight_base: int | None = None) -> GreeksData | None:
         """
         Calculate option or underlying greeks for a given instrument and a quantity of 1.
 
@@ -74,10 +75,10 @@ class GreeksCalculator:
             Shock in years to apply to time to expiry.
         use_cached_greeks : bool, default False
             Whether to use cached greeks values if available.
+        update_vol : bool, default False
+            Whether to update volatility to a target price from a previously calculated volatility.
         cache_greeks : bool, default False
             Whether to cache the calculated greeks.
-        publish_greeks : bool, default False
-            Whether to publish the calculated greeks.
         ts_event : int, default 0
             Timestamp of the event triggering the calculation, by default 0.
         position : Position, optional
@@ -145,7 +146,7 @@ class GreeksCalculator:
         or V(I = I0 * (1 + index_percent_return / 100))
         """
         ...
-    def portfolio_greeks(self, underlyings: list[str] | None = None, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., flat_interest_rate: float = 0.0425, flat_dividend_yield: float | None = None, spot_shock: float = 0.0, vol_shock: float = 0.0, time_to_expiry_shock: float = 0.0, use_cached_greeks: bool = False, cache_greeks: bool = False, publish_greeks: bool = False, percent_greeks: bool = False, index_instrument_id: InstrumentId | None = None, beta_weights: dict[InstrumentId, float] | None = None, greeks_filter: Callable | None = None, vega_time_weight_base: int | None = None) -> PortfolioGreeks | None:
+    def portfolio_greeks(self, underlyings: list[str] | None = None, venue: Venue | None = None, instrument_id: InstrumentId | None = None, strategy_id: StrategyId | None = None, side: PositionSide = ..., flat_interest_rate: float = 0.0425, flat_dividend_yield: float | None = None, spot_shock: float = 0.0, vol_shock: float = 0.0, time_to_expiry_shock: float = 0.0, use_cached_greeks: bool = False, update_vol: bool = False, cache_greeks: bool = False, percent_greeks: bool = False, index_instrument_id: InstrumentId | None = None, beta_weights: dict[InstrumentId, float] | None = None, greeks_filter: Callable | None = None, vega_time_weight_base: int | None = None) -> PortfolioGreeks | None:
         """
         Calculate the portfolio Greeks for a given set of positions.
 
@@ -187,10 +188,10 @@ class GreeksCalculator:
             Shock in years to apply to time to expiry.
         use_cached_greeks : bool, default False
             Whether to use cached Greeks calculations if available.
+        update_vol : bool, default False
+            Whether to update volatility to a target price from a previously calculated volatility.
         cache_greeks : bool, default False
             Whether to cache the calculated Greeks.
-        publish_greeks : bool, default False
-            Whether to publish the Greeks data to the message bus.
         percent_greeks : bool, optional
             Whether to compute greeks as percentage of the underlying price, by default False.
         index_instrument_id : InstrumentId, optional
@@ -214,25 +215,39 @@ class GreeksCalculator:
 
         """
         ...
-    def subscribe_greeks(self, instrument_id: InstrumentId | None = None, handler: Callable[[GreeksData], None] | None = None) -> None:
+    def cache_futures_spread(self, call_instrument_id: InstrumentId, put_instrument_id: InstrumentId, futures_instrument_id: InstrumentId) -> Any | None:
         """
-        Subscribe to Greeks data for a given underlying instrument.
-
-        Useful for reading greeks from a backtesting data catalog and caching them for later use.
+        Cache the futures spread price for a given call/put pair and futures instrument.
 
         Parameters
         ----------
-        instrument_id : str, optional
-            The underlying instrument ID subscribe to.
-            Use for example InstrumentId.from_str("ES*.GLBX") to cache all ES greeks.
-            If empty, subscribes to all Greeks data.
-        handler : Callable[[GreeksData], None], optional
-            The callback function to handle received Greeks data.
-            If None, defaults to adding greeks to the cache.
+        call_instrument_id : InstrumentId
+            The instrument ID of the call option.
+        put_instrument_id : InstrumentId
+            The instrument ID of the put option.
+        futures_instrument_id : InstrumentId
+            The instrument ID of the futures contract.
 
         Returns
         -------
-        None
+        Any | None
+            The cached spread price, or None if caching fails.
+
+        """
+        ...
+    def get_cached_futures_spread_price(self, underlying_instrument_id: InstrumentId) -> Any | None:
+        """
+        Get the cached futures spread price for a given underlying instrument.
+
+        Parameters
+        ----------
+        underlying_instrument_id : InstrumentId
+            The instrument ID of the underlying asset.
+
+        Returns
+        -------
+        Any | None
+            The cached spread price, or None if not found.
 
         """
         ...

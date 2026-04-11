@@ -399,6 +399,7 @@ class ExecutionClient(Component):
         trigger_price: Price | None,
         ts_event: int,
         venue_order_id_modified: bool = False,
+        is_quote_quantity: Any | None = None,
     ) -> None:
         """
         Generate an `OrderUpdated` event and send it to the `ExecutionEngine`.

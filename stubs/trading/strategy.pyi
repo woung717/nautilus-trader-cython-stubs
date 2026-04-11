@@ -167,6 +167,7 @@ class Strategy(Actor):
         ...
     def _start(self) -> None: ...
     def _reset(self) -> None: ...
+    def stop(self) -> None: ...
     def on_order_event(self, event: OrderEvent) -> None:
         """
         Actions to be performed when running and receives an order event.
@@ -479,6 +480,27 @@ class Strategy(Actor):
         Warnings
         --------
         System method (not intended to be called by user code).
+
+        """
+        ...
+    def on_market_exit(self) -> None:
+        """
+        Actions to be performed when a market exit has been initiated.
+
+        Warnings
+        --------
+        Override this method in a subclass to implement custom market exit logic.
+
+        """
+        ...
+    def post_market_exit(self) -> None:
+        """
+        Actions to be performed after a market exit has been completed.
+
+        Warnings
+        --------
+        Override this method in a subclass to implement custom logic after
+        market exit.
 
         """
         ...
@@ -822,6 +844,35 @@ class Strategy(Actor):
         """
         ...
     def _expire_gtd_order(self, event: TimeEvent) -> None: ...
+    def market_exit(self) -> None:
+        """
+        Initiate an iterative market exit for the strategy.
+
+        Will cancel all open orders and close all open positions, and wait for
+        all in-flight orders to resolve and positions to close. The strategy
+        remains running after the exit completes.
+
+        Uses `market_exit_time_in_force` and `market_exit_reduce_only` from
+        the strategy config for closing market orders.
+
+        The `on_market_exit` hook is called when the exit process begins.
+        The `post_market_exit` hook is called when the exit process completes.
+
+        """
+        ...
+    def is_exiting(self) -> bool:
+        """
+        Return whether the strategy is currently executing a market exit.
+
+        Strategies can check this to avoid submitting new orders during exit.
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+    def _check_market_exit(self, event: TimeEvent) -> None: ...
     def handle_event(self, event: Event) -> None:
         """
         Handle the given event.

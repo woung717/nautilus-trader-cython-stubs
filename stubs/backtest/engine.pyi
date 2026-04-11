@@ -18,6 +18,7 @@ from __future__ import annotations
 from collections import deque
 import datetime
 import decimal
+from decimal import Decimal
 from collections.abc import Generator
 from typing import Any
 
@@ -65,6 +66,7 @@ from nautilus_trader.model.objects import Currency, Money, Price, Quantity
 from nautilus_trader.model.orders.base import Order
 from nautilus_trader.model.enums import MarketStatus
 from nautilus_trader.model.enums import LiquiditySide
+from nautilus_trader.model.enums import OtoTriggerMode
 from nautilus_trader.model.enums import AggressorSide, MarketStatusAction
 from nautilus_trader.core import nautilus_pyo3
 from nautilus_trader.trading.trader import Trader
@@ -321,17 +323,21 @@ class BacktestEngine:
         reject_stop_orders: bool = True,
         support_gtd_orders: bool = True,
         support_contingent_orders: bool = True,
+        oto_trigger_mode: OtoTriggerMode = OtoTriggerMode.PARTIAL,
         use_position_ids: bool = True,
         use_random_ids: bool = False,
         use_reduce_only: bool = True,
         use_message_queue: bool = True,
+        use_market_order_acks: bool = False,
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
-        trade_execution: bool = False,
+        trade_execution: bool = True,
         liquidity_consumption: bool = False,
+        queue_position: bool = False,
         allow_cash_borrowing: bool = False,
         frozen_account: bool = False,
-        price_protection_points: int | None = None,
+        price_protection_points = None,
+        settlement_prices: dict[InstrumentId, float] | None = None,
     ) -> None:
         """
         Add a `SimulatedExchange` with the given parameters to the backtest engine.
@@ -1072,15 +1078,19 @@ class SimulatedExchange:
         reject_stop_orders: bool = True,
         support_gtd_orders: bool = True,
         support_contingent_orders: bool = True,
+        oto_trigger_mode: OtoTriggerMode = OtoTriggerMode.PARTIAL,
         use_position_ids: bool = True,
         use_random_ids: bool = False,
         use_reduce_only: bool = True,
         use_message_queue: bool = True,
+        use_market_order_acks: bool = False,
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
-        trade_execution: bool = False,
+        trade_execution: bool = True,
         liquidity_consumption: bool = False,
-        price_protection_points: int | None = None,
+        queue_position: bool = False,
+        price_protection_points = None,
+        settlement_prices: dict[InstrumentId, float] | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -1503,14 +1513,18 @@ class OrderMatchingEngine:
         reject_stop_orders: bool = True,
         support_gtd_orders: bool = True,
         support_contingent_orders: bool = True,
+        oto_full_trigger: bool = False,
         use_position_ids: bool = True,
         use_random_ids: bool = False,
         use_reduce_only: bool = True,
+        use_market_order_acks: bool = False,
         bar_execution: bool = True,
         bar_adaptive_high_low_ordering: bool = False,
-        trade_execution: bool = False,
+        trade_execution: bool = True,
         liquidity_consumption: bool = False,
-        price_protection_points: int | None = None,
+        queue_position: bool = False,
+        price_protection_points = None,
+        settlement_prices: dict[InstrumentId, float] | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...
@@ -1800,6 +1814,10 @@ class OrderMatchingEngine:
         """
         ...
 
+    def check_instrument_expiration(self, timestamp_ns: int) -> None:
+        """Run instrument expiration at timestamp_ns (option exercise/expiry or futures close)."""
+        ...
+
     def apply_fills(
         self,
         order: Order,
@@ -1807,6 +1825,7 @@ class OrderMatchingEngine:
         liquidity_side: LiquiditySide,  # LiquiditySide
         venue_position_id: PositionId | None = None,
         position: Position | None = None,  # Position
+        protection_price: Price | None = None,
     ) -> None:
         """
         Apply the given list of fills to the given order. Optionally provide

@@ -16,6 +16,8 @@ from nautilus_trader.common.component import MessageBus
 from nautilus_trader.core.data import Data
 from nautilus_trader.core.message import Event
 from nautilus_trader.core.uuid import UUID4
+from nautilus_trader.core.nautilus_pyo3 import StrikeRange
+from nautilus_trader.core.nautilus_pyo3 import OptionSeriesId
 from nautilus_trader.data.messages import DataResponse
 from nautilus_trader.indicators.base.indicator import Indicator
 from nautilus_trader.model.book import OrderBook
@@ -27,17 +29,20 @@ from nautilus_trader.model.data import IndexPriceUpdate
 from nautilus_trader.model.data import InstrumentClose
 from nautilus_trader.model.data import InstrumentStatus
 from nautilus_trader.model.data import MarkPriceUpdate
+from nautilus_trader.model.data import OrderBookDeltas
 from nautilus_trader.model.data import OrderBookDepth10
 from nautilus_trader.model.data import QuoteTick
 from nautilus_trader.model.data import TradeTick
 from nautilus_trader.model.events.order import OrderCanceled
 from nautilus_trader.model.events.order import OrderFilled
 from nautilus_trader.model.greeks import GreeksCalculator
+from nautilus_trader.model.greeks import OptionGreeks
 from nautilus_trader.model.identifiers import ClientId
 from nautilus_trader.model.identifiers import InstrumentId
 from nautilus_trader.model.identifiers import Venue
 from nautilus_trader.model.instruments.base import Instrument
 from nautilus_trader.model.instruments.synthetic import SyntheticInstrument
+from nautilus_trader.model.options import OptionChainSlice
 from nautilus_trader.portfolio.base import PortfolioFacade
 
 class Actor(Component):
@@ -374,6 +379,36 @@ class Actor(Component):
         ----------
         funding_rate : FundingRateUpdate
             The funding rate update received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def on_option_greeks(self, option_greeks: OptionGreeks) -> None:
+        """
+        Actions to be performed when running and receives option greeks.
+
+        Parameters
+        ----------
+        option_greeks : OptionGreeks
+            The option greeks received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def on_option_chain(self, option_chain_slice: OptionChainSlice) -> None:
+        """
+        Actions to be performed when running and receives an option chain slice.
+
+        Parameters
+        ----------
+        option_chain_slice : OptionChainSlice
+            The option chain slice received.
 
         Warnings
         --------
@@ -1183,6 +1218,60 @@ class Actor(Component):
 
         """
         ...
+    def subscribe_option_greeks(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Subscribe to streaming `OptionGreeks` data for the given instrument ID.
+
+        Once subscribed, any matching option greeks data published on the message bus is forwarded
+        to the `on_option_greeks` handler.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to subscribe to.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def subscribe_option_chain(
+        self,
+        series_id: OptionSeriesId,
+        strike_range: StrikeRange | None = None,
+        snapshot_interval_ms: int | None = None,
+        client_id: ClientId | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Subscribe to `OptionChainSlice` snapshots for the given series.
+
+        The data engine manages the option chain lifecycle including quote/greeks
+        subscriptions for individual instruments, ATM tracking, and periodic snapshots.
+
+        Parameters
+        ----------
+        series_id : OptionSeriesId
+            The option series to subscribe to.
+        strike_range : StrikeRange, optional
+            The strike range filter. If ``None`` then all strikes are included.
+        snapshot_interval_ms : int, optional
+            Snapshot interval in milliseconds. If ``None`` then operates in raw mode
+            (publish on every quote update).
+        client_id : ClientId, optional
+            The specific client ID for the command.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
     def subscribe_bars(
         self,
         bar_type: BarType,
@@ -1524,6 +1613,48 @@ class Actor(Component):
             Additional parameters potentially used by a specific client.
 
         """
+        ...
+    def unsubscribe_option_greeks(
+        self,
+        instrument_id: InstrumentId,
+        client_id: ClientId | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Unsubscribe from streaming `OptionGreeks` data for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument to unsubscribe from.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
+    def unsubscribe_option_chain(
+        self,
+        series_id: OptionSeriesId,
+        client_id: ClientId | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Unsubscribe from `OptionChainSlice` snapshots for the given series.
+
+        Parameters
+        ----------
+        series_id : OptionSeriesId
+            The option series to unsubscribe from.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        """
+        ...
     def unsubscribe_bars(
         self,
         bar_type: BarType,
@@ -2139,6 +2270,130 @@ class Actor(Component):
 
         """
         ...
+    def request_order_book_deltas(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime,
+        end: datetime | None = None,
+        limit: int = 0,
+        client_id: ClientId | None = None,
+        callback: Callable[[UUID4], None] | None = None,
+        update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> UUID4:
+        """
+        Request historical `OrderBookDeltas` data.
+
+        Once the response is received, the order book deltas data is forwarded from the message bus
+        to the `on_historical_data` handler.
+
+        If the request fails, then an error is logged.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the order book deltas request.
+        start : datetime
+            The start datetime (UTC) of request time range.
+        end : datetime, optional
+            The end datetime (UTC) of request time range.
+            The inclusiveness depends on individual data client implementation.
+        limit : int, optional
+            The limit on the amount of order book deltas received.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        callback : Callable[[UUID4], None], optional
+            The registered callback, to be called with the request ID when the response has
+            completed processing.
+        update_catalog : bool, optional
+            Whether to update a catalog with the received data.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        Returns
+        -------
+        UUID4
+            The `request_id` for the request.
+
+        Raises
+        ------
+        ValueError
+            If `start` is not `None` and > current timestamp (now).
+        ValueError
+            If `end` is not `None` and > current timestamp (now).
+        ValueError
+            If `start` and `end` are not `None` and `start` is >= `end`.
+        TypeError
+            If `callback` is not `None` and not of type `Callable`.
+
+        """
+        ...
+    def request_funding_rates(
+        self,
+        instrument_id: InstrumentId,
+        start: datetime,
+        end: datetime | None = None,
+        limit: int = 0,
+        client_id: ClientId | None = None,
+        callback: Callable[[UUID4], None] | None = None,
+        update_catalog: bool = False,
+        join_request: bool = False,
+        request_id: UUID4 | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> UUID4:
+        """
+        Request historical `FundingRateUpdate` data.
+
+        If `end` is ``None`` then will request up to the most recent data.
+
+        Once the response is received, the funding rate data is forwarded from the message bus
+        to the `on_historical_data` handler.
+
+        If the request fails, then an error is logged.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the funding rates request.
+        start : datetime
+            The start datetime (UTC) of request time range.
+        end : datetime, optional
+            The end datetime (UTC) of request time range.
+            The inclusiveness depends on individual data client implementation.
+        limit : int, optional
+            The limit on the amount of funding rates received.
+        client_id : ClientId, optional
+            The specific client ID for the command.
+            If ``None`` then will be inferred from the venue in the instrument ID.
+        callback : Callable[[UUID4], None], optional
+            The registered callback, to be called with the request ID when the response has
+            completed processing.
+        update_catalog : bool, optional
+            Whether to update a catalog with the received data.
+        params : dict[str, Any], optional
+            Additional parameters potentially used by a specific client.
+
+        Returns
+        -------
+        UUID4
+            The `request_id` for the request.
+
+        Raises
+        ------
+        ValueError
+            If `start` is not `None` and > current timestamp (now).
+        ValueError
+            If `end` is not `None` and > current timestamp (now).
+        ValueError
+            If `start` and `end` are not `None` and `start` is >= `end`.
+        TypeError
+            If `callback` is not `None` and not of type `Callable`.
+
+        """
+        ...
     def request_aggregated_bars(
         self,
         bar_types: list[BarType],
@@ -2304,7 +2559,7 @@ class Actor(Component):
         """
         ...
     
-    def handle_order_book_deltas(self, deltas) -> None:
+    def handle_order_book_deltas(self, deltas, historical: bool = False) -> None:
         """
         Handle the given order book deltas.
 
@@ -2316,6 +2571,8 @@ class Actor(Component):
         ----------
         deltas : OrderBookDeltas or nautilus_pyo3.OrderBookDeltas
             The order book deltas received.
+        historical : bool, default False
+            If True, treats the data as historical.
 
         Warnings
         --------
@@ -2338,6 +2595,11 @@ class Actor(Component):
         --------
         System method (not intended to be called by user code).
 
+        """
+        ...
+    def handle_historical_order_book_deltas(self, deltas: OrderBookDeltas) -> None:
+        """
+        Handle a historical order book deltas message.
         """
         ...
     def handle_historical_order_book_depth(self, depth: OrderBookDepth10) -> None:
@@ -2441,7 +2703,9 @@ class Actor(Component):
 
         """
         ...
-    def handle_funding_rate(self, funding_rate: FundingRateUpdate) -> None:
+    def handle_historical_funding_rate(self, funding_rate: FundingRateUpdate) -> None:
+        ...
+    def handle_funding_rate(self, funding_rate: FundingRateUpdate, historical: bool = False) -> None:
         """
         Handle the given funding rate update.
 
@@ -2451,6 +2715,42 @@ class Actor(Component):
         ----------
         funding_rate : FundingRateUpdate
             The funding rate update received.
+        historical : bool, default False
+            If True, treats the data as historical.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def handle_option_greeks(self, option_greeks: OptionGreeks) -> None:
+        """
+        Handle the given option greeks.
+
+        If state is ``RUNNING`` then passes to `on_option_greeks`.
+
+        Parameters
+        ----------
+        option_greeks : OptionGreeks
+            The option greeks received.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def handle_option_chain(self, option_chain_slice: OptionChainSlice) -> None:
+        """
+        Handle the given option chain slice.
+
+        If state is ``RUNNING`` then passes to `on_option_chain`.
+
+        Parameters
+        ----------
+        option_chain_slice : OptionChainSlice
+            The option chain slice received.
 
         Warnings
         --------
@@ -2590,6 +2890,8 @@ class Actor(Component):
     def _handle_aggregated_bars_response(self, response: DataResponse) -> None: ...
     def _handle_order_book_depth_response(self, response: DataResponse) -> None: ...
     def _handle_order_book_snapshot_response(self, response: DataResponse) -> None: ...
+    def _handle_order_book_deltas_response(self, response: DataResponse) -> None: ...
+    def _handle_funding_rates_response(self, response: DataResponse) -> None: ...
     def _handle_join_response(self, response: DataResponse) -> None: ...
     def _finish_response(self, request_id: UUID4) -> None: ...
     def _handle_order_filled(self, event: OrderFilled) -> None: ...

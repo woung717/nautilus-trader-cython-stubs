@@ -14,6 +14,7 @@ from nautilus_trader.model.objects import Quantity
 from nautilus_trader.model.tick_scheme.base import TickScheme
 
 EXPIRING_INSTRUMENT_CLASSES: set[InstrumentClass]
+ENGINE_EXPIRING_INSTRUMENT_CLASSES: set[InstrumentClass]
 NEGATIVE_PRICE_INSTRUMENT_CLASSES: tuple[InstrumentClass]
 
 class Instrument(Data):
@@ -462,12 +463,17 @@ class Instrument(Data):
         quantity: Quantity,
         price: Price,
         use_quote_for_inverse: bool = False,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
     ) -> Money:
         """
         Calculate the notional value.
 
         Result will be in quote currency for standard instruments, or base
         currency for inverse instruments.
+
+        If `target_currency` and `conversion_price` are provided, the notional
+        value will be converted to the target currency.
 
         Parameters
         ----------
@@ -477,6 +483,10 @@ class Instrument(Data):
             The price for the calculation.
         use_quote_for_inverse : bool
             If inverse instrument calculations use quote currency (instead of base).
+        target_currency : Currency, optional
+            The target currency for conversion.
+        conversion_price : Price, optional
+            The conversion price for the target currency.
 
         Returns
         -------

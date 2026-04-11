@@ -37,6 +37,24 @@ class FillModel:
         config = None,
     ) -> None: ...
 
+    def fill_limit_inside_spread(self) -> bool:
+        """
+        Return whether limit orders at or inside the spread are fillable.
+
+        When True, the matching core treats a limit order as fillable if its
+        price is at or better than the current best quote on its own side
+        (BUY >= bid, SELL <= ask), not just when it crosses the spread.
+
+        Override to return True in fill models that provide simulated
+        liquidity inside the spread (e.g. best bid/ask).
+
+        Returns
+        -------
+        bool
+
+        """
+        ...
+
     def is_limit_filled(self) -> bool:
         """
         Return a value indicating whether a ``LIMIT`` order filled.
@@ -105,6 +123,8 @@ class BestPriceFillModel(FillModel):
     immediately at the best available price. Ideal for testing basic strategy logic.
 
     """
+    def fill_limit_inside_spread(self) -> bool: ...
+
     def get_orderbook_for_fill_simulation(
         self,
         instrument: Instrument,

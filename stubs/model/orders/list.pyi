@@ -43,3 +43,16 @@ class OrderList:
     def __hash__(self) -> int: ...
     def __len__(self) -> int: ...
     def __repr__(self) -> str: ...
+    def is_bracket(self) -> bool:
+        """
+        Return whether this order list represents a bracket order.
+
+        A bracket order has exactly 3 orders: an entry order (OTO contingency)
+        with exactly 2 child orders (OUO contingency, not OCO) that are
+        reduce-only TP/SL orders.
+
+        Returns
+        -------
+        bool
+
+        """

@@ -1,17 +1,22 @@
 from decimal import Decimal
 from typing import Any
 
+from nautilus_trader.model.enums import AssetClass
+from nautilus_trader.model.objects import Currency
+from nautilus_trader.model.instruments import Instrument
 from nautilus_trader.model.identifiers import InstrumentId
 from nautilus_trader.model.identifiers import Symbol
-from nautilus_trader.model.instruments.base import Instrument
-from nautilus_trader.model.objects import Currency
 from nautilus_trader.model.objects import Money
 from nautilus_trader.model.objects import Price
 from nautilus_trader.model.objects import Quantity
 
-class CryptoPerpetual(Instrument):
+
+class PerpetualContract(Instrument):
     """
-    Represents a crypto perpetual futures contract instrument (a.k.a. perpetual swap).
+    Represents a perpetual contract instrument (perpetual swap).
+
+    Supports perpetuals on any asset class including FX, equities,
+    commodities, indexes, and cryptocurrencies.
 
     Parameters
     ----------
@@ -19,8 +24,10 @@ class CryptoPerpetual(Instrument):
         The instrument ID for the instrument.
     raw_symbol : Symbol
         The raw/local/native symbol for the instrument, assigned by the venue.
-    base_currency : Currency, optional
-        The base currency.
+    underlying : str
+        The underlying asset identifier (e.g., "EURUSD", "NVDA", "GC").
+    asset_class : AssetClass
+        The asset class of the perpetual contract.
     quote_currency : Currency
         The quote currency.
     settlement_currency : Currency
@@ -35,12 +42,16 @@ class CryptoPerpetual(Instrument):
         The minimum price increment (tick size).
     size_increment : Quantity
         The minimum size increment.
-    ts_event : uint64_t
+    ts_event : int
         UNIX timestamp (nanoseconds) when the data event occurred.
-    ts_init : uint64_t
+    ts_init : int
         UNIX timestamp (nanoseconds) when the data object was initialized.
+    base_currency : Currency, optional
+        The base currency (for FX/crypto underlyings).
     multiplier : Quantity, default 1
         The contract multiplier.
+    lot_size : Quantity, default 1
+        The rounded lot unit size (standard/board).
     max_quantity : Quantity, optional
         The maximum allowable order quantity.
     min_quantity : Quantity, optional
@@ -66,46 +77,14 @@ class CryptoPerpetual(Instrument):
     info : dict[str, object], optional
         The additional instrument information.
 
-    Raises
-    ------
-    ValueError
-        If `price_precision` is negative (< 0).
-    ValueError
-        If `size_precision` is negative (< 0).
-    ValueError
-        If `price_increment` is not positive (> 0).
-    ValueError
-        If `size_increment` is not positive (> 0).
-    ValueError
-        If `price_precision` is not equal to price_increment.precision.
-    ValueError
-        If `size_increment` is not equal to size_increment.precision.
-    ValueError
-        If `multiplier` is not positive (> 0).
-    ValueError
-        If `max_quantity` is not positive (> 0).
-    ValueError
-        If `min_quantity` is negative (< 0).
-    ValueError
-        If `max_notional` is not positive (> 0).
-    ValueError
-        If `min_notional` is negative (< 0).
-    ValueError
-        If `max_price` is not positive (> 0).
-    ValueError
-        If `min_price` is negative (< 0).
-    ValueError
-        If `margin_init` is negative (< 0).
-    ValueError
-        If `margin_maint` is negative (< 0).
-
     """
 
     def __init__(
         self,
         instrument_id: InstrumentId,
         raw_symbol: Symbol,
-        base_currency: Currency,
+        underlying: str,
+        asset_class: AssetClass,
         quote_currency: Currency,
         settlement_currency: Currency,
         is_inverse: bool,
@@ -115,6 +94,7 @@ class CryptoPerpetual(Instrument):
         size_increment: Quantity,
         ts_event: int,
         ts_init: int,
+        base_currency: Currency | None = None,
         multiplier: Quantity = ...,
         lot_size: Quantity = ...,
         max_quantity: Quantity | None = None,
@@ -128,81 +108,16 @@ class CryptoPerpetual(Instrument):
         maker_fee: Decimal | None = None,
         taker_fee: Decimal | None = None,
         tick_scheme_name: str | None = None,
-        info: dict = ...,
+        info: dict[str, Any] | None = None,
     ) -> None: ...
-    def get_base_currency(self) -> Currency:
-        """
-        Return the instruments base currency.
 
-        Returns
-        -------
-        Currency
+    underlying: str
+    base_currency: Currency | None
+    settlement_currency: Currency
+    is_quanto: bool
 
-        """
-        ...
-    def get_settlement_currency(self) -> Currency:
-        """
-        Return the currency used to settle a trade of the instrument.
-
-        Returns
-        -------
-        Currency
-
-        """
-        ...
-    def get_cost_currency(self) -> Currency:
-        """
-        Return the currency used for PnL calculations for the instrument.
-
-        - Standard linear instruments = quote_currency
-        - Inverse instruments = base_currency
-        - Quanto instruments = settlement_currency
-
-        Returns
-        -------
-        Currency
-
-        """
-        ...
-    def notional_value(
-        self,
-        quantity: Quantity,
-        price: Price,
-        use_quote_for_inverse: bool = False,
-        target_currency: Currency | None = None,
-        conversion_price: Price | None = None,
-    ) -> Money:
-        """
-        Calculate the notional value.
-
-        Result will be in quote currency for standard instruments, base
-        currency for inverse instruments, or settlement currency for quanto
-        instruments.
-
-        Parameters
-        ----------
-        quantity : Quantity
-            The total quantity.
-        price : Price
-            The price for the calculation.
-        use_quote_for_inverse : bool
-            For inverse instruments only: if True, treats the quantity as already representing
-            notional value in quote currency and returns it directly without calculation.
-            This is useful when quantity already represents a USD value that doesn't need
-            conversion (e.g., for display purposes). Has no effect on linear or quanto instruments.
-        target_currency : Currency, optional
-            The target currency for conversion.
-        conversion_price : Price, optional
-            The conversion price to the target currency.
-
-        Returns
-        -------
-        Money
-
-        """
-        ...
     @staticmethod
-    def from_dict(values: dict) -> CryptoPerpetual:
+    def from_dict(values: dict[str, Any]) -> PerpetualContract:
         """
         Return an instrument from the given initialization values.
 
@@ -213,12 +128,13 @@ class CryptoPerpetual(Instrument):
 
         Returns
         -------
-        CryptoPerpetual
+        PerpetualContract
 
         """
         ...
+
     @staticmethod
-    def to_dict(obj: CryptoPerpetual) -> dict[str, Any]:
+    def to_dict(obj: PerpetualContract) -> dict[str, Any]:
         """
         Return a dictionary representation of this object.
 
@@ -228,5 +144,21 @@ class CryptoPerpetual(Instrument):
 
         """
         ...
+
     @staticmethod
-    def from_pyo3(pyo3_instrument: Any) -> CryptoPerpetual: ...
+    def from_pyo3(pyo3_instrument: Any) -> PerpetualContract: ...
+
+    def get_base_currency(self) -> Currency | None: ...
+
+    def get_settlement_currency(self) -> Currency: ...
+
+    def get_cost_currency(self) -> Currency: ...
+
+    def notional_value(
+        self,
+        quantity: Quantity,
+        price: Price,
+        use_quote_for_inverse: bool = False,
+        target_currency: Currency | None = None,
+        conversion_price: Price | None = None,
+    ) -> Money: ...
