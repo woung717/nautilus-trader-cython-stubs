@@ -14,13 +14,28 @@ These stubs serve the following purposes:
 
 **Installation script**
 
-Run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`)
+Run `install.py` python script. This will search for the `nautilus_trader` directory in your system and install the stubs you selected.
+```bash
+python ./install.py
+
+Searching for nautilus_trader directories...
+
+Found 2 nautilus_trader directory(s):
+
+  [1] .venv/lib/python3.11/site-packages/nautilus_trader
+  [2] .venv/lib/python3.12/site-packages/nautilus_trader
+
+Select a directory [1-2] (or 'q' to quit): 
+
+```
+
+Or run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) This will install the stubs in the provided directory.
 
 ```bash
 python ./install.py {python_path}/lib/{python_version}/site-packages/nautilus_trader
 ```
 
-**OS Command**
+**Manual Installation**
 
 Copy all files under the `stubs` directory into your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`) using `rsync` or any other tool, so that the `.pyi` stubs are located next to their corresponding Cython `.pyx` files. 
 
