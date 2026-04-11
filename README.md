@@ -12,7 +12,7 @@ These stubs serve the following purposes:
 
 ## Installation
 
-**`install.py` script**
+**Installation script**
 
 Run `install.py` python script with your installed `nautilus_trader` directory (e.g. `{python_path}/lib/{python_version}/site-packages/nautilus_trader/`)
 
