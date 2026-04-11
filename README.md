@@ -14,7 +14,7 @@ These stubs serve the following purposes:
 
 **Installation script**
 
-Run `install.py` python script. This will search for the `nautilus_trader` directory in your system and install the stubs you selected.
+Run `install.py` python script. This will search for the `nautilus_trader` directory in your system and install the stubs in the selected directory.
 ```bash
 python ./install.py
 
