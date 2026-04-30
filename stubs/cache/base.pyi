@@ -3,6 +3,7 @@ from typing import Any
 
 from nautilus_trader.core.nautilus_pyo3 import OwnOrderBook
 from nautilus_trader.model.data import FundingRateUpdate
+from nautilus_trader.model.data import InstrumentStatus
 from nautilus_trader.model.enums import OrderSide
 from nautilus_trader.model.enums import OrderStatus
 from nautilus_trader.model.enums import PositionSide
@@ -60,6 +61,9 @@ class CacheFacade:
     def funding_rates(self, instrument_id: InstrumentId) -> list[FundingRateUpdate]:
         """Abstract method (implement in subclass)."""
         ...
+    def instrument_statuses(self, instrument_id: InstrumentId) -> list[InstrumentStatus]:
+        """Abstract method (implement in subclass)."""
+        ...
     def bars(self, bar_type: BarType) -> list[Bar]:
         """Abstract method (implement in subclass)."""
         ...
@@ -96,6 +100,9 @@ class CacheFacade:
     def funding_rate(self, instrument_id: InstrumentId, index: int = 0) -> FundingRateUpdate:
         """Abstract method (implement in subclass)."""
         ...
+    def instrument_status(self, instrument_id: InstrumentId, index: int = 0) -> InstrumentStatus:
+        """Abstract method (implement in subclass)."""
+        ...
     def bar(self, bar_type: BarType, index: int = 0) -> Bar:
         """Abstract method (implement in subclass)."""
         ...
@@ -117,6 +124,9 @@ class CacheFacade:
     def funding_rate_count(self, instrument_id: InstrumentId) -> int:
         """Abstract method (implement in subclass)."""
         ...
+    def instrument_status_count(self, instrument_id: InstrumentId) -> int:
+        """Abstract method (implement in subclass)."""
+        ...
     def bar_count(self, bar_type: BarType) -> int:
         """Abstract method (implement in subclass)."""
         ...
@@ -136,6 +146,9 @@ class CacheFacade:
         """Abstract method (implement in subclass)."""
         ...
     def has_funding_rates(self, instrument_id: InstrumentId) -> bool:
+        """Abstract method (implement in subclass)."""
+        ...
+    def has_instrument_statuses(self, instrument_id: InstrumentId) -> bool:
         """Abstract method (implement in subclass)."""
         ...
     def has_bars(self, bar_type: BarType) -> bool:

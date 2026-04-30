@@ -9,6 +9,7 @@ from nautilus_trader.model.events.account import AccountState
 from nautilus_trader.model.events.order import OrderFilled
 from nautilus_trader.model.identifiers import InstrumentId
 from nautilus_trader.model.instruments.base import Instrument
+from nautilus_trader.model.objects import Currency
 from nautilus_trader.model.objects import MarginBalance
 from nautilus_trader.model.objects import Money
 from nautilus_trader.model.objects import Price
@@ -69,6 +70,36 @@ class MarginAccount(Account):
         Returns
         -------
         dict[InstrumentId, Money]
+
+        """
+        ...
+    def account_margins(self) -> dict[Currency, MarginBalance]:
+        """
+        Return the account-wide (cross-margin) margin balances keyed by collateral currency.
+
+        Returns
+        -------
+        dict[Currency, MarginBalance]
+
+        """
+        ...
+    def account_margins_init(self) -> dict[Currency, Money]:
+        """
+        Return the account-wide initial (order) margins keyed by collateral currency.
+
+        Returns
+        -------
+        dict[Currency, Money]
+
+        """
+        ...
+    def account_margins_maint(self) -> dict[Currency, Money]:
+        """
+        Return the account-wide maintenance (position) margins keyed by collateral currency.
+
+        Returns
+        -------
+        dict[Currency, Money]
 
         """
         ...
@@ -154,6 +185,85 @@ class MarginAccount(Account):
         --------
         Returns ``None`` if there is no applicable information for the query,
         rather than `MarginBalance` with zero amounts.
+
+        """
+        ...
+    def margin_for_currency(self, currency: Currency) -> MarginBalance | None:
+        """
+        Return the account-wide (cross-margin) balance for the given collateral currency.
+
+        Parameters
+        ----------
+        currency : Currency
+            The collateral currency for the query.
+
+        Returns
+        -------
+        MarginBalance or ``None``
+
+        """
+        ...
+    def margin_init_for_currency(self, currency: Currency) -> Money | None:
+        """
+        Return the account-wide initial (order) margin for the given collateral currency.
+
+        Parameters
+        ----------
+        currency : Currency
+            The collateral currency for the query.
+
+        Returns
+        -------
+        Money or ``None``
+
+        """
+        ...
+    def margin_maint_for_currency(self, currency: Currency) -> Money | None:
+        """
+        Return the account-wide maintenance (position) margin for the given collateral currency.
+
+        Parameters
+        ----------
+        currency : Currency
+            The collateral currency for the query.
+
+        Returns
+        -------
+        Money or ``None``
+
+        """
+        ...
+    def total_margin_init(self, currency: Currency) -> Money:
+        """
+        Return the total initial margin reserved in the given currency.
+
+        Sums per-instrument and account-wide entries whose currency matches.
+
+        Parameters
+        ----------
+        currency : Currency
+            The currency to total.
+
+        Returns
+        -------
+        Money
+
+        """
+        ...
+    def total_margin_maint(self, currency: Currency) -> Money:
+        """
+        Return the total maintenance margin reserved in the given currency.
+
+        Sums per-instrument and account-wide entries whose currency matches.
+
+        Parameters
+        ----------
+        currency : Currency
+            The currency to total.
+
+        Returns
+        -------
+        Money
 
         """
         ...
@@ -320,6 +430,21 @@ class MarginAccount(Account):
         ----------
         instrument_id : InstrumentId
             The instrument for the maintenance margin to clear.
+
+        Warnings
+        --------
+        System method (not intended to be called by user code).
+
+        """
+        ...
+    def clear_account_margin(self, currency: Currency) -> None:
+        """
+        Clear the account-wide (cross-margin) margin for the given collateral currency.
+
+        Parameters
+        ----------
+        currency : Currency
+            The collateral currency to clear.
 
         Warnings
         --------

@@ -3,7 +3,8 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any
 
-from nautilus_trader.nautilus_trader.core.nautilus_pyo3 import FundingRateUpdate
+from nautilus_trader.core.nautilus_pyo3 import FundingRateUpdate
+from nautilus_trader.core.nautilus_pyo3 import GreeksConvention
 import numpy as np
 import pandas as pd
 
@@ -42,6 +43,17 @@ class BarAggregation(Enum): # skip-validate
 
 def capsule_to_list(capsule) -> list[Data]: ...
 def capsule_to_data(capsule) -> Data: ...
+def pyo3_list_to_data_list(pyo3_items: list) -> list[Data]:
+    """
+    Convert a list of PyO3 data objects to a list of Cython Data objects.
+
+    The Rust backend returns Python lists (instead of PyCapsules) for chunks
+    that contain custom data types. Items in these lists are PyO3 instances
+    of built-in types (QuoteTick, TradeTick, etc.) or PyO3 CustomData wrappers.
+    This function converts each item to its Cython equivalent so the backtest
+    engine can process them.
+    """
+    ...
 
 
 def supported_bar_aggregations_str() -> str:
@@ -2896,6 +2908,7 @@ class OptionGreeks(Data):
         open_interest: float | None = None,
         ts_event: int | None = None,
         ts_init: int | None = None,
+        convention: GreeksConvention | None = None,
     ) -> None: ...
 
     def __repr__(self) -> str: ...

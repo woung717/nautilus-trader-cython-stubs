@@ -325,7 +325,21 @@ class DataEngine(Component):
 
     def _option_chain_snapshot(self, event: TimeEvent) -> None: ...
 
-    def _handle_order_book_deltas_snapshot_replay(self, response: DataResponse) -> None: ...
+    def _handle_order_book_deltas_snapshot_replay(
+        self,
+        correlation_id: UUID4,
+        data: list[Any],
+        params: dict[str, Any],
+    ) -> list[Any]:
+        """
+        Handle snapshot forward replay for order book deltas.
+
+        If the data at the start of a UTC day is a snapshot, move the snapshot forward
+        by playing order book deltas until the first delta with ts_init >= "original_start_date".
+
+        Returns the filtered data list (or the original if no replay is needed).
+        """
+        ...
 
     def _update_order_book(self, data: Data) -> None: ...
 
@@ -396,3 +410,13 @@ class DataEngine(Component):
     def _unsubscribe_spread_quote_aggregator(self, client: MarketDataClient, command: UnsubscribeQuoteTicks) -> None: ...
 
     def _get_spread_quote_aggregator_key(self, spread_instrument_id: InstrumentId, request_id: UUID4 = None) -> Tuple[InstrumentId, UUID4]: ...
+
+
+class RequestWorkflowState:
+    original_start_date: datetime | None
+    identifier: str | None
+    data_count: int
+    has_aggregated_bars: bool
+    join_request: bool
+    join_started: bool
+    time_range_generator_enabled: bool

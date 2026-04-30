@@ -20,6 +20,7 @@ from nautilus_trader.model.data import BarType
 from nautilus_trader.model.data import IndexPriceUpdate
 from nautilus_trader.model.data import MarkPriceUpdate
 from nautilus_trader.model.data import FundingRateUpdate
+from nautilus_trader.model.data import InstrumentStatus
 from nautilus_trader.model.data import QuoteTick
 from nautilus_trader.model.data import TradeTick
 from nautilus_trader.model.identifiers import AccountId
@@ -80,6 +81,8 @@ class Cache(CacheFacade):
     _mark_xrates: dict[tuple[Currency, Currency], float]
     _mark_prices: dict[InstrumentId, MarkPriceUpdate]
     _index_prices: dict[InstrumentId, IndexPriceUpdate]
+    _funding_rates: dict[InstrumentId, deque[FundingRateUpdate]]
+    _instrument_statuses: dict[InstrumentId, deque[InstrumentStatus]]
     _bars: dict[BarType, deque[Bar]]
     _bars_bid: dict[InstrumentId, Bar]
     _bars_ask: dict[InstrumentId, Bar]
@@ -530,6 +533,17 @@ class Cache(CacheFacade):
         ----------
         funding_rate : FundingRateUpdate
             The funding rate update to add.
+
+        """
+        ...
+    def add_instrument_status(self, status: InstrumentStatus) -> None:
+        """
+        Add the given instrument status update to the cache.
+
+        Parameters
+        ----------
+        status : InstrumentStatus
+            The instrument status update to add.
 
         """
         ...
@@ -1046,6 +1060,44 @@ class Cache(CacheFacade):
 
         """
         ...
+    def instrument_statuses(self, instrument_id: InstrumentId) -> list[InstrumentStatus]:
+        """
+        Return instrument status updates for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the statuses to get.
+
+        Returns
+        -------
+        list[InstrumentStatus]
+
+        """
+    def instrument_status(self, instrument_id: InstrumentId, index: int = 0) -> InstrumentStatus | None:
+        """
+        Return the instrument status for the given instrument ID at the given index (if found).
+
+        Last instrument status if no index specified.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the status to get.
+        index : int, optional
+            The index for the status to get.
+
+        Returns
+        -------
+        InstrumentStatus or ``None``
+            If no statuses or no status at the index then returns ``None``.
+
+        Notes
+        -----
+        Reverse indexed (most recent status at index 0).
+
+        """
+        ...
     def bars(self, bar_type: BarType) -> list[Bar]:
         """
         Return bars for the given bar type.
@@ -1435,6 +1487,21 @@ class Cache(CacheFacade):
 
         """
         ...
+    def instrument_status_count(self, instrument_id: InstrumentId) -> int:
+        """
+        The count of instrument status updates for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the statuses.
+
+        Returns
+        -------
+        int
+
+        """
+        ...
     def bar_count(self, bar_type: BarType) -> int:
         """
         The count of bars for the given bar type.
@@ -1539,6 +1606,21 @@ class Cache(CacheFacade):
         ----------
         instrument_id : InstrumentId
             The instrument ID for the funding rates.
+
+        Returns
+        -------
+        bool
+
+        """
+    def has_instrument_statuses(self, instrument_id: InstrumentId) -> bool:
+        """
+        Return a value indicating whether the cache has instrument status updates
+        for the given instrument ID.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID for the statuses.
 
         Returns
         -------

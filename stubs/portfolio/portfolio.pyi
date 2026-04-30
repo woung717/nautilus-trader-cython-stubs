@@ -553,3 +553,68 @@ class Portfolio(PortfolioFacade):
 
         """
         ...
+    def mark_values(self, venue: Venue | None = None, account_id: AccountId | None = None) -> dict[Currency, Money]:
+        """
+        Return the per-currency mark-to-market value of open positions for the
+        given venue or account (if found).
+
+        Longs contribute positive notional, shorts contribute negative notional.
+        Instruments that cannot be priced are tracked via `missing_price_instruments`.
+
+        Parameters
+        ----------
+        venue : Venue, optional
+            The venue for the open positions.
+        account_id : AccountId, optional
+            The account ID for the open positions. The missing-price tracker is
+            venue-scoped, so filtering by `account_id` does not narrow the tracker.
+
+        Returns
+        -------
+        dict[Currency, Money]
+
+        """
+        ...
+    def equity(self, venue: Venue | None = None, account_id: AccountId | None = None) -> dict[Currency, Money]:
+        """
+        Return the per-currency total equity for the given venue or account (if found).
+
+        For cash and betting accounts: ``balance.total + Σ mark_value(open positions)``.
+        For margin accounts: ``balance.total + Σ unrealized_pnl(open positions)``.
+
+        Instruments that cannot be priced are tracked via `missing_price_instruments`,
+        so equity understatement surfaces via a warn-once log.
+
+        Parameters
+        ----------
+        venue : Venue, optional
+            The venue for the account.
+        account_id : AccountId, optional
+            The account ID (takes priority if both venue and account_id are provided).
+
+        Returns
+        -------
+        dict[Currency, Money]
+
+        """
+        ...
+    def missing_price_instruments(self, venue: Venue) -> list[InstrumentId]:
+        """
+        Return the instruments currently flagged as unpriced for the given venue.
+
+        An entry is added the first time `mark_values` or `equity` cannot source a
+        price, mark xrate, or cached instrument for an open position (after also
+        emitting a warn log), and removed once the instrument is priced again so a
+        subsequent drop re-warns.
+
+        Parameters
+        ----------
+        venue : Venue
+            The venue to query.
+
+        Returns
+        -------
+        list[InstrumentId]
+
+        """
+        ...

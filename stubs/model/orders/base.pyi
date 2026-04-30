@@ -30,6 +30,7 @@ from nautilus_trader.model.objects import Quantity
 
 STOP_ORDER_TYPES: set[OrderType]
 LIMIT_ORDER_TYPES: set[OrderType]
+TRIGGERABLE_ORDER_TYPES: set[OrderType]
 CANCELLABLE_ORDER_STATUSES: set[OrderStatus]
 LOCAL_ACTIVE_ORDER_STATUSES: set[OrderStatus]
 

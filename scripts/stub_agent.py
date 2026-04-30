@@ -46,7 +46,7 @@ class Config:
     VALIDATION_SUCCESS: str = "All validations passed!"
     
     # Model settings
-    DEFAULT_MODEL: str = "openrouter/qwen/qwen3.5-plus-02-15"  #"openrouter/openai/gpt-4o"
+    DEFAULT_MODEL: str = "openrouter/qwen/qwen3.6-plus"  #"openrouter/openai/gpt-4o"
     DEFAULT_MAX_RETRIES: int = 3
     
     # Fix loop parameters

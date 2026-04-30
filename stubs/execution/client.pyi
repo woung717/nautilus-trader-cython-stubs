@@ -33,6 +33,7 @@ from nautilus_trader.model.identifiers import StrategyId
 from nautilus_trader.model.identifiers import TradeId
 from nautilus_trader.model.identifiers import Venue
 from nautilus_trader.model.identifiers import VenueOrderId
+from nautilus_trader.model.instruments.base import Instrument
 from nautilus_trader.model.objects import AccountBalance
 from nautilus_trader.model.objects import Currency
 from nautilus_trader.model.objects import MarginBalance
@@ -108,6 +109,36 @@ class ExecutionClient(Component):
         Returns
         -------
         Account or ``None``
+
+        """
+        ...
+    def calculate_commission(
+        self,
+        instrument: Instrument,
+        last_qty: Quantity,
+        last_px: Price,
+        liquidity_side: LiquiditySide,
+    ) -> Money | None:
+        """
+        Calculate the commission for a reconciliation fill.
+
+        Override this method to provide venue-specific commission logic
+        for inferred fills generated during reconciliation.
+
+        Parameters
+        ----------
+        instrument : Instrument
+            The instrument for the fill.
+        last_qty : Quantity
+            The fill quantity.
+        last_px : Price
+            The fill price.
+        liquidity_side : LiquiditySide {``NO_LIQUIDITY_SIDE``, ``MAKER``, ``TAKER``}
+            The liquidity side for the fill.
+
+        Returns
+        -------
+        Money or ``None``
 
         """
         ...
