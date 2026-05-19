@@ -152,7 +152,7 @@ class Clock:
         """
         ...
 
-    def register_default_handler(self, handler: Callable[TimeEvent, None]) -> None:
+    def register_default_handler(self, handler: Callable[[TimeEvent], None]) -> None:
         """
         Register the given handler as the clocks default handler.
 
@@ -194,7 +194,7 @@ class Clock:
         self,
         name: str,
         alert_time: datetime,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         override: bool = False,
         allow_past: bool = True,
     ) -> None:
@@ -243,7 +243,7 @@ class Clock:
         self,
         name: str,
         alert_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
     ) -> None:
         """
@@ -291,7 +291,7 @@ class Clock:
         interval: timedelta,
         start_time: datetime | None = None,
         stop_time: datetime | None = None,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
         fire_immediately: bool = False,
     ) -> None:
@@ -349,7 +349,7 @@ class Clock:
         interval_ns: int,
         start_time_ns: int,
         stop_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
         fire_immediately: bool = False,
     ) -> None:
@@ -456,13 +456,13 @@ class TestClock(Clock):
     def timestamp_ms(self) -> int: ...
     def timestamp_us(self) -> int: ...
     def timestamp_ns(self) -> int: ...
-    def register_default_handler(self, callback: Callable[TimeEvent, None]) -> None: ...
+    def register_default_handler(self, callback: Callable[[TimeEvent], None]) -> None: ...
 
     def set_time_alert_ns(
         self,
         name: str,
         alert_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
     ) -> None: ...
 
@@ -472,7 +472,7 @@ class TestClock(Clock):
         interval_ns: int,
         start_time_ns: int,
         stop_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
         fire_immediately: bool = False,
     ) -> None: ...
@@ -543,13 +543,13 @@ class LiveClock(Clock):
     def timestamp_ms(self) -> int: ...
     def timestamp_us(self) -> int: ...
     def timestamp_ns(self) -> int: ...
-    def register_default_handler(self, callback: Callable[TimeEvent, None]) -> None: ...
+    def register_default_handler(self, callback: Callable[[TimeEvent], None]) -> None: ...
 
     def set_time_alert_ns(
         self,
         name: str,
         alert_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
     ) -> None: ...
 
@@ -559,7 +559,7 @@ class LiveClock(Clock):
         interval_ns: int,
         start_time_ns: int,
         stop_time_ns: int,
-        callback: Callable[TimeEvent, None] | None = None,
+        callback: Callable[[TimeEvent], None] | None = None,
         allow_past: bool = True,
         fire_immediately: bool = False,
     ) -> None: ...
