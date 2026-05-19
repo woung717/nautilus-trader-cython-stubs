@@ -45,10 +45,12 @@ class Config:
     # Validation
     VALIDATION_SUCCESS: str = "All validations passed!"
     
+    os.environ["OPENAI_API_KEY"] = "sk-"
     # Model settings
-    DEFAULT_MODEL: str = "openrouter/qwen/qwen3.6-plus"  #"openrouter/openai/gpt-4o"
+    DEFAULT_MODEL: str = "openai/qwen3.6-35b-a3b" # "openrouter/qwen/qwen3.6-plus"  #"openrouter/openai/gpt-4o"
     DEFAULT_MAX_RETRIES: int = 3
-    
+    DEFAULT_API_BASE: str = "http://localhost:1234/v1"
+
     # Fix loop parameters
     CONTEXT_LINES: int = 25  # lines of context around each error location
     MAX_TOOL_CALLS: int = 50  # guard against runaway tool-call loops
@@ -413,13 +415,13 @@ Use them when a symbol referenced in the .pyx is not defined locally.
 Respond only with the generated .pyi stub code. Do not include markdown formatting, explanations, or filenames.
 """
     
-    def generate(self, pyx_file: Path, model: str) -> str:
+    def generate(self, pyx_file: Path, model: str, api_base: str = "") -> str:
         """Call the LLM to generate a .pyi stub from a .pyx file."""
         prompt = self._build_generation_prompt(pyx_file.read_text(encoding="utf-8"))
-        response = litellm.completion(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        kwargs: dict[str, Any] = {"model": model, "messages": [{"role": "user", "content": prompt}]}
+        if api_base:
+            kwargs["api_base"] = api_base
+        response = litellm.completion(**kwargs)
         return response.choices[0].message.content
 
 
@@ -462,6 +464,7 @@ class StubFixer:
         pyi_file: Path,
         validation_output: str,
         model: str,
+        api_base: str = "",
         verbose: bool = False,
     ) -> None:
         """
@@ -521,12 +524,15 @@ class StubFixer:
         
         calls_made = 0
         while calls_made < Config.MAX_TOOL_CALLS:
-            response = litellm.completion(
-                model=model,
-                messages=messages,
-                tools=self._registry.tools,
-                tool_choice="auto",
-            )
+            kwargs: dict[str, Any] = {
+                "model": model,
+                "messages": messages,
+                "tools": self._registry.tools,
+                "tool_choice": "auto",
+            }
+            if api_base:
+                kwargs["api_base"] = api_base
+            response = litellm.completion(**kwargs)
             
             resp_msg = response.choices[0].message
             messages.append(self._serialize_message(resp_msg))
@@ -632,6 +638,7 @@ class StubProcessor:
         max_retries: int,
         overwrite: bool,
         verbose: bool,
+        api_base: str = "",
     ) -> tuple[bool, str]:
         """
         Process one .pyx → .pyi pair.
@@ -645,7 +652,7 @@ class StubProcessor:
         is_new = not pyi_file.exists() or overwrite
         if is_new:
             print("  Generating stub via LLM...")
-            content = self._generator.generate(pyx_file, model)
+            content = self._generator.generate(pyx_file, model, api_base=api_base)
             pyi_file.parent.mkdir(parents=True, exist_ok=True)
             pyi_file.write_text(content, encoding="utf-8")
             print(f"  Generated → {pyi_file}")
@@ -667,7 +674,7 @@ class StubProcessor:
         # 3. Iterative fix loop
         for attempt in range(1, max_retries + 1):
             print(f"  Fix attempt {attempt}/{max_retries}...")
-            self._fixer.fix(pyx_file, pyi_file, output, model, verbose=verbose)
+            self._fixer.fix(pyx_file, pyi_file, output, model, api_base=api_base, verbose=verbose)
             
             passed, output = self._validation_service.run_validation(pyx_file, pyi_file)
             if verbose:
@@ -715,15 +722,13 @@ class StubAgent:
     def _create_components(
         self,
         symbol_code: str,
-        module_root: Path,
-        stub_root: Path,
-    ) -> tuple[ToolRegistry, ValidationService, StubGenerator, StubFixer]:
+    ) -> tuple[ValidationService, StubGenerator, StubFixer]:
         """Create all the component classes needed for processing."""
         registry = ToolRegistry(self._project_root)
         validation_service = ValidationService(self._project_root)
         generator = StubGenerator(symbol_code)
         fixer = StubFixer(registry, validation_service)
-        return registry, validation_service, generator, fixer
+        return validation_service, generator, fixer
     
     def run(self, args: argparse.Namespace) -> int:
         """Run the stub agent with the given CLI arguments."""
@@ -743,9 +748,7 @@ class StubAgent:
         stub_root = (self._project_root / args.stub_path).resolve()
         
         # Create components
-        registry, validation_service, generator, fixer = self._create_components(
-            symbol_code, module_root, stub_root
-        )
+        validation_service, generator, fixer = self._create_components(symbol_code)
         
         # ── Clean up stubs that have no corresponding .pyx ────────
         print("Scanning for orphaned stubs...")
@@ -761,6 +764,7 @@ class StubAgent:
         processor = StubProcessor(generator, fixer, validation_service)
         
         print(f"Model        : {args.model}")
+        print(f"API Base     : {args.api_base or '(default)'}")
         print(f"Max retries  : {args.max_retries}")
         print(f"Files        : {len(pyx_files)}")
         print()
@@ -787,6 +791,7 @@ class StubAgent:
                     max_retries=args.max_retries,
                     overwrite=args.overwrite,
                     verbose=args.verbose,
+                    api_base=args.api_base,
                 )
             except Exception:
                 status = "exception"
@@ -852,6 +857,12 @@ def main() -> None:
         "--api-key",
         metavar="KEY",
         help="API key (alternative: set OPENROUTER_API_KEY env var).",
+    )
+    parser.add_argument(
+        "--api-base",
+        default=os.environ.get("LITELLM_API_BASE", Config.DEFAULT_API_BASE),
+        metavar="URL",
+        help="LiteLLM API base URL (alternative: set LITELLM_API_BASE env var).",
     )
     parser.add_argument(
         "--module-path",

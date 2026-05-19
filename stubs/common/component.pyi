@@ -425,9 +425,29 @@ class Clock:
         Cancel all timers.
         """
         ...
+    def cancel_default_handler(self) -> None:
+        """
+        Cancel the registered default handler (if any).
+
+        Releases the Python callback held by the clock so the bound method (and the
+        component that owns it) can be garbage collected. The clock stores the
+        callback as a Rust ``Py<PyAny>`` which Python's GC cannot trace, so any
+        cycle through it must be broken explicitly.
+        """
+        ...
+
+    def cancel_callbacks(self) -> None:
+        """
+        Cancel all registered named callbacks.
+
+        Releases callbacks registered via ``set_time_alert`` or ``set_timer`` with an
+        explicit handler. Companion to ``cancel_default_handler`` for breaking reference
+        cycles between Python components and the clock during disposal.
+        """
+        ...
 
 
-def get_component_clocks(instance_id: UUID4) -> listTestClock: ...
+def get_component_clocks(instance_id: UUID4) -> list[TestClock]: ...
 def register_component_clock(instance_id: UUID4, clock: Clock) -> None: ...
 def deregister_component_clock(instance_id: UUID4, clock: Clock) -> None: ...
 def remove_instance_component_clocks(instance_id: UUID4) -> None: ...
@@ -517,6 +537,27 @@ class TestClock(Clock):
         """
         ...
 
+    def cancel_default_handler(self) -> None:
+        """
+        Cancel the registered default handler (if any).
+
+        Releases the Python callback held by the clock so the bound method (and the
+        component that owns it) can be garbage collected. The clock stores the
+        callback as a Rust ``Py<PyAny>`` which Python's GC cannot trace, so any
+        cycle through it must be broken explicitly.
+        """
+        ...
+
+    def cancel_callbacks(self) -> None:
+        """
+        Cancel all registered named callbacks.
+
+        Releases callbacks registered via ``set_time_alert`` or ``set_timer`` with an
+        explicit handler. Companion to ``cancel_default_handler`` for breaking reference
+        cycles between Python components and the clock during disposal.
+        """
+        ...
+
 
 class LiveClock(Clock):
     """
@@ -567,6 +608,27 @@ class LiveClock(Clock):
     def next_time_ns(self, name: str) -> int: ...
     def cancel_timer(self, name: str) -> None: ...
     def cancel_timers(self) -> None: ...
+
+    def cancel_default_handler(self) -> None:
+        """
+        Cancel the registered default handler (if any).
+
+        Releases the Python callback held by the clock so the bound method (and the
+        component that owns it) can be garbage collected. The clock stores the
+        callback as a Rust ``Py<PyAny>`` which Python's GC cannot trace, so any
+        cycle through it must be broken explicitly.
+        """
+        ...
+
+    def cancel_callbacks(self) -> None:
+        """
+        Cancel all registered named callbacks.
+
+        Releases callbacks registered via ``set_time_alert`` or ``set_timer`` with an
+        explicit handler. Companion to ``cancel_default_handler`` for breaking reference
+        cycles between Python components and the clock during disposal.
+        """
+        ...
 
 
 def create_pyo3_conversion_wrapper(callback: Any) -> Callable[[Any], Any]: ...

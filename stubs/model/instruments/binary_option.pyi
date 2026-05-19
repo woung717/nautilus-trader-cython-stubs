@@ -145,3 +145,19 @@ class BinaryOption(Instrument):
 
         """
         ...
+    @staticmethod
+    def from_pyo3(pyo3_instrument: Any) -> BinaryOption:
+        """
+        Return legacy Cython binary option instrument converted from the given pyo3 Rust object.
+
+        Parameters
+        ----------
+        pyo3_instrument : nautilus_pyo3.BinaryOption
+            The pyo3 Rust binary option instrument to convert from.
+
+        Returns
+        -------
+        BinaryOption
+
+        """
+        ...

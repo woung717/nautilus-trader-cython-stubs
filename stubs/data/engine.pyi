@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from dataclasses import dataclass
 from typing import Any, Callable, Generator, List, Set, Tuple, Dict
 
 from nautilus_trader.core.nautilus_pyo3 import FundingRateUpdate, MessageBus
@@ -376,7 +377,7 @@ class DataEngine(Component):
 
     def _create_bar_aggregator(self, bar_type: BarType, params: Dict[str, Any], request_id: UUID4 = None) -> None: ...
 
-    def _setup_bar_aggregator(self, bar_type: BarType, historical: bool = False, request_id: UUID4 = None) -> None: ...
+    def _setup_bar_aggregator(self, bar_type: BarType, historical: bool = False, request_id: UUID4 = None, subscribe_source: bool = True) -> None: ...
 
     def _dispose_bar_aggregator(self, bar_type: BarType, historical: bool = False, request_id: UUID4 = None) -> None: ...
 
@@ -410,6 +411,26 @@ class DataEngine(Component):
     def _unsubscribe_spread_quote_aggregator(self, client: MarketDataClient, command: UnsubscribeQuoteTicks) -> None: ...
 
     def _get_spread_quote_aggregator_key(self, spread_instrument_id: InstrumentId, request_id: UUID4 = None) -> Tuple[InstrumentId, UUID4]: ...
+
+    # Continuous Futures internal methods
+    def _handle_subscribe_continuous_future_bars(self, client: MarketDataClient, command: SubscribeBars) -> None: ...
+
+    def _handle_unsubscribe_continuous_future_bars(self, client: MarketDataClient, command: UnsubscribeBars) -> None: ...
+
+    def _handle_continuous_future_request(self, request: RequestData) -> None: ...
+
+    def _update_continuous_future_data(self, parent_id: UUID4) -> None: ...
+
+    def _handle_continuous_future_subscription_transition(self, event: TimeEvent) -> None: ...
+
+    def _handle_continuous_future_response(self, response: DataResponse) -> None: ...
+
+
+@dataclass(slots=True)
+class ContinuousFutureSubscriptionState:
+    active_segment_instrument_id: InstrumentId | None = None
+    next_transition_index: int | None = None
+    timer_name: str | None = None
 
 
 class RequestWorkflowState:

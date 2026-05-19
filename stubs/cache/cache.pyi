@@ -316,6 +316,39 @@ class Cache(CacheFacade):
 
         """
         ...
+    def purge_instrument(
+        self,
+        instrument_id: InstrumentId,
+        purge_from_database: bool = False,
+    ) -> None:
+        """
+        Purge the instrument for the given instrument ID from the cache (if found).
+
+        All cache-owned data keyed by the instrument is removed: the instrument record,
+        any synthetic with the same id, order book and own-order-book state,
+        quote/trade histories, mark/index/funding price histories, instrument status,
+        bars for any ``BarType`` referencing the instrument, and the
+        ``_index_instrument_orders`` / ``_index_instrument_positions`` index entries.
+
+        For safety, an instrument is prevented from being purged while any associated
+        order is non-terminal (anything not in `_index_orders_closed`, including
+        initialized, submitted, accepted, emulated, released, or inflight states) or
+        any associated position is non-closed.
+
+        Active subscriptions and other live data-engine state are not touched here;
+        those belong to the data and execution engines.
+
+        Parameters
+        ----------
+        instrument_id : InstrumentId
+            The instrument ID to purge.
+        purge_from_database : bool, default False
+            Reserved for future use. Currently a no-op because the cache database
+            adapter does not yet expose a delete-instrument method. The parameter is
+            kept for API symmetry with `purge_order` and `purge_position`.
+
+        """
+        ...
     def clear_index(self) -> None: ...
     def reset(self) -> None:
         """
